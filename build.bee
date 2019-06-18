@@ -1,0 +1,45 @@
+var VERSION = properties.getProperty("version");
+
+var CP = bee.createClassPath();
+CP.addClassPathEntry("${dir-build}/${project-name}-${version}.jar");
+CP.addClassPathEntry("${dir-build}/${project-name}-${version}-unittests.jar");
+CP.addClassPathEntries("${dir-lib}", "*.jar");
+
+function prepare() {
+    bee.createVersionClass("${dir-src}/${basepackagepath}", VERSION);
+    bee.createVersionTestClass("${dir-tst}/${basepackagepath}", VERSION);
+    bee.rmdirs("${dir-jarsrc}");
+    bee.mkdirs("${dir-jarsrc}");
+}
+
+function compile() {
+    bee.deleteFile("${dir-build}/${project-name}-${version}.jar");
+    bee.compile(CP, "${dir-src}", "${dir-jarsrc}", "-source 1.8 -target 1.8 -encoding UTF-8 -g", true, "*.java");
+}
+
+function buildJar() {
+    // bee.mkdirs("${dir-jarsrc}/${basepackagepath}/dm");
+    // bee.mkdirs("${dir-jarsrc}/${basepackagepath}/gui/icons/ocean");
+    // bee.copyFiles("${dir-src}/icons", "*.*", "${dir-jarsrc}/${basepackagepath}/gui/icons");
+    // bee.copyFiles("${dir-src}/icons/ocean", "*.*", "${dir-jarsrc}/${basepackagepath}/gui/icons/ocean");
+    // bee.copyFile("dm/archimedes.ads", "${dir-jarsrc}/${basepackagepath}/dm/archimedes.ads");
+    bee.mkdirs("${dir-build}");
+    bee.deleteFile("${dir-build}/${project-name}.jar");
+    bee.jar("${dir-build}/${project-name}.jar", "${dir-jarsrc}", new Array("Implementation-Title: ${application-title}", "Implementation-Vendor: ${application-vendor}", "Implementation-Version: ${version}"));
+    bee.copyFile("${dir-build}/${project-name}.jar", "${dir-build}/${project-name}-${version}.jar");
+}
+
+function run() {
+    bee.run(CP, "", "${project-name}.${main-name}");
+}
+
+function copyToOtherProjects() {
+    bee.copyFile("${dir-build}/${project-name}.jar", "../baccaraacf/lib/${project-name}.jar");
+    bee.copyFile("${dir-build}/${project-name}.jar", "../isisacf/lib/${project-name}.jar");
+}
+
+function main() {
+    prepare();
+    compile();
+    buildJar();
+}

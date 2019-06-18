@@ -1,0 +1,46 @@
+/*
+ * VersionTest.java
+ *
+ * **.**.**** (automatisch generiert)
+ *
+ * (c) by $VENDOR$
+ *
+ */
+
+package $BASEPACKAGE$;
+
+
+import static org.junit.Assert.*;
+
+import org.junit.*;
+
+
+/**
+ * Tests zur Klasse VersionTest.
+ *
+ * @author $VENDOR$
+ *
+ * @changed *** **.**.**** - Automatisch generiert.
+ */
+
+public class VersionTest {
+
+    @Test
+    /** Test auf bestehen der statischen Instanz. */
+    public void testInstanceNotNull() {
+        assertNotNull(Version.INSTANCE);
+    }
+
+    @Test
+    /** Test der Methode <TT>getVersion()</TT>. */
+    public void testGetVersion() {
+        assertEquals("$VERSION$", Version.INSTANCE.getVersion());
+    }
+
+    @Test
+    /** Test der Methode <TT>toString()</TT>. */
+    public void testToString() {
+        assertEquals("$VERSION$", Version.INSTANCE.toString());
+    }
+
+}
