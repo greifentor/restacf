@@ -7,3 +7,5 @@ application-vendor=O.Lieshoff
 version=1.1.1
 
 basepackagepath=rest/acf
+
+dir-lib=lib
