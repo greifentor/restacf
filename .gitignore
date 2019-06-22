@@ -1,5 +1,1 @@
-tmp/
-*.class
-/.classpath
-/.directory
-/.project
+/target/
