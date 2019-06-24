@@ -19,6 +19,7 @@ public class ClassSourceModel {
 
 	private PackageSourceModel packageModel;
 	private String name;
+	private List<AttributeSourceModel> attributes;
 	private List<ImportSourceModel> imports;
 	private List<MethodSourceModel> methods;
 
