@@ -11,9 +11,10 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class ColumnSO {
+public class TypeSO {
 
-	private String name;
-	private TypeSO type;
+	private int sqlType;
+	private Integer length;
+	private Integer precision;
 
 }

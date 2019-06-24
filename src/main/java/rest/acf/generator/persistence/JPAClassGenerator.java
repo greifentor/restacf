@@ -1,4 +1,4 @@
-package rest.acf.generators.persistence;
+package rest.acf.generator.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,10 @@ import rest.acf.model.ClassSourceModel;
 public class JPAClassGenerator {
 
 	/**
-	 * Generiert eine JPA mapping class for the passed database table service
-	 * object.
+	 * Generiert eine JPA mapping class for the passed database table service object.
 	 * 
-	 * @param tableSO
-	 *            The database table service object which the class is to create
-	 *            for.
-	 * @returns A JPA mapping class for passed database table or a "null" value
-	 *          if a "null" value is passed.
+	 * @param tableSO The database table service object which the class is to create for.
+	 * @returns A JPA mapping class for passed database table or a "null" value if a "null" value is passed.
 	 */
 	public ClassSourceModel generate(TableSO tableSO) {
 		if (tableSO == null) {
@@ -32,11 +28,9 @@ public class JPAClassGenerator {
 		}
 		List<AttributeSourceModel> attributes = new ArrayList<>();
 		for (ColumnSO column : tableSO.getColumns()) {
-			attributes
-					.add(new AttributeSourceModel().setName(column.getName()));
+			attributes.add(new AttributeSourceModel().setName(column.getName()).setType(null));
 		}
-		return new ClassSourceModel().setAttributes(attributes)
-				.setName(tableSO.getName() + "Dbo");
+		return new ClassSourceModel().setAttributes(attributes).setName(tableSO.getName() + "Dbo");
 	}
 
 }

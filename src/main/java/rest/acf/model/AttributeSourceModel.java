@@ -16,5 +16,6 @@ import lombok.experimental.Accessors;
 public class AttributeSourceModel {
 
 	private String name;
+	private String type;
 
 }

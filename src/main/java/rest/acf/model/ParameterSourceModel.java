@@ -1,13 +1,11 @@
 package rest.acf.model;
 
-import java.util.List;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * A model for a method source.
+ * A model for a parameter source.
  * 
  * @author ollie
  *
@@ -15,11 +13,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
-public class MethodSourceModel {
+public class ParameterSourceModel {
 
 	private String name;
-	private String code;
-	private String returnType;
-	private List<ParameterSourceModel> parameters;
+	private String type;
 
 }
