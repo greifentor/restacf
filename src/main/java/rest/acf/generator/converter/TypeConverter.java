@@ -15,34 +15,65 @@ public class TypeConverter {
 	/**
 	 * Converts a service object into a string with the Java type name..
 	 * 
-	 * @param typeSO The service object which should be converted.
+	 * @param typeSO
+	 *            The service object which should be converted.
+	 * @param nullable
+	 *            Set this flag if the type should be returned in a nullable
+	 *            form.
 	 * @return A string with the name of the Java type.
-	 * @throws IllegalArgumentException If the passed type cannot be converted.
+	 * @throws IllegalArgumentException
+	 *             If the passed type cannot be converted.
 	 */
-	public String typeSOToTypeString(TypeSO typeSO) {
+	public String typeSOToTypeString(TypeSO typeSO, boolean nullable) {
 		if (typeSO == null) {
 			return null;
 		}
 		if (typeSO.getSqlType() == Types.BIGINT) {
-			return "long";
+			return getTypeRespectNullable(nullable, "long", "Long");
 		} else if (typeSO.getSqlType() == Types.BOOLEAN) {
-			return "boolean";
-		} else if ((typeSO.getSqlType() == Types.CHAR) || (typeSO.getSqlType() == Types.LONGNVARCHAR)
-				|| (typeSO.getSqlType() == Types.LONGVARCHAR)) {
+			return getTypeRespectNullable(nullable, "boolean", "Boolean");
+		} else if ((typeSO.getSqlType() == Types.CHAR)
+				|| (typeSO.getSqlType() == Types.LONGNVARCHAR)
+				|| (typeSO.getSqlType() == Types.LONGVARCHAR)
+				|| (typeSO.getSqlType() == Types.NCHAR)
+				|| (typeSO.getSqlType() == Types.NVARCHAR)
+				|| (typeSO.getSqlType() == Types.VARCHAR)) {
 			if (typeSO.getLength() == 1) {
-				return "char";
+				return getTypeRespectNullable(nullable, "char", "Character");
 			}
 			return "String";
 		} else if (typeSO.getSqlType() == Types.DATE) {
 			return "LocalDate";
-		} else if ((typeSO.getSqlType() == Types.DECIMAL) || (typeSO.getSqlType() == Types.DOUBLE)) {
-			return "double";
+		} else if ((typeSO.getSqlType() == Types.DECIMAL)
+				|| (typeSO.getSqlType() == Types.DOUBLE)
+				|| (typeSO.getSqlType() == Types.NUMERIC)
+				|| (typeSO.getSqlType() == Types.REAL)) {
+			return getTypeRespectNullable(nullable, "double", "Double");
 		} else if (typeSO.getSqlType() == Types.FLOAT) {
-			return "float";
+			return getTypeRespectNullable(nullable, "float", "Float");
 		} else if (typeSO.getSqlType() == Types.INTEGER) {
-			return "int";
+			return getTypeRespectNullable(nullable, "int", "Integer");
+		} else if (typeSO.getSqlType() == Types.SMALLINT) {
+			return getTypeRespectNullable(nullable, "short", "Short");
+		} else if (typeSO.getSqlType() == Types.TIME) {
+			return "LocalTime";
+		} else if (typeSO.getSqlType() == Types.TIMESTAMP) {
+			return "LocalDateTime";
+		} else if (typeSO.getSqlType() == Types.TIMESTAMP_WITH_TIMEZONE) {
+			return "ZonedDateTime";
+		} else if (typeSO.getSqlType() == Types.TINYINT) {
+			return getTypeRespectNullable(nullable, "byte", "Byte");
 		}
-		throw new IllegalArgumentException("type " + typeSO.getSqlType() + " cannot be converted to a Java type.");
+		throw new IllegalArgumentException("type " + typeSO.getSqlType()
+				+ " cannot be converted to a Java type.");
+	}
+
+	private String getTypeRespectNullable(boolean nullable,
+			String simpleTypeName, String wrapperTypeName) {
+		if (nullable) {
+			return wrapperTypeName;
+		}
+		return simpleTypeName;
 	}
 
 }
