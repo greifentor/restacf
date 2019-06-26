@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.ImportSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -101,6 +102,32 @@ public class ModelToJavaSourceCodeConverterTest {
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
 				.setAnnotations(Arrays.asList(annotation));
+		// Run
+		String returned = this.unitUnderTest.classSourceModelToJavaSourceCode(classSourceModel);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void classSourceModelToJavaSourceCode_PassASimpleClassSourceModelWithAnImports_ReturnsACorrectSourceCode() {
+		// Prepare
+		String expected = "import imported.pack.age.Class;\n" //
+				+ "import another.pack.age.*;\n\n\n" //
+				+ "public " + TABLE_NAME + " {\n" //
+				+ "\n" //
+				+ "\tprivate int column0;\n" //
+				+ "\tprivate String column1;\n" //
+				+ "\n" //
+				+ "}";
+		ImportSourceModel importSingleClass = new ImportSourceModel()
+				.setPackageModel(new PackageSourceModel().setPackageName("imported.pack.age")).setClassName("Class");
+		ImportSourceModel importWholePackage = new ImportSourceModel()
+				.setPackageModel(new PackageSourceModel().setPackageName("another.pack.age"));
+		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
+		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
+				.setImports(Arrays.asList(importSingleClass, importWholePackage));
 		// Run
 		String returned = this.unitUnderTest.classSourceModelToJavaSourceCode(classSourceModel);
 		// Check

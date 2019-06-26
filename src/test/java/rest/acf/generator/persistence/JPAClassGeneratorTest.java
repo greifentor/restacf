@@ -19,6 +19,7 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
+import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
 
@@ -32,10 +33,8 @@ public class JPAClassGeneratorTest {
 
 	private static final String COLUMN_NAME_0 = "Column0";
 	private static final String COLUMN_NAME_1 = "Column1";
-	private static final TypeSO COLUMN_TYPE_0 = new TypeSO()
-			.setSqlType(Types.INTEGER);
-	private static final TypeSO COLUMN_TYPE_1 = new TypeSO()
-			.setSqlType(Types.VARCHAR).setLength(100);
+	private static final TypeSO COLUMN_TYPE_0 = new TypeSO().setSqlType(Types.INTEGER);
+	private static final TypeSO COLUMN_TYPE_1 = new TypeSO().setSqlType(Types.VARCHAR).setLength(100);
 	private static final String TABLE_NAME = "TestTable";
 
 	@Spy
@@ -54,21 +53,16 @@ public class JPAClassGeneratorTest {
 	@Test
 	public void generate_PassASimpleClassWithSimpleFields_ReturnsACorrectClassSourceModel() {
 		// Prepare
-		ColumnSO column0 = new ColumnSO().setName(COLUMN_NAME_0)
-				.setType(COLUMN_TYPE_0);
-		ColumnSO column1 = new ColumnSO().setName(COLUMN_NAME_1)
-				.setType(COLUMN_TYPE_1);
+		ColumnSO column0 = new ColumnSO().setName(COLUMN_NAME_0).setType(COLUMN_TYPE_0);
+		ColumnSO column1 = new ColumnSO().setName(COLUMN_NAME_1).setType(COLUMN_TYPE_1);
 		List<ColumnSO> columns = Arrays.asList(column0, column1);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(columns);
 
-		AttributeSourceModel attribute0 = new AttributeSourceModel()
-				.setName("column0").setType("int");
-		AttributeSourceModel attribute1 = new AttributeSourceModel()
-				.setName("column1").setType("String");
-		List<AttributeSourceModel> attributes = Arrays.asList(attribute0,
-				attribute1);
-		ClassSourceModel expected = new ClassSourceModel()
-				.setAttributes(attributes).setName(TABLE_NAME + "DBO");
+		AnnotationSourceModel annotationEntity = new AnnotationSourceModel().setName("Entity");
+		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
+		ClassSourceModel expected = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME + "DBO");
 		// Run
 		ClassSourceModel returned = this.unitUnderTest.generate(table);
 

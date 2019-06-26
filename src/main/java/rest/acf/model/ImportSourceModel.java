@@ -16,5 +16,6 @@ import lombok.experimental.Accessors;
 public class ImportSourceModel {
 
 	private PackageSourceModel packageModel;
+	private String className;
 
 }

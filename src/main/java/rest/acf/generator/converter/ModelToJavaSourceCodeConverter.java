@@ -3,6 +3,7 @@ package rest.acf.generator.converter;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.ImportSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -29,6 +30,18 @@ public class ModelToJavaSourceCodeConverter {
 		PackageSourceModel psm = csm.getPackageModel();
 		if (psm != null) {
 			code += "package " + psm.getPackageName() + ";\n\n\n";
+		}
+		if (!csm.getImports().isEmpty()) {
+			for (ImportSourceModel ism : csm.getImports()) {
+				code += "import " + ism.getPackageModel().getPackageName() + ".";
+				if (ism.getClassName() != null) {
+					code += ism.getClassName();
+				} else {
+					code += "*";
+				}
+				code += ";\n";
+			}
+			code += "\n\n";
 		}
 		for (AnnotationSourceModel asm : csm.getAnnotations()) {
 			code += "@" + asm.getName();
