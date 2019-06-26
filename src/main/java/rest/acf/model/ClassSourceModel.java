@@ -1,5 +1,6 @@
 package rest.acf.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -19,8 +20,9 @@ public class ClassSourceModel {
 
 	private PackageSourceModel packageModel;
 	private String name;
-	private List<AttributeSourceModel> attributes;
-	private List<ImportSourceModel> imports;
-	private List<MethodSourceModel> methods;
+	private List<AnnotationSourceModel> annotations = new ArrayList<>();
+	private List<AttributeSourceModel> attributes = new ArrayList<>();
+	private List<ImportSourceModel> imports = new ArrayList<>();
+	private List<MethodSourceModel> methods = new ArrayList<>();
 
 }
