@@ -5,6 +5,7 @@ import java.util.List;
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
+import rest.acf.model.AnnotationBearer;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
@@ -48,28 +49,32 @@ public class ClassSourceModelUtils {
 	 *            The name of the package to import.
 	 * @param className
 	 *            The name of the class to import.
+	 * @return The add import source model.
 	 */
-	public void addImport(ClassSourceModel csm, String packageName,
+	public ImportSourceModel addImport(ClassSourceModel csm, String packageName,
 			String className) {
 		List<ImportSourceModel> imports = csm.getImports();
-		imports.add(
-				new ImportSourceModel().setClassName(className).setPackageModel(
-						new PackageSourceModel().setPackageName(packageName)));
+		ImportSourceModel ism = new ImportSourceModel().setClassName(className)
+				.setPackageModel(
+						new PackageSourceModel().setPackageName(packageName));
+		imports.add(ism);
+		return ism;
 	}
 
 	/**
-	 * Adds an annotation to the passed class source model.
+	 * Adds an annotation to the passed annotation bearer.
 	 * 
-	 * @param csm
-	 *            The class source model which the annotation is to add to.
+	 * @param ab
+	 *            The annotation bearer which the annotation is to add to.
 	 * @param name
 	 *            The name of the annotation.
 	 * @param propertyInfo
 	 *            Information about properties which should be set for the
 	 *            annotation. Could be left empty if no properties should be
 	 *            passed with the annotation.
+	 * @return The annotation source model which has been added.
 	 */
-	public void addAnnotation(ClassSourceModel csm, String name,
+	public AnnotationSourceModel addAnnotation(AnnotationBearer ab, String name,
 			Object... propertyInfo) {
 		AnnotationSourceModel asm = new AnnotationSourceModel().setName(name);
 		if (propertyInfo.length > 0) {
@@ -80,7 +85,8 @@ public class ClassSourceModelUtils {
 								.setContent(propertyInfo[i + 1]));
 			}
 		}
-		csm.getAnnotations().add(asm);
+		ab.getAnnotations().add(asm);
+		return asm;
 	}
 
 	/**
@@ -92,14 +98,18 @@ public class ClassSourceModelUtils {
 	 * @param column
 	 *            The column service object which the attribute source model is
 	 *            to add for.
+	 * @return The added attribute source model.
 	 */
-	public void addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+	public AttributeSourceModel addAttributeForColumn(ClassSourceModel csm,
+			ColumnSO column) {
 		String attributeName = this.nameConverter
 				.columnNameToAttributeName(column);
 		String typeName = this.typeConverter
 				.typeSOToTypeString(column.getType(), column.isNullable());
-		csm.getAttributes().add(new AttributeSourceModel()
-				.setName(attributeName).setType(typeName));
+		AttributeSourceModel asm = new AttributeSourceModel()
+				.setName(attributeName).setType(typeName);
+		csm.getAttributes().add(asm);
+		return asm;
 	}
 
 }

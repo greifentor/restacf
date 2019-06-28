@@ -68,14 +68,20 @@ public class JPAClassGeneratorTest {
 	public void generate_PassASimpleClassWithSimpleFields_ReturnsACorrectClassSourceModel() {
 		// Prepare
 		ColumnSO column0 = new ColumnSO().setName(COLUMN_NAME_0)
-				.setType(COLUMN_TYPE_0);
+				.setType(COLUMN_TYPE_0).setPkMember(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN_NAME_1)
 				.setType(COLUMN_TYPE_1);
 		List<ColumnSO> columns = Arrays.asList(column0, column1);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(columns);
 
+		ImportSourceModel importColumnAnnotation = new ImportSourceModel()
+				.setClassName("Column").setPackageModel(new PackageSourceModel()
+						.setPackageName("javax.persistence"));
 		ImportSourceModel importEntityAnnotation = new ImportSourceModel()
 				.setClassName("Entity").setPackageModel(new PackageSourceModel()
+						.setPackageName("javax.persistence"));
+		ImportSourceModel importIdAnnotation = new ImportSourceModel()
+				.setClassName("Id").setPackageModel(new PackageSourceModel()
 						.setPackageName("javax.persistence"));
 		ImportSourceModel importTableAnnotation = new ImportSourceModel()
 				.setClassName("Table").setPackageModel(new PackageSourceModel()
@@ -87,14 +93,28 @@ public class JPAClassGeneratorTest {
 				.setProperties(Arrays.asList(new PropertySourceModel<String>()
 						.setName("name").setContent(TABLE_NAME)));
 		AttributeSourceModel attribute0 = new AttributeSourceModel()
-				.setName("column0").setType("int");
+				.setName("column0").setType("int")
+				.setAnnotations(Arrays.asList(
+						new AnnotationSourceModel().setName("Id"),
+						new AnnotationSourceModel().setName("Column")
+								.setProperties(Arrays.asList(
+										new PropertySourceModel<String>()
+												.setName("name")
+												.setContent(COLUMN_NAME_0)))));
 		AttributeSourceModel attribute1 = new AttributeSourceModel()
-				.setName("column1").setType("String");
+				.setName("column1").setType("String")
+				.setAnnotations(Arrays
+						.asList(new AnnotationSourceModel().setName("Column")
+								.setProperties(Arrays.asList(
+										new PropertySourceModel<String>()
+												.setName("name")
+												.setContent(COLUMN_NAME_1)))));;
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0,
 				attribute1);
 		ClassSourceModel expected = new ClassSourceModel()
 				.setAttributes(attributes).setName(TABLE_NAME + "DBO")
-				.setImports(Arrays.asList(importEntityAnnotation,
+				.setImports(Arrays.asList(importColumnAnnotation,
+						importEntityAnnotation, importIdAnnotation,
 						importTableAnnotation))
 				.setAnnotations(
 						Arrays.asList(annotationEntity, annotationTable));

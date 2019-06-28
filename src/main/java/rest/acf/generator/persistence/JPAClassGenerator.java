@@ -5,6 +5,7 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
+import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
 
 /**
@@ -53,13 +54,22 @@ public class JPAClassGenerator {
 		}
 		ClassSourceModel csm = createClassWithName(tableSO);
 		this.classSourceModelUtils.addImport(csm, "javax.persistence",
+				"Column");
+		this.classSourceModelUtils.addImport(csm, "javax.persistence",
 				"Entity");
+		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Id");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Table");
 		this.classSourceModelUtils.addAnnotation(csm, "Entity");
 		this.classSourceModelUtils.addAnnotation(csm, "Table", "name",
 				tableSO.getName());
 		for (ColumnSO column : tableSO.getColumns()) {
-			this.classSourceModelUtils.addAttributeForColumn(csm, column);
+			AttributeSourceModel asm = this.classSourceModelUtils
+					.addAttributeForColumn(csm, column);
+			if (column.isPkMember()) {
+				this.classSourceModelUtils.addAnnotation(asm, "Id");
+			}
+			this.classSourceModelUtils.addAnnotation(asm, "Column", "name",
+					column.getName());
 		}
 		return csm;
 	}

@@ -20,5 +20,6 @@ public class ColumnSO {
 	private String name;
 	private TypeSO type;
 	private boolean nullable;
+	private boolean pkMember;
 
 }

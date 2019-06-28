@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
-public class ClassSourceModel {
+public class ClassSourceModel implements AnnotationBearer {
 
 	private PackageSourceModel packageModel;
 	private String name;
