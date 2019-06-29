@@ -1,5 +1,6 @@
 package de.ollie.archimedes.alexandrian.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -20,7 +21,7 @@ public class TableSO {
 
 	@NonNull
 	private String name;
-	private List<ColumnSO> columns;
+	private List<ColumnSO> columns = new ArrayList<>();
 	private TableMetaInfo metaInfo;
 	private TableGUIInfo guiInfo;
 

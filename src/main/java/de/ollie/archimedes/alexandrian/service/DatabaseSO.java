@@ -7,16 +7,16 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * A container class for database schemes in the service environment.
+ * A container class for databases in the service environment.
  * 
  * @author ollie
  *
  */
 @Data
 @Accessors(chain = true)
-public class SchemeSO {
+public class DatabaseSO {
 
 	private String name;
-	private List<TableSO> tables = new ArrayList<>();
+	private List<SchemeSO> schemes = new ArrayList<>();
 
 }
