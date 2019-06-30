@@ -1,5 +1,6 @@
 package rest.acf.generator.converter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -7,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.sql.Types;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.Test;
@@ -53,9 +53,10 @@ public class DataModelToSOConverterTest {
 	@Test
 	public void convert_PassADataModel_ReturnsADatabaseSOWithTheDataOfThePassedModel() {
 		// Prepare
-		ColumnSO column0 = new ColumnSO().setName(COLUMN0_NAME).setType(new TypeSO().setSqlType(TYPE_BIGINT));
+		ColumnSO column0 = new ColumnSO().setName(COLUMN0_NAME).setType(new TypeSO().setSqlType(TYPE_BIGINT))
+				.setNullable(false).setPkMember(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN1_NAME)
-				.setType(new TypeSO().setSqlType(TYPE_VARCHAR).setLength(TYPE_VARCHAR_LENGTH));
+				.setType(new TypeSO().setSqlType(TYPE_VARCHAR).setLength(TYPE_VARCHAR_LENGTH)).setNullable(true);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(Arrays.asList(column0, column1));
 		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table));
 		DatabaseSO expected = new DatabaseSO().setName(MODEL_NAME).setSchemes(Arrays.asList(scheme));
@@ -79,7 +80,7 @@ public class DataModelToSOConverterTest {
 		// Run
 		DatabaseSO returned = this.unitUnderTest.convert(model);
 		// Check
-		assertThat(returned, equalTo(expected));
+		assertEquals(expected.toString(), returned.toString());
 	}
 
 }

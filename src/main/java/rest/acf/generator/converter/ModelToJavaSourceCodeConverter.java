@@ -43,6 +43,9 @@ public class ModelToJavaSourceCodeConverter {
 			}
 			code += "\n\n";
 		}
+		if (csm.getComment() != null) {
+			code += csm.getComment().getComment();
+		}
 		for (AnnotationSourceModel asm : csm.getAnnotations()) {
 			code += "@" + asm.getName();
 			if (!asm.getProperties().isEmpty()) {
@@ -62,6 +65,22 @@ public class ModelToJavaSourceCodeConverter {
 		code += "public " + csm.getName() + " {\n";
 		code += "\n";
 		for (AttributeSourceModel asm : csm.getAttributes()) {
+			for (AnnotationSourceModel ansm : asm.getAnnotations()) {
+				code += "\t@" + ansm.getName();
+				if (!ansm.getProperties().isEmpty()) {
+					code += "(";
+					boolean first = true;
+					for (PropertySourceModel<?> prosm : ansm.getProperties()) {
+						if (!first) {
+							code += ", ";
+						}
+						code += prosm.getName() + "=" + getJavaConstantValue(prosm.getContent());
+						first = false;
+					}
+					code += ")";
+				}
+				code += "\n";
+			}
 			code += "\tprivate " + asm.getType() + " " + asm.getName() + ";\n";
 		}
 		code += "\n";

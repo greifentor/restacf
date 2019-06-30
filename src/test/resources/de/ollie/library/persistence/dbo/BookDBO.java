@@ -8,20 +8,24 @@ import javax.persistence.Table;
 
 
 /**
- * A mapping class city objects.
+ * A mapping class book objects.
  *
  * @author rest-acf
  *
  * GENERATED CODE!!! DO NOT CHANGE!!!
  */
 @Entity
-@Table(name="City")
-public CityDBO {
+@Table(name="Book")
+public BookDBO {
 
 	@Id
 	@Column(name="Id")
 	private long id;
-	@Column(name="Name")
-	private String name;
+	@Column(name="CityOfPublication")
+	private CityDBO cityOfPublication;
+	@Column(name="Title")
+	private String title;
+	@Column(name="YearOfPublication")
+	private int yearOfPublication;
 
 }

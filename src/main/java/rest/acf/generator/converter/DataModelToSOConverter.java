@@ -44,6 +44,8 @@ public class DataModelToSOConverter {
 					tpso.setPrecision(dom.getDecimalPlace());
 				}
 				cso.setType(tpso);
+				cso.setPkMember(cm.isPrimaryKey());
+				cso.setNullable(!cm.isNotNull());
 				tso.getColumns().add(cso);
 			}
 			sso.getTables().add(tso);
