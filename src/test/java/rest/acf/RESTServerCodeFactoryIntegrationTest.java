@@ -40,8 +40,10 @@ public class RESTServerCodeFactoryIntegrationTest {
 	@Test
 	public void generate_PassADataModel_CreatesAllFilesFromTheDataModel() throws Exception {
 		String path = "target/test/output";
-		Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
-				.forEach(File::delete);
+		if (new File(path).exists()) {
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+					.forEach(File::delete);
+		}
 		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
 		DataModel dm = (Diagramm) reader.read("src/test/resources/TestDataModel.xml");
 		this.unitUnderTest.setDataModel(dm);

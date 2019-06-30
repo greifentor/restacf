@@ -6,6 +6,7 @@ import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.AttributeSourceModel;
+import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.PackageSourceModel;
 
@@ -48,10 +49,11 @@ public class JPAClassGenerator {
 	/**
 	 * Generiert eine JPA mapping class for the passed database table service object.
 	 * 
-	 * @param tableSO The database table service object which the class is to create for.
+	 * @param tableSO    The database table service object which the class is to create for.
+	 * @param authorName The name which should be inserted as author name.
 	 * @returns A JPA mapping class for passed database table or a "null" value if a "null" value is passed.
 	 */
-	public ClassSourceModel generate(TableSO tableSO) {
+	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
 			return null;
 		}
@@ -63,6 +65,13 @@ public class JPAClassGenerator {
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Table");
 		this.classSourceModelUtils.addAnnotation(csm, "Entity");
 		this.classSourceModelUtils.addAnnotation(csm, "Table", "name", tableSO.getName());
+		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
+				+ " * A mapping class " + tableSO.getName().toLowerCase() + " objects.\n" //
+				+ " *\n" //
+				+ " * @author " + authorName + "\n" //
+				+ " *\n" //
+				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
+				+ " */\n"));
 		for (ColumnSO column : tableSO.getColumns()) {
 			AttributeSourceModel asm = this.classSourceModelUtils.addAttributeForColumn(csm, column);
 			if (column.isPkMember()) {

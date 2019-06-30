@@ -20,6 +20,7 @@ public class ClassSourceModel implements AnnotationBearer {
 
 	private PackageSourceModel packageModel;
 	private String name;
+	private ClassCommentSourceModel comment;
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
 	private List<AttributeSourceModel> attributes = new ArrayList<>();
 	private List<ImportSourceModel> imports = new ArrayList<>();

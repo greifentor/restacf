@@ -22,6 +22,7 @@ import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
+import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportSourceModel;
 import rest.acf.model.PackageSourceModel;
@@ -35,6 +36,7 @@ import rest.acf.model.PropertySourceModel;
 @RunWith(MockitoJUnitRunner.class)
 public class JPAClassGeneratorTest {
 
+	private static final String AUTHOR_NAME = "rest-acf";
 	private static final String COLUMN_NAME_0 = "Column0";
 	private static final String COLUMN_NAME_1 = "Column1";
 	private static final TypeSO COLUMN_TYPE_0 = new TypeSO().setSqlType(Types.INTEGER);
@@ -57,7 +59,7 @@ public class JPAClassGeneratorTest {
 
 	@Test
 	public void generate_PassANullValue_ReturnsANullValue() {
-		assertThat(this.unitUnderTest.generate(null), nullValue());
+		assertThat(this.unitUnderTest.generate(null, null), nullValue());
 	}
 
 	@Test
@@ -86,15 +88,20 @@ public class JPAClassGeneratorTest {
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String")
 				.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Column").setProperties(
 						Arrays.asList(new PropertySourceModel<String>().setName("name").setContent(COLUMN_NAME_1)))));
-		;
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
-		ClassSourceModel expected = new ClassSourceModel()
+		ClassSourceModel expected = new ClassSourceModel().setComment(new ClassCommentSourceModel().setComment("/**\n" //
+				+ " * A mapping class " + TABLE_NAME.toLowerCase() + " objects.\n" //
+				+ " *\n" //
+				+ " * @author " + AUTHOR_NAME + "\n" //
+				+ " *\n" //
+				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
+				+ " */\n"))
 				.setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}.persistence.dbo"))
 				.setAttributes(attributes).setName(TABLE_NAME + "DBO").setImports(Arrays.asList(importColumnAnnotation,
 						importEntityAnnotation, importIdAnnotation, importTableAnnotation))
 				.setAnnotations(Arrays.asList(annotationEntity, annotationTable));
 		// Run
-		ClassSourceModel returned = this.unitUnderTest.generate(table);
+		ClassSourceModel returned = this.unitUnderTest.generate(table, "rest-acf");
 
 		// Check
 		assertEquals(expected.toString(), returned.toString());

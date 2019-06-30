@@ -79,7 +79,7 @@ public class RESTServerCodeFactoryTest {
 	@Test
 	public void getResourceBundleNames_ReturnsTheCorrectResourceBundleName() {
 		// Prepare
-		String[] expected = new String[0];
+		String[] expected = new String[] { "archimedes" };
 		// Run
 		String[] returned = this.unitUnderTest.getResourceBundleNames();
 		// Check

@@ -51,9 +51,10 @@ public class RESTServerCodeFactory implements CodeFactory {
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = generator.generate(table);
-				String p = path + "/" + csm.getPackageModel().getPackageName()
-						.replace("${base.package.name}", "de.ollie.library").replace(".", "/");
+				ClassSourceModel csm = generator.generate(table, "rest-acf");
+				csm.getPackageModel().setPackageName(
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
 				new File(p).mkdirs();
 				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
 				try {
@@ -84,8 +85,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public String[] getResourceBundleNames() {
-		// TODO Define the resource bundle names here.
-		return new String[0];
+		return new String[] { "archimedes" };
 	}
 
 	@Override
