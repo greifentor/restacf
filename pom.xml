@@ -46,6 +46,11 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
+			<groupId>archimedes</groupId>
+			<artifactId>app</artifactId>
+			<version>1.81.1</version>
+		</dependency>
+		<dependency>
 			<groupId>de.ollie</groupId>
 			<artifactId>baccara</artifactId>
 			<version>1.10.1</version>
@@ -61,6 +66,11 @@
 			<version>1.46.1</version>
 		</dependency>
 		<dependency>
+			<groupId>de.ollie</groupId>
+			<artifactId>gengen</artifactId>
+			<version>1.12.2</version>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.8</version>
@@ -69,6 +79,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.7</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.13</version>
 		</dependency>
 	</dependencies>
 
