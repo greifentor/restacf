@@ -1,5 +1,6 @@
 package rest.acf.generator.converter;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -7,8 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.sql.Types;
 import java.util.Arrays;
-
-import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,13 +52,19 @@ public class DataModelToSOConverterTest {
 	@Test
 	public void convert_PassADataModel_ReturnsADatabaseSOWithTheDataOfThePassedModel() {
 		// Prepare
-		ColumnSO column0 = new ColumnSO().setName(COLUMN0_NAME).setType(new TypeSO().setSqlType(TYPE_BIGINT))
+		ColumnSO column0 = new ColumnSO().setName(COLUMN0_NAME)
+				.setType(new TypeSO().setSqlType(TYPE_BIGINT))
 				.setNullable(false).setPkMember(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN1_NAME)
-				.setType(new TypeSO().setSqlType(TYPE_VARCHAR).setLength(TYPE_VARCHAR_LENGTH)).setNullable(true);
-		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(Arrays.asList(column0, column1));
-		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table));
-		DatabaseSO expected = new DatabaseSO().setName(MODEL_NAME).setSchemes(Arrays.asList(scheme));
+				.setType(new TypeSO().setSqlType(TYPE_VARCHAR)
+						.setLength(TYPE_VARCHAR_LENGTH))
+				.setNullable(true);
+		TableSO table = new TableSO().setName(TABLE_NAME)
+				.setColumns(Arrays.asList(column0, column1));
+		SchemeSO scheme = new SchemeSO().setName("public")
+				.setTables(Arrays.asList(table));
+		DatabaseSO expected = new DatabaseSO().setName(MODEL_NAME)
+				.setSchemes(Arrays.asList(scheme));
 		DataModel model = mock(DataModel.class);
 		TableModel tm = mock(TableModel.class);
 		ColumnModel cm0 = mock(ColumnModel.class);
@@ -71,12 +76,14 @@ public class DataModelToSOConverterTest {
 		when(domVarchar.getLength()).thenReturn(TYPE_VARCHAR_LENGTH);
 		when(cm0.getName()).thenReturn(COLUMN0_NAME);
 		when(cm0.getDomain()).thenReturn(domBigInt);
+		when(cm0.isNotNull()).thenReturn(true);
+		when(cm0.isPrimaryKey()).thenReturn(true);
 		when(cm1.getName()).thenReturn(COLUMN1_NAME);
 		when(cm1.getDomain()).thenReturn(domVarchar);
-		when(tm.getColumns()).thenReturn(new ColumnModel[] { cm0, cm1 });
+		when(tm.getColumns()).thenReturn(new ColumnModel[]{cm0, cm1});
 		when(tm.getName()).thenReturn(TABLE_NAME);
 		when(model.getName()).thenReturn(MODEL_NAME);
-		when(model.getTables()).thenReturn(new TableModel[] { tm });
+		when(model.getTables()).thenReturn(new TableModel[]{tm});
 		// Run
 		DatabaseSO returned = this.unitUnderTest.convert(model);
 		// Check

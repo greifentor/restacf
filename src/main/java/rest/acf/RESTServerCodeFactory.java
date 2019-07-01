@@ -46,20 +46,27 @@ public class RESTServerCodeFactory implements CodeFactory {
 	public boolean generate(String path) {
 		new File(path).mkdirs();
 		JPAClassGenerator generator = new JPAClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
+				new ClassSourceModelUtils(new NameConverter(),
+						new TypeConverter()),
+				new NameConverter(), new TypeConverter());
+		DatabaseSO databaseSO = new DataModelToSOConverter()
+				.convert(this.dataModel);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = generator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				csm.getPackageModel()
+						.setPackageName(csm.getPackageModel().getPackageName()
+								.replace("${base.package.name}",
+										"de.ollie.library"));
+				String p = path + "/" + csm.getPackageModel().getPackageName()
+						.replace(".", "/");
 				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				String code = new ModelToJavaSourceCodeConverter()
+						.classSourceModelToJavaSourceCode(csm);
 				try {
-					Files.writeString(Paths.get(p + "/" + table.getName() + "DBO.java"), code,
-							StandardOpenOption.CREATE_NEW);
+					Files.write(
+							Paths.get(p + "/" + table.getName() + "DBO.java"),
+							code.getBytes(), StandardOpenOption.CREATE_NEW);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -85,7 +92,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public String[] getResourceBundleNames() {
-		return new String[] { "archimedes" };
+		return new String[]{"archimedes"};
 	}
 
 	@Override
@@ -109,7 +116,8 @@ public class RESTServerCodeFactory implements CodeFactory {
 	}
 
 	@Override
-	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... listeners) {
+	public void setModelCheckerMessageListFrameListeners(
+			ModelCheckerMessageListFrameListener... listeners) {
 		// ???
 	}
 
