@@ -8,6 +8,8 @@ import archimedes.model.DomainModel;
 import archimedes.model.TableModel;
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.ReferenceSO;
 import de.ollie.archimedes.alexandrian.service.SchemeSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
@@ -50,8 +52,40 @@ public class DataModelToSOConverter {
 			}
 			sso.getTables().add(tso);
 		}
+		for (TableModel tm : dataModel.getTables()) {
+			TableSO tso = getTableSOByName(tm.getName(), sso);
+			for (ColumnModel cm : tm.getColumns()) {
+				if ((cm.getReferencedColumn() != null) && (cm.getReferencedTable() != null)) {
+					ColumnSO cso = getColumnSOByName(cm.getName(), tso);
+					TableSO tsoReferenced = getTableSOByName(cm.getReferencedTable().getName(), sso);
+					ColumnSO csoReferenced = getColumnSOByName(cm.getReferencedColumn().getName(), tsoReferenced);
+					ReferenceSO reference = new ReferenceSO().setReferencedColumn(csoReferenced)
+							.setReferencedTable(tsoReferenced).setReferencingColumn(cso).setReferencingTable(tso);
+					ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
+					tso.getForeignKeys().add(foreignKey);
+				}
+			}
+		}
 		DatabaseSO dbso = new DatabaseSO().setName(dataModel.getName()).setSchemes(Arrays.asList(sso));
 		return dbso;
+	}
+
+	private TableSO getTableSOByName(String tableName, SchemeSO sso) {
+		for (TableSO tso : sso.getTables()) {
+			if (tso.getName().equals(tableName)) {
+				return tso;
+			}
+		}
+		return null;
+	}
+
+	private ColumnSO getColumnSOByName(String columnName, TableSO tso) {
+		for (ColumnSO cso : tso.getColumns()) {
+			if (cso.getName().equals(columnName)) {
+				return cso;
+			}
+		}
+		return null;
 	}
 
 }

@@ -21,6 +21,8 @@ import archimedes.model.DomainModel;
 import archimedes.model.TableModel;
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.ReferenceSO;
 import de.ollie.archimedes.alexandrian.service.SchemeSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
@@ -57,13 +59,22 @@ public class DataModelToSOConverterTest {
 				.setNullable(false).setPkMember(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN1_NAME)
 				.setType(new TypeSO().setSqlType(TYPE_VARCHAR).setLength(TYPE_VARCHAR_LENGTH)).setNullable(true);
+		ColumnSO column2 = new ColumnSO().setName("Reference").setType(new TypeSO().setSqlType(TYPE_BIGINT))
+				.setNullable(true);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(Arrays.asList(column0, column1));
+		TableSO tableReferencing = new TableSO().setName(TABLE_NAME + "Referencing").setColumns(Arrays.asList(column2));
+		ReferenceSO reference = new ReferenceSO().setReferencedColumn(column0).setReferencedTable(table)
+				.setReferencingColumn(column2).setReferencingTable(tableReferencing);
+		ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
+		tableReferencing.setForeignKeys(Arrays.asList(foreignKey));
 		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table));
 		DatabaseSO expected = new DatabaseSO().setName(MODEL_NAME).setSchemes(Arrays.asList(scheme));
 		DataModel model = mock(DataModel.class);
 		TableModel tm = mock(TableModel.class);
+		TableModel tmReferencing = mock(TableModel.class);
 		ColumnModel cm0 = mock(ColumnModel.class);
 		ColumnModel cm1 = mock(ColumnModel.class);
+		ColumnModel cm2 = mock(ColumnModel.class);
 		DomainModel domBigInt = mock(DomainModel.class);
 		DomainModel domVarchar = mock(DomainModel.class);
 		when(domBigInt.getDataType()).thenReturn(TYPE_BIGINT);
@@ -71,12 +82,21 @@ public class DataModelToSOConverterTest {
 		when(domVarchar.getLength()).thenReturn(TYPE_VARCHAR_LENGTH);
 		when(cm0.getName()).thenReturn(COLUMN0_NAME);
 		when(cm0.getDomain()).thenReturn(domBigInt);
+		when(cm0.isNotNull()).thenReturn(true);
+		when(cm0.isPrimaryKey()).thenReturn(true);
 		when(cm1.getName()).thenReturn(COLUMN1_NAME);
 		when(cm1.getDomain()).thenReturn(domVarchar);
+		when(cm1.isNotNull()).thenReturn(false);
 		when(tm.getColumns()).thenReturn(new ColumnModel[] { cm0, cm1 });
 		when(tm.getName()).thenReturn(TABLE_NAME);
+		when(tmReferencing.getColumns()).thenReturn(new ColumnModel[] { cm2 });
+		when(tmReferencing.getName()).thenReturn(TABLE_NAME + "Referencing");
+		when(cm2.getName()).thenReturn("Reference");
+		when(cm2.getDomain()).thenReturn(domBigInt);
+		when(cm2.getReferencedColumn()).thenReturn(cm0);
+		when(cm2.getReferencedTable()).thenReturn(tm);
 		when(model.getName()).thenReturn(MODEL_NAME);
-		when(model.getTables()).thenReturn(new TableModel[] { tm });
+		when(model.getTables()).thenReturn(new TableModel[] { tm, tmReferencing });
 		// Run
 		DatabaseSO returned = this.unitUnderTest.convert(model);
 		// Check

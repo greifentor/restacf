@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
- * A container for table service objects.
+ * A container for foreign key service objects.
  *
  * @author ollie
  *
@@ -17,15 +17,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
-public class TableSO {
+public class ForeignKeySO {
 
 	@NonNull
-	private String name;
-	@NonNull
-	private List<ColumnSO> columns = new ArrayList<>();
-	@NonNull
-	private List<ForeignKeySO> foreignKeys = new ArrayList<>();
-	private TableMetaInfo metaInfo;
-	private TableGUIInfo guiInfo;
+	private List<ReferenceSO> references = new ArrayList<>();
 
 }
