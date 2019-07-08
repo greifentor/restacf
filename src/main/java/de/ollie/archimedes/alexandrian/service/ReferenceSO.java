@@ -40,10 +40,10 @@ public class ReferenceSO {
 
 	@Override
 	public String toString() {
-		return "ReferenceSO[referencedTable=" + (referencedTable != null ? referencedTable.getName() : "null")
+		return "ReferenceSO(referencedTable=" + (referencedTable != null ? referencedTable.getName() : "null")
 				+ ", referencedColumn=" + (referencedColumn != null ? referencedColumn.getName() : "null")
 				+ ", referencingTable=" + (referencingTable != null ? referencingTable.getName() : "null")
-				+ ", referencingColumn=" + (referencingColumn != null ? referencingColumn.getName() : "null") + "]";
+				+ ", referencingColumn=" + (referencingColumn != null ? referencingColumn.getName() : "null") + ")";
 	}
 
 }

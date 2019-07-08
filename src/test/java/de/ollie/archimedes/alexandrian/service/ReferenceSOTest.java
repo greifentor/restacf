@@ -164,8 +164,8 @@ public class ReferenceSOTest {
 	@Test
 	public void toString_ReturnsACorrectStringRepresentation() {
 		// Prepare
-		String expected = "ReferenceSO[referencedTable=" + TABLE_NAME + ", referencedColumn=" + COLUMN0_NAME
-				+ ", referencingTable=" + TABLE_NAME + "Referencing, referencingColumn=Reference]";
+		String expected = "ReferenceSO(referencedTable=" + TABLE_NAME + ", referencedColumn=" + COLUMN0_NAME
+				+ ", referencingTable=" + TABLE_NAME + "Referencing, referencingColumn=Reference)";
 		// Run
 		String returned = createFullyLoadedReferenceSO().toString();
 		// Check
