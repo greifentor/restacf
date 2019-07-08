@@ -7,6 +7,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import archimedes.acf.checker.ModelChecker;
 import archimedes.acf.event.CodeFactoryListener;
 import archimedes.gui.checker.ModelCheckerMessageListFrameListener;
@@ -33,6 +35,8 @@ import rest.acf.model.ClassSourceModel;
  */
 public class RESTServerCodeFactory implements CodeFactory {
 
+	private static final Logger LOG = Logger.getLogger(RESTServerCodeFactory.class);
+
 	private DataModel dataModel = null;
 	private GUIBundle guiBundle = null;
 	private List<CodeFactoryListener> listeners = new ArrayList<>();
@@ -44,22 +48,30 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public boolean generate(String path) {
+		LOG.info("Started code generation");
 		new File(path).mkdirs();
 		JPAClassGenerator generator = new JPAClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
+				new ClassSourceModelUtils(new NameConverter(),
+						new TypeConverter()),
+				new NameConverter(), new TypeConverter());
+		DatabaseSO databaseSO = new DataModelToSOConverter()
+				.convert(this.dataModel);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = generator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				csm.getPackageModel()
+						.setPackageName(csm.getPackageModel().getPackageName()
+								.replace("${base.package.name}",
+										"de.ollie.library"));
+				String p = path + "/" + csm.getPackageModel().getPackageName()
+						.replace(".", "/");
 				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				String code = new ModelToJavaSourceCodeConverter()
+						.classSourceModelToJavaSourceCode(csm);
 				try {
-					Files.writeString(Paths.get(p + "/" + table.getName() + "DBO.java"), code,
-							StandardOpenOption.CREATE_NEW);
+					Files.write(
+							Paths.get(p + "/" + table.getName() + "DBO.java"),
+							code.getBytes(), StandardOpenOption.CREATE_NEW);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -85,7 +97,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public String[] getResourceBundleNames() {
-		return new String[] { "archimedes" };
+		return new String[]{"archimedes"};
 	}
 
 	@Override
@@ -109,7 +121,8 @@ public class RESTServerCodeFactory implements CodeFactory {
 	}
 
 	@Override
-	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... listeners) {
+	public void setModelCheckerMessageListFrameListeners(
+			ModelCheckerMessageListFrameListener... listeners) {
 		// ???
 	}
 

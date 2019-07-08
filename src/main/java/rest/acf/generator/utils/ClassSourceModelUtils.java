@@ -3,9 +3,12 @@ package rest.acf.generator.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
 import de.ollie.archimedes.alexandrian.service.ReferenceSO;
+import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.model.AnnotationBearer;
@@ -24,6 +27,8 @@ import rest.acf.model.PropertySourceModel;
  */
 public class ClassSourceModelUtils {
 
+	private static final Logger LOG = Logger.getLogger(RESTServerCodeFactory.class);
+
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
@@ -35,7 +40,10 @@ public class ClassSourceModelUtils {
 	 */
 	public ClassSourceModelUtils(NameConverter nameConverter, TypeConverter typeConverter) {
 		super();
+		LOG.debug("Created ClassSourceModelUtils");
+		LOG.debug("    nameConverter: " + nameConverter);
 		this.nameConverter = nameConverter;
+		LOG.debug("    typeConverter: " + typeConverter);
 		this.typeConverter = typeConverter;
 	}
 
@@ -52,6 +60,7 @@ public class ClassSourceModelUtils {
 		ImportSourceModel ism = new ImportSourceModel().setClassName(className)
 				.setPackageModel(new PackageSourceModel().setPackageName(packageName));
 		imports.add(ism);
+		LOG.debug("Added import '" + ism + "' to class source model: " + csm);
 		return ism;
 	}
 
@@ -73,6 +82,7 @@ public class ClassSourceModelUtils {
 			}
 		}
 		ab.getAnnotations().add(asm);
+		LOG.debug("Added annotation '" + asm + "' to annotation bearer: " + ab);
 		return asm;
 	}
 
@@ -91,6 +101,7 @@ public class ClassSourceModelUtils {
 		asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
 		csm.getAttributes().add(asm);
 		// }
+		LOG.debug("Added attribute '" + asm + "' to class source model: " + csm);
 		return asm;
 	}
 

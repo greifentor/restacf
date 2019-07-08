@@ -1,5 +1,6 @@
 package rest.acf;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -8,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-
-import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,41 +37,51 @@ public class RESTServerCodeFactoryIntegrationTest {
 	}
 
 	@Test
-	public void generate_PassADataModel_CreatesCorrectBookDBOFile() throws Exception {
+	public void generate_PassADataModel_CreatesCorrectBookDBOFile()
+			throws Exception {
 		String path = "target/test/output";
 		if (new File(path).exists()) {
-			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder())
+					.map(Path::toFile).peek(System.out::println)
 					.forEach(File::delete);
 		}
-		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
-		DataModel dm = (Diagramm) reader.read("src/test/resources/TestDataModel.xml");
+		ModelXMLReader reader = new ModelXMLReader(
+				new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader
+				.read("src/test/resources/TestDataModel.xml");
 		this.unitUnderTest.setDataModel(dm);
 		this.unitUnderTest.generate(path);
 		assertThat(new File(path).exists(), equalTo(true));
-		String expected = Files.readString(
-				Paths.get("src/test/resources/", "de", "ollie", "library", "persistence", "dbo", "BookDBO.java"));
-		String generated = Files
-				.readString(Paths.get(path, "de", "ollie", "library", "persistence", "dbo", "BookDBO.java"));
-		assertEquals(expected, generated);
+		String expected = new String(Files
+				.readAllBytes(Paths.get("src/test/resources/", "de", "ollie",
+						"library", "persistence", "dbo", "BookDBO.java")));
+		String generated = new String(Files.readAllBytes(Paths.get(path, "de",
+				"ollie", "library", "persistence", "dbo", "BookDBO.java")));
+		assertEquals(expected.toString(), generated.toString());
 	}
 
 	@Test
-	public void generate_PassADataModel_CreatesCorrectCityDBOFile() throws Exception {
+	public void generate_PassADataModel_CreatesCorrectCityDBOFile()
+			throws Exception {
 		String path = "target/test/output";
 		if (new File(path).exists()) {
-			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder())
+					.map(Path::toFile).peek(System.out::println)
 					.forEach(File::delete);
 		}
-		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
-		DataModel dm = (Diagramm) reader.read("src/test/resources/TestDataModel.xml");
+		ModelXMLReader reader = new ModelXMLReader(
+				new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader
+				.read("src/test/resources/TestDataModel.xml");
 		this.unitUnderTest.setDataModel(dm);
 		this.unitUnderTest.generate(path);
 		assertThat(new File(path).exists(), equalTo(true));
-		String expected = Files.readString(
-				Paths.get("src/test/resources/", "de", "ollie", "library", "persistence", "dbo", "CityDBO.java"));
-		String generated = Files
-				.readString(Paths.get(path, "de", "ollie", "library", "persistence", "dbo", "CityDBO.java"));
-		assertEquals(expected, generated);
+		String expected = new String(Files
+				.readAllBytes(Paths.get("src/test/resources/", "de", "ollie",
+						"library", "persistence", "dbo", "CityDBO.java")));
+		String generated = new String(Files.readAllBytes(Paths.get(path, "de",
+				"ollie", "library", "persistence", "dbo", "CityDBO.java")));
+		assertEquals(expected.toString(), generated.toString());
 	}
 
 }
