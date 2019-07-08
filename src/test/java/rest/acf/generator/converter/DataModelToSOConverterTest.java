@@ -67,7 +67,7 @@ public class DataModelToSOConverterTest {
 				.setReferencingColumn(column2).setReferencingTable(tableReferencing);
 		ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
 		tableReferencing.setForeignKeys(Arrays.asList(foreignKey));
-		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table));
+		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table, tableReferencing));
 		DatabaseSO expected = new DatabaseSO().setName(MODEL_NAME).setSchemes(Arrays.asList(scheme));
 		DataModel model = mock(DataModel.class);
 		TableModel tm = mock(TableModel.class);

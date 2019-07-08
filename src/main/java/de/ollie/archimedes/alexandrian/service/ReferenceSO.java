@@ -25,4 +25,25 @@ public class ReferenceSO {
 	@NonNull
 	private ColumnSO referencedColumn;
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof ReferenceSO)) {
+			return false;
+		}
+		return toString().equals(o.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "ReferenceSO[referencedTable=" + (referencedTable != null ? referencedTable.getName() : "null")
+				+ ", referencedColumn=" + (referencedColumn != null ? referencedColumn.getName() : "null")
+				+ ", referencingTable=" + (referencingTable != null ? referencingTable.getName() : "null")
+				+ ", referencingColumn=" + (referencingColumn != null ? referencingColumn.getName() : "null") + "]";
+	}
+
 }
