@@ -69,7 +69,8 @@ public class JPAClassGeneratorTest {
 		ColumnSO column1 = new ColumnSO().setName(COLUMN_NAME_1).setType(COLUMN_TYPE_1);
 		List<ColumnSO> columns = Arrays.asList(column0, column1);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(columns);
-
+		column0.setTable(table);
+		column1.setTable(table);
 		ImportSourceModel importColumnAnnotation = new ImportSourceModel().setClassName("Column")
 				.setPackageModel(new PackageSourceModel().setPackageName("javax.persistence"));
 		ImportSourceModel importEntityAnnotation = new ImportSourceModel().setClassName("Entity")

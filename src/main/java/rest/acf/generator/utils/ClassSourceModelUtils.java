@@ -96,11 +96,16 @@ public class ClassSourceModelUtils {
 	public AttributeSourceModel addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
 		String attributeName = this.nameConverter.columnNameToAttributeName(column);
 		AttributeSourceModel asm = null;
-		// if (getForeignkeyByColumn(column).length == 0) {
-		String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
-		asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
-		csm.getAttributes().add(asm);
-		// }
+		if (getForeignkeyByColumn(column).length == 0) {
+			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
+			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
+			csm.getAttributes().add(asm);
+		} else {
+			// TODO: INSERT LOGIC REFERENCES !!!
+			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
+			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
+			csm.getAttributes().add(asm);
+		}
 		LOG.debug("Added attribute '" + asm + "' to class source model: " + csm);
 		return asm;
 	}
