@@ -7,6 +7,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import archimedes.acf.checker.ModelChecker;
 import archimedes.acf.event.CodeFactoryListener;
 import archimedes.gui.checker.ModelCheckerMessageListFrameListener;
@@ -33,6 +35,8 @@ import rest.acf.model.ClassSourceModel;
  */
 public class RESTServerCodeFactory implements CodeFactory {
 
+	private static final Logger LOG = Logger.getLogger(RESTServerCodeFactory.class);
+
 	private DataModel dataModel = null;
 	private GUIBundle guiBundle = null;
 	private List<CodeFactoryListener> listeners = new ArrayList<>();
@@ -44,6 +48,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public boolean generate(String path) {
+		LOG.info("Started code generation");
 		new File(path).mkdirs();
 		JPAClassGenerator generator = new JPAClassGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
