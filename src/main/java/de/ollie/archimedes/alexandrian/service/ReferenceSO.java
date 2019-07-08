@@ -17,11 +17,7 @@ import lombok.experimental.Accessors;
 public class ReferenceSO {
 
 	@NonNull
-	private TableSO referencingTable;
-	@NonNull
 	private ColumnSO referencingColumn;
-	@NonNull
-	private TableSO referencedTable;
 	@NonNull
 	private ColumnSO referencedColumn;
 
@@ -40,10 +36,10 @@ public class ReferenceSO {
 
 	@Override
 	public String toString() {
-		return "ReferenceSO(referencedTable=" + (referencedTable != null ? referencedTable.getName() : "null")
-				+ ", referencedColumn=" + (referencedColumn != null ? referencedColumn.getName() : "null")
-				+ ", referencingTable=" + (referencingTable != null ? referencingTable.getName() : "null")
-				+ ", referencingColumn=" + (referencingColumn != null ? referencingColumn.getName() : "null") + ")";
+		return "ReferenceSO(" //
+				+ "referencedColumn=" + (referencedColumn != null ? referencedColumn.getNameWithTable() : "null") //
+				+ ", referencingColumn=" + (referencingColumn != null ? referencingColumn.getNameWithTable() : "null")
+				+ ")";
 	}
 
 }

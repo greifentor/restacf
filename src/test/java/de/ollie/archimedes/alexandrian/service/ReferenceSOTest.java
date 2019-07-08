@@ -52,8 +52,10 @@ public class ReferenceSOTest {
 				.setNullable(true);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(Arrays.asList(column0, column1));
 		TableSO tableReferencing = new TableSO().setName(TABLE_NAME + "Referencing").setColumns(Arrays.asList(column2));
-		ReferenceSO reference = new ReferenceSO().setReferencedColumn(column0).setReferencedTable(table)
-				.setReferencingColumn(column2).setReferencingTable(tableReferencing);
+		column0.setTable(table);
+		column1.setTable(table);
+		column2.setTable(tableReferencing);
+		ReferenceSO reference = new ReferenceSO().setReferencedColumn(column0).setReferencingColumn(column2);
 		ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
 		tableReferencing.setForeignKeys(Arrays.asList(foreignKey));
 		return reference;
@@ -83,35 +85,11 @@ public class ReferenceSOTest {
 	}
 
 	@Test
-	public void equals_PassAnObjectWithDifferentReferencedTable_ReturnsFalse() {
-		// Prepare
-		boolean expected = false;
-		ReferenceSO toCheck = createFullyLoadedReferenceSO();
-		ReferenceSO passed = createFullyLoadedReferenceSO().setReferencedTable(new TableSO().setName("OtherColumn"));
-		// Run
-		boolean returned = toCheck.equals(passed);
-		// Check
-		assertThat(returned, equalTo(expected));
-	}
-
-	@Test
 	public void equals_PassAnObjectWithDifferentReferencingColumn_ReturnsFalse() {
 		// Prepare
 		boolean expected = false;
 		ReferenceSO toCheck = createFullyLoadedReferenceSO();
 		ReferenceSO passed = createFullyLoadedReferenceSO().setReferencingColumn(new ColumnSO().setName("OtherColumn"));
-		// Run
-		boolean returned = toCheck.equals(passed);
-		// Check
-		assertThat(returned, equalTo(expected));
-	}
-
-	@Test
-	public void equals_PassAnObjectWithDifferentReferencingTable_ReturnsFalse() {
-		// Prepare
-		boolean expected = false;
-		ReferenceSO toCheck = createFullyLoadedReferenceSO();
-		ReferenceSO passed = createFullyLoadedReferenceSO().setReferencingTable(new TableSO().setName("OtherColumn"));
 		// Run
 		boolean returned = toCheck.equals(passed);
 		// Check
@@ -164,8 +142,8 @@ public class ReferenceSOTest {
 	@Test
 	public void toString_ReturnsACorrectStringRepresentation() {
 		// Prepare
-		String expected = "ReferenceSO(referencedTable=" + TABLE_NAME + ", referencedColumn=" + COLUMN0_NAME
-				+ ", referencingTable=" + TABLE_NAME + "Referencing, referencingColumn=Reference)";
+		String expected = "ReferenceSO(referencedColumn=" + TABLE_NAME + "." + COLUMN0_NAME + ", referencingColumn="
+				+ TABLE_NAME + "Referencing.Reference)";
 		// Run
 		String returned = createFullyLoadedReferenceSO().toString();
 		// Check

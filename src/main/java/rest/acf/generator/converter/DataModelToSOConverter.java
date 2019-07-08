@@ -48,6 +48,7 @@ public class DataModelToSOConverter {
 				cso.setType(tpso);
 				cso.setPkMember(cm.isPrimaryKey());
 				cso.setNullable(!cm.isNotNull());
+				cso.setTable(tso);
 				tso.getColumns().add(cso);
 			}
 			sso.getTables().add(tso);
@@ -60,7 +61,7 @@ public class DataModelToSOConverter {
 					TableSO tsoReferenced = getTableSOByName(cm.getReferencedTable().getName(), sso);
 					ColumnSO csoReferenced = getColumnSOByName(cm.getReferencedColumn().getName(), tsoReferenced);
 					ReferenceSO reference = new ReferenceSO().setReferencedColumn(csoReferenced)
-							.setReferencedTable(tsoReferenced).setReferencingColumn(cso).setReferencingTable(tso);
+							.setReferencingColumn(cso);
 					ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
 					tso.getForeignKeys().add(foreignKey);
 				}

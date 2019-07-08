@@ -63,8 +63,10 @@ public class DataModelToSOConverterTest {
 				.setNullable(true);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(Arrays.asList(column0, column1));
 		TableSO tableReferencing = new TableSO().setName(TABLE_NAME + "Referencing").setColumns(Arrays.asList(column2));
-		ReferenceSO reference = new ReferenceSO().setReferencedColumn(column0).setReferencedTable(table)
-				.setReferencingColumn(column2).setReferencingTable(tableReferencing);
+		column0.setTable(table);
+		column1.setTable(table);
+		column2.setTable(tableReferencing);
+		ReferenceSO reference = new ReferenceSO().setReferencedColumn(column0).setReferencingColumn(column2);
 		ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
 		tableReferencing.setForeignKeys(Arrays.asList(foreignKey));
 		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table, tableReferencing));
