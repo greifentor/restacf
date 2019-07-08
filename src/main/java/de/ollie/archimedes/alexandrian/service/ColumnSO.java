@@ -32,6 +32,15 @@ public class ColumnSO {
 		return toString().equals(o.toString());
 	}
 
+	/**
+	 * Returns the table and the column name separated by a dot.
+	 * 
+	 * @return The table and the column name separated by a dot.
+	 */
+	public String getNameWithTable() {
+		return (this.table != null ? this.table.getName() + "." : "") + this.name;
+	}
+
 	@Override
 	public int hashCode() {
 		return toString().hashCode();

@@ -126,6 +126,16 @@ public class ColumnSOTest {
 	}
 
 	@Test
+	public void getNameWithTable_ReturnsTheTableNameDotColumnName() {
+		// Prepare
+		String expected = TABLE_NAME + "." + COLUMN0_NAME;
+		// Run
+		String returned = createFullyLoadedColumnSO().getNameWithTable();
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
 	public void hashCode_ReturnsEqualValuesForEqualObjects() {
 		// Prepare
 		int expected = createFullyLoadedColumnSO().hashCode();
