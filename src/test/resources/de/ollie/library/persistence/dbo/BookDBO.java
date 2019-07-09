@@ -22,6 +22,7 @@ public BookDBO {
 	@Column(name="Id")
 	private long id;
 	@Column(name="CityOfPublication")
+	@JoinColumn(name="CityOfPublication")
 	private CityDBO cityOfPublication;
 	@Column(name="Title")
 	private String title;

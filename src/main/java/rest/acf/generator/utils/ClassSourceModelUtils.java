@@ -1,10 +1,14 @@
 package rest.acf.generator.utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.ReferenceSO;
 import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
@@ -88,15 +92,53 @@ public class ClassSourceModelUtils {
 	 * 
 	 * @param csm    The class source model which the attribute is to add to.
 	 * @param column The column service object which the attribute source model is to add for.
-	 * @return The added attribute source model.
+	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
+	 *         be added.
 	 */
-	public AttributeSourceModel addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
 		String attributeName = this.nameConverter.columnNameToAttributeName(column);
-		String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
-		AttributeSourceModel asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
-		csm.getAttributes().add(asm);
+		AttributeSourceModel asm = null;
+		ForeignKeySO[] foreignKeys = getForeignkeyByColumn(column);
+		if (foreignKeys.length == 0) {
+			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
+			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
+			csm.getAttributes().add(asm);
+		} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
+			ReferenceSO reference = foreignKeys[0].getReferences().get(0);
+			String referencedClassName = this.nameConverter
+					.tableNameToDBOClassName(reference.getReferencedColumn().getTable());
+			LOG.debug("Attribute '" + csm.getName() + "." + attributeName + "' is a reference to '"
+					+ referencedClassName + "'.");
+			asm = new AttributeSourceModel().setName(attributeName).setType(referencedClassName);
+			csm.getAttributes().add(asm);
+		} else {
+			LOG.error("Too many references for attribute: " + attributeName);
+			return Optional.empty();
+		}
 		LOG.debug("Added attribute '" + asm + "' to class source model: " + csm);
-		return asm;
+		return Optional.of(asm);
+	}
+
+	/**
+	 * Returns the foreign key service objects which contain the passed column service object as referencing column.
+	 * 
+	 * @param column The column which the related foreign keys are to get for.
+	 * @return The foreign key service object which the passed column acts a referencing column for. An empty array will
+	 *         returned in case of no related foreign keys found..
+	 */
+	public ForeignKeySO[] getForeignkeyByColumn(ColumnSO column) {
+		if (column == null) {
+			return null;
+		}
+		List<ForeignKeySO> fks = new ArrayList<>();
+		for (ForeignKeySO fk : column.getTable().getForeignKeys()) {
+			for (ReferenceSO reference : fk.getReferences()) {
+				if (reference.getReferencingColumn().equals(column)) {
+					fks.add(fk);
+				}
+			}
+		}
+		return fks.toArray(new ForeignKeySO[fks.size()]);
 	}
 
 }
