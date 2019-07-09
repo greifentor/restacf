@@ -114,7 +114,7 @@ public class ClassSourceModelUtilsTest {
 		ClassSourceModel csm = new ClassSourceModel();
 		AttributeSourceModel expected = new AttributeSourceModel().setName(attributeName).setType(typeName);
 		// Run
-		AttributeSourceModel stored = this.unitUnderTest.addAttributeForColumn(csm, column);
+		AttributeSourceModel stored = this.unitUnderTest.addAttributeForColumn(csm, column).get();
 		// Check
 		assertThat(csm.getAttributes().size(), equalTo(1));
 		AttributeSourceModel returned = csm.getAttributes().get(0);

@@ -2,6 +2,7 @@ package rest.acf.generator.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -91,23 +92,31 @@ public class ClassSourceModelUtils {
 	 * 
 	 * @param csm    The class source model which the attribute is to add to.
 	 * @param column The column service object which the attribute source model is to add for.
-	 * @return The added attribute source model.
+	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
+	 *         be added.
 	 */
-	public AttributeSourceModel addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
 		String attributeName = this.nameConverter.columnNameToAttributeName(column);
 		AttributeSourceModel asm = null;
-		if (getForeignkeyByColumn(column).length == 0) {
+		ForeignKeySO[] foreignKeys = getForeignkeyByColumn(column);
+		if (foreignKeys.length == 0) {
 			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
 			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
+			csm.getAttributes().add(asm);
+		} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
+			ReferenceSO reference = foreignKeys[0].getReferences().get(0);
+			String referencedClassName = this.nameConverter
+					.tableNameToDBOClassName(reference.getReferencedColumn().getTable());
+			LOG.debug("Attribute '" + csm.getName() + "." + attributeName + "' is a reference to '"
+					+ referencedClassName + "'.");
+			asm = new AttributeSourceModel().setName(attributeName).setType(referencedClassName);
 			csm.getAttributes().add(asm);
 		} else {
-			// TODO: INSERT LOGIC REFERENCES !!!
-			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
-			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
-			csm.getAttributes().add(asm);
+			LOG.error("Too many references for attribute: " + attributeName);
+			return Optional.empty();
 		}
 		LOG.debug("Added attribute '" + asm + "' to class source model: " + csm);
-		return asm;
+		return Optional.of(asm);
 	}
 
 	/**

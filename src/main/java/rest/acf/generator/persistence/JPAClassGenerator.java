@@ -1,11 +1,11 @@
 package rest.acf.generator.persistence;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
-import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.PackageSourceModel;
@@ -73,11 +73,16 @@ public class JPAClassGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		for (ColumnSO column : tableSO.getColumns()) {
-			AttributeSourceModel asm = this.classSourceModelUtils.addAttributeForColumn(csm, column);
-			if (column.isPkMember()) {
-				this.classSourceModelUtils.addAnnotation(asm, "Id");
-			}
-			this.classSourceModelUtils.addAnnotation(asm, "Column", "name", column.getName());
+			this.classSourceModelUtils.addAttributeForColumn(csm, column).ifPresent(asm -> {
+				if (column.isPkMember()) {
+					this.classSourceModelUtils.addAnnotation(asm, "Id");
+				}
+				this.classSourceModelUtils.addAnnotation(asm, "Column", "name", column.getName());
+				ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
+				if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
+					this.classSourceModelUtils.addAnnotation(asm, "JoinColumn", "name", column.getName());
+				}
+			});
 		}
 		return csm;
 	}
