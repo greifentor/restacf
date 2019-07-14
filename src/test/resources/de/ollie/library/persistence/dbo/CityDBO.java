@@ -16,7 +16,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="City")
-public CityDBO {
+public class CityDBO {
 
 	@Id
 	@Column(name="Id")

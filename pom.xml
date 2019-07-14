@@ -50,6 +50,21 @@
 			<version>2.0.2-beta</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>2.1.9.RELEASE</version>
+		</dependency>
 		<!-- Local dependencies -->
 		<dependency>
 			<groupId>archimedes</groupId>

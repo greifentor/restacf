@@ -38,16 +38,7 @@ public class JPAClassGenerator {
 	}
 
 	/**
-	 * Returns the package name suffix for the generated class.
-	 * 
-	 * @return The package name suffix for the generated class.
-	 */
-	public String getPackageNameSuffix() {
-		return "persistence.dbo";
-	}
-
-	/**
-	 * Generiert eine JPA mapping class for the passed database table service object.
+	 * Generates a JPA mapping class for the passed database table service object.
 	 * 
 	 * @param tableSO    The database table service object which the class is to create for.
 	 * @param authorName The name which should be inserted as author name.
@@ -57,8 +48,9 @@ public class JPAClassGenerator {
 		if (tableSO == null) {
 			return null;
 		}
-		ClassSourceModel csm = createClassWithName(tableSO);
-		csm.setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}." + getPackageNameSuffix()));
+		ClassSourceModel csm = this.classSourceModelUtils.createJPAModelClassSourceModel(tableSO);
+		csm.setPackageModel(new PackageSourceModel().setPackageName(
+				"${base.package.name}." + this.classSourceModelUtils.createJPAModelPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Column");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Entity");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Id");
@@ -85,10 +77,6 @@ public class JPAClassGenerator {
 			});
 		}
 		return csm;
-	}
-
-	private ClassSourceModel createClassWithName(TableSO tableSO) {
-		return new ClassSourceModel().setName(tableSO.getName() + "DBO");
 	}
 
 }
