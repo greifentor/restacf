@@ -31,10 +31,19 @@ public class ModelToJavaSourceCodeConverter {
 		String code = "";
 		PackageSourceModel psm = csm.getPackageModel();
 		if (psm != null) {
-			code += "package " + psm.getPackageName() + ";\n\n\n";
+			code += "package " + psm.getPackageName() + ";\n\n";
 		}
+		String importStart = "";
 		if (!csm.getImports().isEmpty()) {
 			for (ImportSourceModel ism : csm.getImports()) {
+				String packageName = ism.getPackageModel().getPackageName();
+				if (!importStart.equals(getFirstPackageNamePart(packageName))) {
+					System.out.println(importStart + "-" + getFirstPackageNamePart(packageName));
+					if (!importStart.isEmpty()) {
+						code += "\n";
+					}
+					importStart = getFirstPackageNamePart(packageName);
+				}
 				code += "import " + ism.getPackageModel().getPackageName() + ".";
 				if (ism.getClassName() != null) {
 					code += ism.getClassName();
@@ -43,7 +52,7 @@ public class ModelToJavaSourceCodeConverter {
 				}
 				code += ";\n";
 			}
-			code += "\n\n";
+			code += "\n";
 		}
 		if (csm.getComment() != null) {
 			code += csm.getComment().getComment();
@@ -57,14 +66,14 @@ public class ModelToJavaSourceCodeConverter {
 					if (!first) {
 						code += ", ";
 					}
-					code += prosm.getName() + "=" + getJavaConstantValue(prosm.getContent());
+					code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
 					first = false;
 				}
 				code += ")";
 			}
 			code += "\n";
 		}
-		code += "public " + csm.getName() + " {\n";
+		code += "public class " + csm.getName() + " {\n";
 		code += "\n";
 		for (AttributeSourceModel asm : csm.getAttributes()) {
 			for (AnnotationSourceModel ansm : asm.getAnnotations()) {
@@ -76,7 +85,7 @@ public class ModelToJavaSourceCodeConverter {
 						if (!first) {
 							code += ", ";
 						}
-						code += prosm.getName() + "=" + getJavaConstantValue(prosm.getContent());
+						code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
 						first = false;
 					}
 					code += ")";
@@ -88,6 +97,13 @@ public class ModelToJavaSourceCodeConverter {
 		code += "\n";
 		code += "}";
 		return code;
+	}
+
+	private String getFirstPackageNamePart(String s) {
+		if (s.contains(".")) {
+			return s.substring(0, s.indexOf("."));
+		}
+		return s;
 	}
 
 	private String getJavaConstantValue(Object value) {
@@ -111,10 +127,19 @@ public class ModelToJavaSourceCodeConverter {
 		String code = "";
 		PackageSourceModel psm = insm.getPackageModel();
 		if (psm != null) {
-			code += "package " + psm.getPackageName() + ";\n\n\n";
+			code += "package " + psm.getPackageName() + ";\n\n";
 		}
+		String importStart = "";
 		if (!insm.getImports().isEmpty()) {
 			for (ImportSourceModel ism : insm.getImports()) {
+				String packageName = ism.getPackageModel().getPackageName();
+				if (!importStart.equals(getFirstPackageNamePart(packageName))) {
+					System.out.println(importStart + "-" + getFirstPackageNamePart(packageName));
+					if (!importStart.isEmpty()) {
+						code += "\n";
+					}
+					importStart = getFirstPackageNamePart(packageName);
+				}
 				code += "import " + ism.getPackageModel().getPackageName() + ".";
 				if (ism.getClassName() != null) {
 					code += ism.getClassName();
@@ -123,7 +148,7 @@ public class ModelToJavaSourceCodeConverter {
 				}
 				code += ";\n";
 			}
-			code += "\n\n";
+			code += "\n";
 		}
 		if (insm.getComment() != null) {
 			code += insm.getComment().getComment();
@@ -137,7 +162,7 @@ public class ModelToJavaSourceCodeConverter {
 					if (!first) {
 						code += ", ";
 					}
-					code += prosm.getName() + "=" + getJavaConstantValue(prosm.getContent());
+					code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
 					first = false;
 				}
 				code += ")";

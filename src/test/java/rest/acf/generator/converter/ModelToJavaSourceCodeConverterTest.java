@@ -44,8 +44,8 @@ public class ModelToJavaSourceCodeConverterTest {
 	@Test
 	public void classSourceModelToJavaSourceCode_PassASimpleClassSourceModel_ReturnsACorrectSourceCode() {
 		// Prepare
-		String expected = "package " + PACKAGE_NAME + ";\n\n\n" //
-				+ "public " + TABLE_NAME + " {\n" //
+		String expected = "package " + PACKAGE_NAME + ";\n\n" //
+				+ "public class " + TABLE_NAME + " {\n" //
 				+ "\n" //
 				+ "\tprivate int column0;\n" //
 				+ "\tprivate String column1;\n" //
@@ -67,7 +67,7 @@ public class ModelToJavaSourceCodeConverterTest {
 	public void classSourceModelToJavaSourceCode_PassASimpleClassSourceModelWithAnAnnotation_ReturnsACorrectSourceCode() {
 		// Prepare
 		String expected = "@Entity\n" //
-				+ "public " + TABLE_NAME + " {\n" //
+				+ "public class " + TABLE_NAME + " {\n" //
 				+ "\n" //
 				+ "\tprivate int column0;\n" //
 				+ "\tprivate String column1;\n" //
@@ -88,8 +88,8 @@ public class ModelToJavaSourceCodeConverterTest {
 	@Test
 	public void classSourceModelToJavaSourceCode_PassASimpleClassSourceModelWithAParameterizedAnnotation_ReturnsACorrectSourceCode() {
 		// Prepare
-		String expected = "@Annotation(name=\"aName\", value=4711)\n" //
-				+ "public " + TABLE_NAME + " {\n" //
+		String expected = "@Annotation(name = \"aName\", value = 4711)\n" //
+				+ "public class " + TABLE_NAME + " {\n" //
 				+ "\n" //
 				+ "\tprivate int column0;\n" //
 				+ "\tprivate String column1;\n" //
@@ -106,15 +106,15 @@ public class ModelToJavaSourceCodeConverterTest {
 		// Run
 		String returned = this.unitUnderTest.classSourceModelToJavaSourceCode(classSourceModel);
 		// Check
-		assertThat(returned, equalTo(expected));
+		assertEquals(expected.toString(), returned.toString());
 	}
 
 	@Test
 	public void classSourceModelToJavaSourceCode_PassASimpleClassSourceModelWithAnImports_ReturnsACorrectSourceCode() {
 		// Prepare
-		String expected = "import imported.pack.age.Class;\n" //
-				+ "import another.pack.age.*;\n\n\n" //
-				+ "public " + TABLE_NAME + " {\n" //
+		String expected = "import imported.pack.age.Class;\n\n" //
+				+ "import another.pack.age.*;\n\n" //
+				+ "public class " + TABLE_NAME + " {\n" //
 				+ "\n" //
 				+ "\tprivate int column0;\n" //
 				+ "\tprivate String column1;\n" //
@@ -138,12 +138,12 @@ public class ModelToJavaSourceCodeConverterTest {
 	@Test
 	public void classSourceModelToJavaSourceCode_PassASimpleClassSourceModelWithAttributeAnnotations_ReturnsACorrectSourceCode() {
 		// Prepare
-		String expected = "import imported.pack.age.Class;\n" //
-				+ "import another.pack.age.*;\n\n\n" //
-				+ "public " + TABLE_NAME + " {\n" //
+		String expected = "import imported.pack.age.Class;\n\n" //
+				+ "import another.pack.age.*;\n\n" //
+				+ "public class " + TABLE_NAME + " {\n" //
 				+ "\n" //
 				+ "\t@Id\n" //
-				+ "\t@Column(name=\"Column0\")\n" //
+				+ "\t@Column(name = \"Column0\")\n" //
 				+ "\tprivate int column0;\n" //
 				+ "\tprivate String column1;\n" //
 				+ "\n" //

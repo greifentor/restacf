@@ -129,7 +129,7 @@ public class ClassSourceModelUtils {
 	 * @return An interface source model for a CRUD repository interface based on the passed table service object.
 	 */
 	public InterfaceSourceModel createCRUDRepitoryInterfaceSourceModel(TableSO tableSO) {
-		return new InterfaceSourceModel().setName(tableSO.getName() + "Repository");
+		return new InterfaceSourceModel().setName(this.nameConverter.tableNameToRepositoryInterfaceName(tableSO));
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class ClassSourceModelUtils {
 	 * @return A class source model for a JPA model class based on the passed table service object.
 	 */
 	public ClassSourceModel createJPAModelClassSourceModel(TableSO tableSO) {
-		return new ClassSourceModel().setName(tableSO.getName() + "DBO");
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToDBOClassName(tableSO));
 	}
 
 	/**

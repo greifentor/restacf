@@ -102,4 +102,28 @@ public class NameConverter {
 		return StringUtils.left(s, 1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
 	}
 
+	/**
+	 * Converts the name of the passed table service object into a repository interface name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a repository interface name.
+	 * @return The repository interface name for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToRepositoryInterfaceName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		String tableName = tableSO.getName();
+		ensure(!tableName.isEmpty(), "table name cannot be empty.");
+		if (containsUnderScores(tableName)) {
+			tableName = buildTableNameFromUnderScoreString(tableName);
+		} else if (allCharactersAreUpperCase(tableName)) {
+			tableName = tableName.toLowerCase();
+		}
+		if (startsWithLowerCaseCharacter(tableName)) {
+			tableName = firstCharToUpperCase(tableName);
+		}
+		return tableName + "Repository";
+	}
+
 }

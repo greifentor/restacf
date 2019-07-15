@@ -16,7 +16,7 @@ import rest.acf.model.PackageSourceModel;
  * @author ollie
  *
  */
-public class JPAClassGenerator {
+public class DBOJPAClassGenerator {
 
 	private final ClassSourceModelUtils classSourceModelUtils;
 	private final NameConverter nameConverter;
@@ -29,7 +29,7 @@ public class JPAClassGenerator {
 	 * @param nameConverter         An access to the name converter of the application.
 	 * @param typeConverter         An access to the type converter of the application.
 	 */
-	public JPAClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
+	public DBOJPAClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
@@ -55,10 +55,14 @@ public class JPAClassGenerator {
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Entity");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Id");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Table");
-		this.classSourceModelUtils.addAnnotation(csm, "Entity");
+		this.classSourceModelUtils.addImport(csm, "lombok", "Data");
+		this.classSourceModelUtils.addImport(csm, "lombok.experimental", "Accessors");
+		this.classSourceModelUtils.addAnnotation(csm, "Accessors", "chain", true);
+		this.classSourceModelUtils.addAnnotation(csm, "Data");
+		this.classSourceModelUtils.addAnnotation(csm, "Entity", "name", csm.getName().replace("DBO", ""));
 		this.classSourceModelUtils.addAnnotation(csm, "Table", "name", tableSO.getName());
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
-				+ " * A mapping class " + tableSO.getName().toLowerCase() + " objects.\n" //
+				+ " * A ORM mapping and database access class for " + tableSO.getName().toLowerCase() + "s.\n" //
 				+ " *\n" //
 				+ " * @author " + authorName + "\n" //
 				+ " *\n" //

@@ -21,9 +21,9 @@ import rest.acf.model.PackageSourceModel;
  * @author ollie
  *
  */
-public class CrudRepositoryInterfaceGenerator {
+public class CRUDRepositoryInterfaceGenerator {
 
-	private static final Logger LOG = Logger.getLogger(CrudRepositoryInterfaceGenerator.class);
+	private static final Logger LOG = Logger.getLogger(CRUDRepositoryInterfaceGenerator.class);
 
 	private final ClassSourceModelUtils classSourceModelUtils;
 	private final NameConverter nameConverter;
@@ -36,7 +36,7 @@ public class CrudRepositoryInterfaceGenerator {
 	 * @param nameConverter         An access to the name converter of the application.
 	 * @param typeConverter         An access to the type converter of the application.
 	 */
-	public CrudRepositoryInterfaceGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
+	public CRUDRepositoryInterfaceGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
@@ -70,7 +70,7 @@ public class CrudRepositoryInterfaceGenerator {
 		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + jpaModelPackageName, dboClassName);
 		this.classSourceModelUtils.addAnnotation(ism, "Repository");
 		ism.setComment(new ClassCommentSourceModel().setComment("/**\n" //
-				+ " * A repository for " + tableSO.getName().toLowerCase() + " access.\n" //
+				+ " * A CRUD repository for " + tableSO.getName().toLowerCase() + " access.\n" //
 				+ " *\n" //
 				+ " * @author " + authorName + "\n" //
 				+ " *\n" //
