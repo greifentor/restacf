@@ -63,6 +63,10 @@ public class NameConverter {
 		if (tableSO == null) {
 			return null;
 		}
+		return getClassName(tableSO) + "DBO";
+	}
+
+	private String getClassName(TableSO tableSO) {
 		String tableName = tableSO.getName();
 		ensure(!tableName.isEmpty(), "table name cannot be empty.");
 		if (containsUnderScores(tableName)) {
@@ -73,7 +77,7 @@ public class NameConverter {
 		if (startsWithLowerCaseCharacter(tableName)) {
 			tableName = firstCharToUpperCase(tableName);
 		}
-		return tableName + "DBO";
+		return tableName;
 	}
 
 	private boolean containsUnderScores(String s) {
@@ -103,6 +107,48 @@ public class NameConverter {
 	}
 
 	/**
+	 * Converts the name of the passed table service object into a DBO converter class name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a DBO converter class name.
+	 * @return The DBO converter class name for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToDBOConverterClassName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "DBOConverter";
+	}
+
+	/**
+	 * Converts the name of the passed table service object into a persistence adapter class name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a persistence adapter class name.
+	 * @return The persistence adapter class for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToPersistenceAdapterClassName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "RDBMSPersistenceAdapter";
+	}
+
+	/**
+	 * Converts the name of the passed table service object into a persistence port interface name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a persistence port interface name.
+	 * @return The persistence port interface for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToPersistencePortInterfaceName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "PersistencePort";
+	}
+
+	/**
 	 * Converts the name of the passed table service object into a repository interface name.
 	 * 
 	 * @param tableSO The table service object whose name is to convert into a repository interface name.
@@ -113,17 +159,7 @@ public class NameConverter {
 		if (tableSO == null) {
 			return null;
 		}
-		String tableName = tableSO.getName();
-		ensure(!tableName.isEmpty(), "table name cannot be empty.");
-		if (containsUnderScores(tableName)) {
-			tableName = buildTableNameFromUnderScoreString(tableName);
-		} else if (allCharactersAreUpperCase(tableName)) {
-			tableName = tableName.toLowerCase();
-		}
-		if (startsWithLowerCaseCharacter(tableName)) {
-			tableName = firstCharToUpperCase(tableName);
-		}
-		return tableName + "Repository";
+		return getClassName(tableSO) + "Repository";
 	}
 
 }

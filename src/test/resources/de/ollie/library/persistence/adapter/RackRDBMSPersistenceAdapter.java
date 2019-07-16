@@ -15,6 +15,7 @@ import de.ollie.library.service.so.RackSO;
  *
  * @author ollie
  *
+ * GENERATED CODE!!! DO NOT CHANGE!!!
  */
 @Service
 public class RackRDBMSPersistenceAdapter implements RackPersistencePort {

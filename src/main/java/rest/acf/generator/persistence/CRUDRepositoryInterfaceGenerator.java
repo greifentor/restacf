@@ -91,4 +91,5 @@ public class CRUDRepositoryInterfaceGenerator {
 		}
 		return pkMembers;
 	}
+
 }
