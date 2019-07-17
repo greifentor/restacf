@@ -162,4 +162,9 @@ public class ClassSourceModelUtilsTest {
 		assertThat(returned, equalTo(expected));
 	}
 
+	@Test
+	public void testCreatePersistencePortInterfaceSourceModelTableSO() throws Exception {
+		throw new RuntimeException("not yet implemented");
+	}
+
 }

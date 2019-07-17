@@ -162,4 +162,18 @@ public class NameConverter {
 		return getClassName(tableSO) + "Repository";
 	}
 
+	/**
+	 * Converts the name of the passed table service object into a service object class name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a service object class name.
+	 * @return The service object class name for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToServiceObjectClassName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "SO";
+	}
+
 }

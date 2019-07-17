@@ -218,6 +218,25 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Creates a new service object class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a service object class based on the passed table service object.
+	 */
+	public ClassSourceModel createServiceObjectClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToServiceObjectClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the persistence port generated class.
+	 * 
+	 * @return The package name suffix for the persistence port generated class.
+	 */
+	public String createServiceObjectPackageNameSuffix() {
+		return "service.so";
+	}
+
+	/**
 	 * Returns the foreign key service objects which contain the passed column service object as referencing column.
 	 * 
 	 * @param column The column which the related foreign keys are to get for.
