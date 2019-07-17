@@ -16,7 +16,7 @@ import rest.acf.model.PackageSourceModel;
  * @author ollie
  *
  */
-public class JPAClassGenerator {
+public class DBOJPAClassGenerator {
 
 	private final ClassSourceModelUtils classSourceModelUtils;
 	private final NameConverter nameConverter;
@@ -29,7 +29,7 @@ public class JPAClassGenerator {
 	 * @param nameConverter         An access to the name converter of the application.
 	 * @param typeConverter         An access to the type converter of the application.
 	 */
-	public JPAClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
+	public DBOJPAClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
@@ -38,16 +38,7 @@ public class JPAClassGenerator {
 	}
 
 	/**
-	 * Returns the package name suffix for the generated class.
-	 * 
-	 * @return The package name suffix for the generated class.
-	 */
-	public String getPackageNameSuffix() {
-		return "persistence.dbo";
-	}
-
-	/**
-	 * Generiert eine JPA mapping class for the passed database table service object.
+	 * Generates a JPA mapping class for the passed database table service object.
 	 * 
 	 * @param tableSO    The database table service object which the class is to create for.
 	 * @param authorName The name which should be inserted as author name.
@@ -57,16 +48,21 @@ public class JPAClassGenerator {
 		if (tableSO == null) {
 			return null;
 		}
-		ClassSourceModel csm = createClassWithName(tableSO);
-		csm.setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}." + getPackageNameSuffix()));
+		ClassSourceModel csm = this.classSourceModelUtils.createJPAModelClassSourceModel(tableSO);
+		csm.setPackageModel(new PackageSourceModel().setPackageName(
+				"${base.package.name}." + this.classSourceModelUtils.createJPAModelPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Column");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Entity");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Id");
 		this.classSourceModelUtils.addImport(csm, "javax.persistence", "Table");
-		this.classSourceModelUtils.addAnnotation(csm, "Entity");
+		this.classSourceModelUtils.addImport(csm, "lombok", "Data");
+		this.classSourceModelUtils.addImport(csm, "lombok.experimental", "Accessors");
+		this.classSourceModelUtils.addAnnotation(csm, "Accessors", "chain", true);
+		this.classSourceModelUtils.addAnnotation(csm, "Data");
+		this.classSourceModelUtils.addAnnotation(csm, "Entity", "name", csm.getName().replace("DBO", ""));
 		this.classSourceModelUtils.addAnnotation(csm, "Table", "name", tableSO.getName());
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
-				+ " * A mapping class " + tableSO.getName().toLowerCase() + " objects.\n" //
+				+ " * A ORM mapping and database access class for " + tableSO.getName().toLowerCase() + "s.\n" //
 				+ " *\n" //
 				+ " * @author " + authorName + "\n" //
 				+ " *\n" //
@@ -85,10 +81,6 @@ public class JPAClassGenerator {
 			});
 		}
 		return csm;
-	}
-
-	private ClassSourceModel createClassWithName(TableSO tableSO) {
-		return new ClassSourceModel().setName(tableSO.getName() + "DBO");
 	}
 
 }

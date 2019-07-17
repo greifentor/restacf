@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * A model for a class source.
+ * A model for an interface source.
  * 
  * @author ollie
  *
@@ -16,15 +16,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
-public class ClassSourceModel implements AnnotationBearer, ImportBearer {
+public class InterfaceSourceModel implements AnnotationBearer, ImportBearer {
 
-	private PackageSourceModel packageModel;
+	private PackageSourceModel packageModel = new PackageSourceModel();
 	private String name;
 	private ExtensionSourceModel extendsModel;
 	private ClassCommentSourceModel comment;
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
-	private List<AttributeSourceModel> attributes = new ArrayList<>();
 	private List<ImportSourceModel> imports = new ArrayList<>();
-	private List<MethodSourceModel> methods = new ArrayList<>();
 
 }

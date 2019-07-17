@@ -226,4 +226,507 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToDBOConverterClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToDBOConverterClassName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSOWithNameCamelCase_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TestTableDBOConverter";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSOWithNameUpperCase_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TableDBOConverter";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TableNameDBOConverter";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TableNameDBOConverter";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TableNameDBOConverter";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSOWithNameLowerCase_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TableDBOConverter";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSONameSingleUpperCase_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TDBOConverter";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDBOConverterClassName_PassTableSONameSinglelowerCase_ReturnsACorrectDBOConverterName() {
+		// Prepare
+		String expected = "TDBOConverter";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToPersistenceAdapterClassName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithNameCamelCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TestTableRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithNameUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSOWithNameLowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSONameSingleUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistenceAdapterClassName_PassTableSONameSinglelowerCase_ReturnsACorrectName() {
+		// Prepare
+		String expected = "TRDBMSPersistenceAdapter";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToPersistencePortInterfaceName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithNameCamelCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TestTablePersistencePort";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithNameUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TablePersistencePort";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNamePersistencePort";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNamePersistencePort";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNamePersistencePort";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSOWithNameLowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TablePersistencePort";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSONameSingleUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TPersistencePort";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToPersistencePortInterfaceName_PassTableSONameSinglelowerCase_ReturnsACorrectName() {
+		// Prepare
+		String expected = "TPersistencePort";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToRepositoryInterfaceName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithNameCamelCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TestTableRepository";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithNameUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableRepository";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRepository";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRepository";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRepository";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSOWithNameLowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableRepository";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSONameSingleUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TRepository";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRepositoryInterfaceName_PassTableSONameSinglelowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TRepository";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToServiceObjectClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToServiceObjectClassName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSOWithNameCamelCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TestTableSO";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSOWithNameUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableSO";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameSO";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameSO";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameSO";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSOWithNameLowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableSO";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSONameSingleUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TSO";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceObjectClassName_PassTableSONameSinglelowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TSO";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
 }

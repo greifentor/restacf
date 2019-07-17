@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
 import de.ollie.archimedes.alexandrian.service.ReferenceSO;
+import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
@@ -16,7 +17,9 @@ import rest.acf.model.AnnotationBearer;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.ImportBearer;
 import rest.acf.model.ImportSourceModel;
+import rest.acf.model.InterfaceSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -51,17 +54,17 @@ public class ClassSourceModelUtils {
 	/**
 	 * Adds an import for the passed package name and class to the passed class source model.
 	 * 
-	 * @param csm         The class source model which the import is to add to.
+	 * @param ib          An import bearer which the import is to add to.
 	 * @param packageName The name of the package to import.
 	 * @param className   The name of the class to import.
 	 * @return The add import source model.
 	 */
-	public ImportSourceModel addImport(ClassSourceModel csm, String packageName, String className) {
-		List<ImportSourceModel> imports = csm.getImports();
+	public ImportSourceModel addImport(ImportBearer ib, String packageName, String className) {
+		List<ImportSourceModel> imports = ib.getImports();
 		ImportSourceModel ism = new ImportSourceModel().setClassName(className)
 				.setPackageModel(new PackageSourceModel().setPackageName(packageName));
 		imports.add(ism);
-		LOG.debug("Added import '" + ism + "' to class source model: " + csm);
+		LOG.debug("Added import '" + ism + "' to import bearer: " + ib);
 		return ism;
 	}
 
@@ -117,6 +120,120 @@ public class ClassSourceModelUtils {
 		}
 		LOG.debug("Added attribute '" + asm + "' to class source model: " + csm);
 		return Optional.of(asm);
+	}
+
+	/**
+	 * Creates a new CRUD repository interface source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the interface source model is to create for.
+	 * @return An interface source model for a CRUD repository interface based on the passed table service object.
+	 */
+	public InterfaceSourceModel createCRUDRepitoryInterfaceSourceModel(TableSO tableSO) {
+		return new InterfaceSourceModel().setName(this.nameConverter.tableNameToRepositoryInterfaceName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the CRUD repository generated interface.
+	 * 
+	 * @return The package name suffix for the CRUD repository generated interface.
+	 */
+	public String createCRUDRepositoryPackageNameSuffix() {
+		return "persistence.repository";
+	}
+
+	/**
+	 * Creates a new DBO converter class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a DBO converter class based on the passed table service object.
+	 */
+	public ClassSourceModel createDBOConverterClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToDBOConverterClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the DBO converter generated class.
+	 * 
+	 * @return The package name suffix for the DBO converter generated class.
+	 */
+	public String createDBOConverterPackageNameSuffix() {
+		return "persistence.converter";
+	}
+
+	/**
+	 * Creates a new JPA model class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return A class source model for a JPA model class based on the passed table service object.
+	 */
+	public ClassSourceModel createJPAModelClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToDBOClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the JPA model generated class.
+	 * 
+	 * @return The package name suffix for the JPA model generated class.
+	 */
+	public String createJPAModelPackageNameSuffix() {
+		return "persistence.dbo";
+	}
+
+	/**
+	 * Creates a new persistence adapter class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a persistence adapter class based on the passed table service object.
+	 */
+	public ClassSourceModel createPersistenceAdapterClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToPersistenceAdapterClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the persistence adapter generated class.
+	 * 
+	 * @return The package name suffix for the persistence adapter generated class.
+	 */
+	public String createPersistenceAdapterPackageNameSuffix() {
+		return "persistence.adapter";
+	}
+
+	/**
+	 * Creates a new persistence port class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a persistence port class based on the passed table service object.
+	 */
+	public ClassSourceModel createPersistencePortInterfaceSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToPersistencePortInterfaceName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the persistence port generated class.
+	 * 
+	 * @return The package name suffix for the persistence port generated class.
+	 */
+	public String createPersistencePortPackageNameSuffix() {
+		return "service.persistence.port";
+	}
+
+	/**
+	 * Creates a new service object class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a service object class based on the passed table service object.
+	 */
+	public ClassSourceModel createServiceObjectClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToServiceObjectClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the persistence port generated class.
+	 * 
+	 * @return The package name suffix for the persistence port generated class.
+	 */
+	public String createServiceObjectPackageNameSuffix() {
+		return "service.so";
 	}
 
 	/**

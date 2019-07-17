@@ -26,6 +26,9 @@
          	<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
       	</layout>
    	</appender>
+   	<logger name="corentx.dates.SystemPDateFactory">
+   	    <level value="FATAL" />
+   	</logger>
   	<root>
     	<priority value="DEBUG" />
     	<appender-ref ref="CONSOLE" />

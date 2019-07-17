@@ -22,9 +22,12 @@ import rest.acf.generator.converter.DataModelToSOConverter;
 import rest.acf.generator.converter.ModelToJavaSourceCodeConverter;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
-import rest.acf.generator.persistence.JPAClassGenerator;
+import rest.acf.generator.persistence.CRUDRepositoryInterfaceGenerator;
+import rest.acf.generator.persistence.DBOJPAClassGenerator;
+import rest.acf.generator.service.SOClassGenerator;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.InterfaceSourceModel;
 
 /**
  * A basic class for all REST code generators.
@@ -50,30 +53,65 @@ public class RESTServerCodeFactory implements CodeFactory {
 	public boolean generate(String path) {
 		LOG.info("Started code generation");
 		new File(path).mkdirs();
-		JPAClassGenerator generator = new JPAClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(),
-						new TypeConverter()),
-				new NameConverter(), new TypeConverter());
-		DatabaseSO databaseSO = new DataModelToSOConverter()
-				.convert(this.dataModel);
+		DBOJPAClassGenerator jpaClassGenerator = new DBOJPAClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		SOClassGenerator soClassGenerator = new SOClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		CRUDRepositoryInterfaceGenerator crudRepositoryGenerator = new CRUDRepositoryInterfaceGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = generator.generate(table, "rest-acf");
-				csm.getPackageModel()
-						.setPackageName(csm.getPackageModel().getPackageName()
-								.replace("${base.package.name}",
-										"de.ollie.library"));
-				String p = path + "/" + csm.getPackageModel().getPackageName()
-						.replace(".", "/");
+				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
+				csm.getPackageModel().setPackageName(
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
 				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter()
-						.classSourceModelToJavaSourceCode(csm);
+				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				code = code.replace("${base.package.name}", "de.ollie.library");
 				try {
-					Files.write(
-							Paths.get(p + "/" + table.getName() + "DBO.java"),
-							code.getBytes(), StandardOpenOption.CREATE_NEW);
+					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
+							StandardOpenOption.CREATE_NEW);
+					System.out.println(p + "/" + csm.getName() + ".java");
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+			}
+			for (TableSO table : scheme.getTables()) {
+				ClassSourceModel csm = soClassGenerator.generate(table, "rest-acf");
+				csm.getPackageModel().setPackageName(
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				new File(p).mkdirs();
+				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				code = code.replace("${base.package.name}", "de.ollie.library");
+				try {
+					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
+							StandardOpenOption.CREATE_NEW);
+					System.out.println(p + "/" + csm.getName() + ".java");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			for (TableSO table : scheme.getTables()) {
+				InterfaceSourceModel ism = crudRepositoryGenerator.generate(table, "rest-acf");
+				if (ism != null) {
+					ism.getPackageModel().setPackageName(
+							ism.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+					String p = path + "/" + ism.getPackageModel().getPackageName().replace(".", "/");
+					new File(p).mkdirs();
+					String code = new ModelToJavaSourceCodeConverter().interfaceSourceModelToJavaSourceCode(ism);
+					code = code.replace("${base.package.name}", "de.ollie.library");
+					try {
+						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes(),
+								StandardOpenOption.CREATE_NEW);
+						System.out.println(p + "/" + ism.getName() + ".java");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -97,7 +135,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public String[] getResourceBundleNames() {
-		return new String[]{"archimedes"};
+		return new String[] { "archimedes" };
 	}
 
 	@Override
@@ -121,8 +159,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 	}
 
 	@Override
-	public void setModelCheckerMessageListFrameListeners(
-			ModelCheckerMessageListFrameListener... listeners) {
+	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... listeners) {
 		// ???
 	}
 
