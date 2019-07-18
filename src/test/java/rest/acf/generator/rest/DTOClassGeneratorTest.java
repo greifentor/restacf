@@ -1,4 +1,4 @@
-package rest.acf.generator.persistence;
+package rest.acf.generator.rest;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -19,22 +19,23 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
-import rest.acf.generator.persistence.CRUDRepositoryInterfaceGenerator;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.AnnotationSourceModel;
+import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
-import rest.acf.model.ExtensionSourceModel;
+import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportSourceModel;
-import rest.acf.model.InterfaceSourceModel;
 import rest.acf.model.PackageSourceModel;
+import rest.acf.model.PropertySourceModel;
 
 /**
- * Unit tests for class "CRUDRepositoryInterfaceGenerator".
+ * Unit tests for class "SOClassGenerator".
  *
  * @author ollie
+ *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class CRUDRepositoryInterfaceGeneratorTest {
+public class DTOClassGeneratorTest {
 
 	private static final String AUTHOR_NAME = "rest-acf";
 	private static final String COLUMN_NAME_0 = "Column0";
@@ -49,13 +50,12 @@ public class CRUDRepositoryInterfaceGeneratorTest {
 	@Spy
 	private TypeConverter typeConverter;
 
-	private CRUDRepositoryInterfaceGenerator unitUnderTest;
+	private DTOClassGenerator unitUnderTest;
 
 	@Before
 	public void setUp() {
 		this.classSourceModelUtils = new ClassSourceModelUtils(this.nameConverter, this.typeConverter);
-		this.unitUnderTest = new CRUDRepositoryInterfaceGenerator(this.classSourceModelUtils, this.nameConverter,
-				this.typeConverter);
+		this.unitUnderTest = new DTOClassGenerator(this.classSourceModelUtils, this.nameConverter, this.typeConverter);
 	}
 
 	@Test
@@ -72,29 +72,28 @@ public class CRUDRepositoryInterfaceGeneratorTest {
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(columns);
 		column0.setTable(table);
 		column1.setTable(table);
-		ImportSourceModel importCRUDRepository = new ImportSourceModel().setClassName("CrudRepository")
-				.setPackageModel(new PackageSourceModel().setPackageName("org.springframework.data.repository"));
-		ImportSourceModel importEntityAnnotation = new ImportSourceModel().setClassName("Repository")
-				.setPackageModel(new PackageSourceModel().setPackageName("org.springframework.stereotype"));
-		ImportSourceModel importRackDBOAnnotation = new ImportSourceModel().setClassName(TABLE_NAME + "DBO")
-				.setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}.persistence.dbo"));
-		AnnotationSourceModel annotationRepository = new AnnotationSourceModel().setName("Repository");
-		InterfaceSourceModel expected = new InterfaceSourceModel()
-				.setComment(new ClassCommentSourceModel().setComment("/**\n" //
-						+ " * A CRUD repository for " + TABLE_NAME.toLowerCase() + " access.\n" //
-						+ " *\n" //
-						+ " * @author " + AUTHOR_NAME + "\n" //
-						+ " *\n" //
-						+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
-						+ " */\n"))
-				.setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}.persistence.repository"))
-				.setName(TABLE_NAME + "Repository")
-				.setImports(Arrays.asList(importCRUDRepository, importEntityAnnotation, importRackDBOAnnotation))
-				.setAnnotations(Arrays.asList(annotationRepository));
-		String parentClassName = "CrudRepository<" + TABLE_NAME + "DBO, Integer>";
-		expected.setExtendsModel(new ExtensionSourceModel().setParentClassName(parentClassName));
+		ImportSourceModel importData = new ImportSourceModel().setClassName("Data")
+				.setPackageModel(new PackageSourceModel().setPackageName("lombok"));
+		ImportSourceModel importAccessors = new ImportSourceModel().setClassName("Accessors")
+				.setPackageModel(new PackageSourceModel().setPackageName("lombok.experimental"));
+		AnnotationSourceModel annotationAccessors = new AnnotationSourceModel().setName("Accessors")
+				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("chain").setContent("true")));
+		AnnotationSourceModel annotationData = new AnnotationSourceModel().setName("Data");
+		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
+		ClassSourceModel expected = new ClassSourceModel().setComment(new ClassCommentSourceModel().setComment("/**\n" //
+				+ " * A data transfer object class for " + TABLE_NAME.toLowerCase() + "s.\n" //
+				+ " *\n" //
+				+ " * @author " + AUTHOR_NAME + "\n" //
+				+ " *\n" //
+				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
+				+ " */\n")).setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}.rest.v1.dto"))
+				.setAttributes(attributes).setName(TABLE_NAME + "DTO")
+				.setImports(Arrays.asList(importData, importAccessors))
+				.setAnnotations(Arrays.asList(annotationAccessors, annotationData));
 		// Run
-		InterfaceSourceModel returned = this.unitUnderTest.generate(table, "rest-acf");
+		ClassSourceModel returned = this.unitUnderTest.generate(table, "rest-acf");
 
 		// Check
 		assertEquals(expected.toString(), returned.toString());

@@ -6,7 +6,9 @@ import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ExtensionSourceModel;
 import rest.acf.model.ImportSourceModel;
 import rest.acf.model.InterfaceSourceModel;
+import rest.acf.model.MethodSourceModel;
 import rest.acf.model.PackageSourceModel;
+import rest.acf.model.ParameterSourceModel;
 import rest.acf.model.PropertySourceModel;
 
 /**
@@ -94,7 +96,22 @@ public class ModelToJavaSourceCodeConverter {
 			}
 			code += "\tprivate " + asm.getType() + " " + asm.getName() + ";\n";
 		}
-		code += "\n";
+		if (csm.getAttributes().size() > 0) {
+			code += "\n";
+		}
+		for (MethodSourceModel method : csm.getMethods()) {
+			code += "\tpublic " + method.getReturnType() + " " + method.getName() + "(";
+			String paramStr = "";
+			for (ParameterSourceModel param : method.getParameters()) {
+				if (!paramStr.isEmpty()) {
+					paramStr += ", ";
+				}
+				paramStr += param.getType() + " " + param.getName();
+			}
+			code += paramStr;
+			code += ") {\n";
+			code += method.getCode() + "\n";
+		}
 		code += "}";
 		return code;
 	}

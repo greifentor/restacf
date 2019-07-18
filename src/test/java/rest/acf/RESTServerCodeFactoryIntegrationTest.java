@@ -79,6 +79,25 @@ public class RESTServerCodeFactoryIntegrationTest {
 	}
 
 	@Test
+	public void generate_PassADataModel_CreatesCorrectRackDTOFile() throws Exception {
+		String path = "target/test/output";
+		if (new File(path).exists()) {
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+					.forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(path);
+		assertThat(new File(path).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(
+				Paths.get("src/test/resources/", "de", "ollie", "library", "rest", "v1", "dto", "RackDTO.java")));
+		String generated = new String(
+				Files.readAllBytes(Paths.get(path, "de", "ollie", "library", "rest", "v1", "dto", "RackDTO.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
 	public void generate_PassADataModel_CreatesCorrectRackSOFile() throws Exception {
 		String path = "target/test/output";
 		if (new File(path).exists()) {
@@ -94,6 +113,25 @@ public class RESTServerCodeFactoryIntegrationTest {
 				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "so", "RackSO.java")));
 		String generated = new String(
 				Files.readAllBytes(Paths.get(path, "de", "ollie", "library", "service", "so", "RackSO.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModel_CreatesCorrectRackDBOConverterFile() throws Exception {
+		String path = "target/test/output";
+		if (new File(path).exists()) {
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+					.forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(path);
+		assertThat(new File(path).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "de", "ollie", "library",
+				"persistence", "converter", "RackDBOConverter.java")));
+		String generated = new String(Files.readAllBytes(
+				Paths.get(path, "de", "ollie", "library", "persistence", "converter", "RackDBOConverter.java")));
 		assertEquals(expected.toString(), generated.toString());
 	}
 
