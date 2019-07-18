@@ -2,6 +2,8 @@ package rest.acf.generator.converter;
 
 import static de.ollie.utils.Check.ensure;
 
+import java.sql.Types;
+
 import org.apache.commons.lang3.StringUtils;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
@@ -50,6 +52,37 @@ public class NameConverter {
 
 	private String firstCharToLowerCase(String s) {
 		return StringUtils.left(s, 1).toLowerCase() + (s.length() > 1 ? s.substring(1) : "");
+	}
+
+	/**
+	 * Returns the getter name for the passed column service object.
+	 * 
+	 * @param columnSO The column service object whose getter name is to return.
+	 * @return The getter name for the passed column service object.
+	 */
+	public String getGetterName(ColumnSO column) {
+		if (column == null) {
+			return null;
+		}
+		return (isBooleanColumn(column) ? "is" : "get")
+				+ this.firstCharToUpperCase(this.columnNameToAttributeName(column));
+	}
+
+	private boolean isBooleanColumn(ColumnSO column) {
+		return (column.getType().getSqlType() == Types.BIT) || (column.getType().getSqlType() == Types.BOOLEAN);
+	}
+
+	/**
+	 * Returns the setter name for the passed column service object.
+	 * 
+	 * @param columnSO The column service object whose setter name is to return.
+	 * @return The setter name for the passed column service object.
+	 */
+	public String getSetterName(ColumnSO column) {
+		if (column == null) {
+			return null;
+		}
+		return "set" + this.firstCharToUpperCase(this.columnNameToAttributeName(column));
 	}
 
 	/**

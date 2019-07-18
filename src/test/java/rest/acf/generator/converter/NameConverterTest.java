@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.sql.Types;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -11,6 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.TypeSO;
 
 /**
  * Unit tests for class "NameConverter".
@@ -121,6 +124,213 @@ public class NameConverterTest {
 		ColumnSO columnSO = new ColumnSO().setName("column_name");
 		// Run
 		String returned = this.unitUnderTest.columnNameToAttributeName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassANullValue_ReturnsANullValue() {
+		// Prepare
+		String expected = null;
+		// Run
+		String returned = this.unitUnderTest.getGetterName(null);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameStartsWithLowerCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getColumn";
+		ColumnSO columnSO = new ColumnSO().setName("column").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameStartsWithUpperCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getColumn";
+		ColumnSO columnSO = new ColumnSO().setName("Column").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameCompleteUpperCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getColumn";
+		ColumnSO columnSO = new ColumnSO().setName("COLUMN").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameSingleUpperCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getC";
+		ColumnSO columnSO = new ColumnSO().setName("C").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameSingleLowerCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getC";
+		ColumnSO columnSO = new ColumnSO().setName("c").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameOnlyUpperCaseWithUnderScore_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("COLUMN_NAME").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameOnlyMixedCaseWithUnderScore_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "getColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("Column_Name").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnNameOnlyLowercaseWithUnderScore_ReturnsACorrectGetterName() {
+		// Prepare
+		String expected = "getColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("column_name").setType(new TypeSO().setSqlType(Types.VARCHAR));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getGetterName_PassAColumnSOWithBooleanType_ReturnsACorrectGetterName() {
+		// Prepare
+		String expected = "isColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("column_name").setType(new TypeSO().setSqlType(Types.BOOLEAN));
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassANullValue_ReturnsANullValue() {
+		// Prepare
+		String expected = null;
+		// Run
+		String returned = this.unitUnderTest.getSetterName(null);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameStartsWithLowerCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setColumn";
+		ColumnSO columnSO = new ColumnSO().setName("column");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameStartsWithUpperCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setColumn";
+		ColumnSO columnSO = new ColumnSO().setName("Column");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameCompleteUpperCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setColumn";
+		ColumnSO columnSO = new ColumnSO().setName("COLUMN");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameSingleUpperCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setC";
+		ColumnSO columnSO = new ColumnSO().setName("C");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameSingleLowerCase_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setC";
+		ColumnSO columnSO = new ColumnSO().setName("c");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameOnlyUpperCaseWithUnderScore_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("COLUMN_NAME");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameOnlyMixedCaseWithUnderScore_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("Column_Name");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void getSetterName_PassAColumnNameOnlyLowercaseWithUnderScore_ReturnsACorrectMethodName() {
+		// Prepare
+		String expected = "setColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("column_name");
+		// Run
+		String returned = this.unitUnderTest.getSetterName(columnSO);
 		// Check
 		assertThat(returned, equalTo(expected));
 	}

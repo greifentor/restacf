@@ -48,8 +48,8 @@ public class DTOClassGenerator {
 			return null;
 		}
 		ClassSourceModel csm = this.classSourceModelUtils.createDTOClassSourceModel(tableSO);
-		csm.setPackageModel(new PackageSourceModel()
-				.setPackageName("${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix()));
+		csm.setPackageModel(new PackageSourceModel().setPackageName(
+				"${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "lombok", "Data");
 		this.classSourceModelUtils.addImport(csm, "lombok.experimental", "Accessors");
 		this.classSourceModelUtils.addAnnotation(csm, "Accessors", "chain", true);

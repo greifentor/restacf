@@ -23,6 +23,7 @@ import rest.acf.generator.converter.ModelToJavaSourceCodeConverter;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.persistence.CRUDRepositoryInterfaceGenerator;
+import rest.acf.generator.persistence.DBOConverterClassGenerator;
 import rest.acf.generator.persistence.DBOJPAClassGenerator;
 import rest.acf.generator.rest.DTOClassGenerator;
 import rest.acf.generator.service.SOClassGenerator;
@@ -57,6 +58,9 @@ public class RESTServerCodeFactory implements CodeFactory {
 		DBOJPAClassGenerator jpaClassGenerator = new DBOJPAClassGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
+		DBOConverterClassGenerator dboConverterClassGenerator = new DBOConverterClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
 		DTOClassGenerator dtoClassGenerator = new DTOClassGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
@@ -70,6 +74,22 @@ public class RESTServerCodeFactory implements CodeFactory {
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
+				csm.getPackageModel().setPackageName(
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				new File(p).mkdirs();
+				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				code = code.replace("${base.package.name}", "de.ollie.library");
+				try {
+					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
+							StandardOpenOption.CREATE_NEW);
+					System.out.println(p + "/" + csm.getName() + ".java");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			for (TableSO table : scheme.getTables()) {
+				ClassSourceModel csm = dboConverterClassGenerator.generate(table, "rest-acf");
 				csm.getPackageModel().setPackageName(
 						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
 				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
