@@ -161,6 +161,25 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Creates a new DTO class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a DTO class based on the passed table service object.
+	 */
+	public ClassSourceModel createDTOClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToDTOClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the DBO generated class.
+	 * 
+	 * @return The package name suffix for the DBO generated class.
+	 */
+	public String createDTOPackageNameSuffix() {
+		return "rest.v1.dto";
+	}
+
+	/**
 	 * Creates a new JPA model class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.

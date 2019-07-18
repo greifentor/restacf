@@ -19,6 +19,7 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
+import rest.acf.generator.persistence.DBOJPAClassGenerator;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;

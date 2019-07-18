@@ -328,6 +328,107 @@ public class NameConverterTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToDTOClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToDTOClassName(tableSO);
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToDTOClassName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSOWithNameCamelCase_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TestTableDTO";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSOWithNameUpperCase_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TableDTO";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TableNameDTO";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TableNameDTO";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TableNameDTO";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSOWithNameLowerCase_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TableDTO";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSONameSingleUpperCase_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TDTO";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToDTOClassName_PassTableSONameSinglelowerCase_ReturnsACorrectDTOName() {
+		// Prepare
+		String expected = "TDTO";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void tableNameToPersistenceAdapterClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
