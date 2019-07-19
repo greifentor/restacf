@@ -15,14 +15,10 @@ public class TypeConverter {
 	/**
 	 * Converts a service object into a string with the Java type name..
 	 * 
-	 * @param typeSO
-	 *            The service object which should be converted.
-	 * @param nullable
-	 *            Set this flag if the type should be returned in a nullable
-	 *            form.
+	 * @param typeSO   The service object which should be converted.
+	 * @param nullable Set this flag if the type should be returned in a nullable form.
 	 * @return A string with the name of the Java type.
-	 * @throws IllegalArgumentException
-	 *             If the passed type cannot be converted.
+	 * @throws IllegalArgumentException If the passed type cannot be converted.
 	 */
 	public String typeSOToTypeString(TypeSO typeSO, boolean nullable) {
 		if (typeSO == null) {
@@ -30,24 +26,19 @@ public class TypeConverter {
 		}
 		if (typeSO.getSqlType() == Types.BIGINT) {
 			return getTypeRespectNullable(nullable, "long", "Long");
-		} else if (typeSO.getSqlType() == Types.BOOLEAN) {
+		} else if ((typeSO.getSqlType() == Types.BIT) || (typeSO.getSqlType() == Types.BOOLEAN)) {
 			return getTypeRespectNullable(nullable, "boolean", "Boolean");
-		} else if ((typeSO.getSqlType() == Types.CHAR)
-				|| (typeSO.getSqlType() == Types.LONGNVARCHAR)
-				|| (typeSO.getSqlType() == Types.LONGVARCHAR)
-				|| (typeSO.getSqlType() == Types.NCHAR)
-				|| (typeSO.getSqlType() == Types.NVARCHAR)
-				|| (typeSO.getSqlType() == Types.VARCHAR)) {
+		} else if ((typeSO.getSqlType() == Types.CHAR) || (typeSO.getSqlType() == Types.LONGNVARCHAR)
+				|| (typeSO.getSqlType() == Types.LONGVARCHAR) || (typeSO.getSqlType() == Types.NCHAR)
+				|| (typeSO.getSqlType() == Types.NVARCHAR) || (typeSO.getSqlType() == Types.VARCHAR)) {
 			if (typeSO.getLength() == 1) {
 				return getTypeRespectNullable(nullable, "char", "Character");
 			}
 			return "String";
 		} else if (typeSO.getSqlType() == Types.DATE) {
 			return "LocalDate";
-		} else if ((typeSO.getSqlType() == Types.DECIMAL)
-				|| (typeSO.getSqlType() == Types.DOUBLE)
-				|| (typeSO.getSqlType() == Types.NUMERIC)
-				|| (typeSO.getSqlType() == Types.REAL)) {
+		} else if ((typeSO.getSqlType() == Types.DECIMAL) || (typeSO.getSqlType() == Types.DOUBLE)
+				|| (typeSO.getSqlType() == Types.NUMERIC) || (typeSO.getSqlType() == Types.REAL)) {
 			return getTypeRespectNullable(nullable, "double", "Double");
 		} else if (typeSO.getSqlType() == Types.FLOAT) {
 			return getTypeRespectNullable(nullable, "float", "Float");
@@ -64,12 +55,10 @@ public class TypeConverter {
 		} else if (typeSO.getSqlType() == Types.TINYINT) {
 			return getTypeRespectNullable(nullable, "byte", "Byte");
 		}
-		throw new IllegalArgumentException("type " + typeSO.getSqlType()
-				+ " cannot be converted to a Java type.");
+		throw new IllegalArgumentException("type " + typeSO.getSqlType() + " cannot be converted to a Java type.");
 	}
 
-	private String getTypeRespectNullable(boolean nullable,
-			String simpleTypeName, String wrapperTypeName) {
+	private String getTypeRespectNullable(boolean nullable, String simpleTypeName, String wrapperTypeName) {
 		if (nullable) {
 			return wrapperTypeName;
 		}
