@@ -180,6 +180,25 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Creates a new DTO converter class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a DTO converter class based on the passed table service object.
+	 */
+	public ClassSourceModel createDTOConverterClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToDTOConverterClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the DTO converter generated class.
+	 * 
+	 * @return The package name suffix for the DTO converter generated class.
+	 */
+	public String createDTOConverterPackageNameSuffix() {
+		return "rest.v1.converter";
+	}
+
+	/**
 	 * Creates a new JPA model class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.

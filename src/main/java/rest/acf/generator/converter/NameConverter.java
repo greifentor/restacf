@@ -168,6 +168,20 @@ public class NameConverter {
 	}
 
 	/**
+	 * Converts the name of the passed table service object into a DTO converter class name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a DTO converter class name.
+	 * @return The DTO converter class name for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToDTOConverterClassName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "DTOConverter";
+	}
+
+	/**
 	 * Converts the name of the passed table service object into a persistence adapter class name.
 	 * 
 	 * @param tableSO The table service object whose name is to convert into a persistence adapter class name.
