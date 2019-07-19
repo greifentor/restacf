@@ -71,15 +71,16 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
+		String basePackageName = this.dataModel.getBasePackageName();
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
 				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
 				new File(p).mkdirs();
 				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", "de.ollie.library");
+				code = code.replace("${base.package.name}", basePackageName);
 				try {
 					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
 							StandardOpenOption.CREATE_NEW);
@@ -91,11 +92,11 @@ public class RESTServerCodeFactory implements CodeFactory {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = dboConverterClassGenerator.generate(table, "rest-acf");
 				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
 				new File(p).mkdirs();
 				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", "de.ollie.library");
+				code = code.replace("${base.package.name}", basePackageName);
 				try {
 					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
 							StandardOpenOption.CREATE_NEW);
@@ -107,11 +108,11 @@ public class RESTServerCodeFactory implements CodeFactory {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = soClassGenerator.generate(table, "rest-acf");
 				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
 				new File(p).mkdirs();
 				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", "de.ollie.library");
+				code = code.replace("${base.package.name}", basePackageName);
 				try {
 					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
 							StandardOpenOption.CREATE_NEW);
@@ -123,11 +124,11 @@ public class RESTServerCodeFactory implements CodeFactory {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = dtoClassGenerator.generate(table, "rest-acf");
 				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
 				new File(p).mkdirs();
 				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", "de.ollie.library");
+				code = code.replace("${base.package.name}", basePackageName);
 				try {
 					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
 							StandardOpenOption.CREATE_NEW);
@@ -140,11 +141,11 @@ public class RESTServerCodeFactory implements CodeFactory {
 				InterfaceSourceModel ism = crudRepositoryGenerator.generate(table, "rest-acf");
 				if (ism != null) {
 					ism.getPackageModel().setPackageName(
-							ism.getPackageModel().getPackageName().replace("${base.package.name}", "de.ollie.library"));
+							ism.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 					String p = path + "/" + ism.getPackageModel().getPackageName().replace(".", "/");
 					new File(p).mkdirs();
 					String code = new ModelToJavaSourceCodeConverter().interfaceSourceModelToJavaSourceCode(ism);
-					code = code.replace("${base.package.name}", "de.ollie.library");
+					code = code.replace("${base.package.name}", basePackageName);
 					try {
 						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes(),
 								StandardOpenOption.CREATE_NEW);

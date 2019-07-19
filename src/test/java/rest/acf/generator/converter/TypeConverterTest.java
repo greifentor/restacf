@@ -1,10 +1,11 @@
 package rest.acf.generator.converter;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.sql.Types;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +28,7 @@ public class TypeConverterTest {
 
 	@Test
 	public void typeSOToTypeSourceModel_PassANullValue_ReturnsANullValue() {
-		assertThat(this.unitUnderTest.typeSOToTypeString(null, false),
-				nullValue());
+		assertThat(this.unitUnderTest.typeSOToTypeString(null, false), nullValue());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -69,12 +69,14 @@ public class TypeConverterTest {
 		this.unitUnderTest.typeSOToTypeString(typeSO, false);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
 	public void typeSOToTypeSourceModel_PassTypeSOOfBIT_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
+		String expected = "Boolean";
 		TypeSO typeSO = new TypeSO().setSqlType(Types.BIT);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, true);
+		// Check
+		assertThat(returned, equalTo(expected));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -297,8 +299,7 @@ public class TypeConverterTest {
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGNVARCHAR1_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		String expected = "char";
-		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR)
-				.setLength(1);
+		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR).setLength(1);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, false);
 		// Check
@@ -309,8 +310,7 @@ public class TypeConverterTest {
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGNVARCHAR1Nullable_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		String expected = "Character";
-		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR)
-				.setLength(1);
+		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR).setLength(1);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, true);
 		// Check
@@ -321,8 +321,7 @@ public class TypeConverterTest {
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGNVARCHAR50_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		String expected = "String";
-		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR)
-				.setLength(50);
+		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR).setLength(50);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, false);
 		// Check
@@ -333,8 +332,7 @@ public class TypeConverterTest {
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGNVARCHAR50Nullable_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		String expected = "String";
-		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR)
-				.setLength(50);
+		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGNVARCHAR).setLength(50);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, true);
 		// Check
@@ -375,8 +373,7 @@ public class TypeConverterTest {
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGVARCHAR50_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		String expected = "String";
-		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGVARCHAR)
-				.setLength(50);
+		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGVARCHAR).setLength(50);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, false);
 		// Check
@@ -387,8 +384,7 @@ public class TypeConverterTest {
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGVARCHAR50Nullable_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		String expected = "String";
-		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGVARCHAR)
-				.setLength(50);
+		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGVARCHAR).setLength(50);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, true);
 		// Check
