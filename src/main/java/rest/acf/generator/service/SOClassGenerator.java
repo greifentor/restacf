@@ -25,8 +25,10 @@ public class SOClassGenerator {
 	 * Create a new service object class generator with the passed parameters.
 	 *
 	 * @param classSourceModelUtils An access to the class source model utils.
-	 * @param nameConverter         An access to the name converter of the application.
-	 * @param typeConverter         An access to the type converter of the application.
+	 * @param nameConverter         An access to the name converter of the
+	 *                              application.
+	 * @param typeConverter         An access to the type converter of the
+	 *                              application.
 	 */
 	public SOClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
@@ -37,11 +39,14 @@ public class SOClassGenerator {
 	}
 
 	/**
-	 * Generates a service object class for the passed database table service object.
+	 * Generates a service object class for the passed database table service
+	 * object.
 	 * 
-	 * @param tableSO    The database table service object which the class is to create for.
+	 * @param tableSO    The database table service object which the class is to
+	 *                   create for.
 	 * @param authorName The name which should be inserted as author name.
-	 * @returns A JPA mapping class for passed database table or a "null" value if a "null" value is passed.
+	 * @returns A JPA mapping class for passed database table or a "null" value if a
+	 *          "null" value is passed.
 	 */
 	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
@@ -62,8 +67,10 @@ public class SOClassGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		for (ColumnSO column : tableSO.getColumns()) {
-			this.classSourceModelUtils.addAttributeForColumn(csm, column).ifPresent(asm -> {
-			});
+			this.classSourceModelUtils
+					.addAttributeForColumn(csm, column, t -> this.nameConverter.tableNameToServiceObjectClassName(t))
+					.ifPresent(asm -> {
+					});
 		}
 		return csm;
 	}

@@ -52,7 +52,8 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Adds an import for the passed package name and class to the passed class source model.
+	 * Adds an import for the passed package name and class to the passed class
+	 * source model.
 	 * 
 	 * @param ib          An import bearer which the import is to add to.
 	 * @param packageName The name of the package to import.
@@ -73,8 +74,9 @@ public class ClassSourceModelUtils {
 	 * 
 	 * @param ab           The annotation bearer which the annotation is to add to.
 	 * @param name         The name of the annotation.
-	 * @param propertyInfo Information about properties which should be set for the annotation. Could be left empty if
-	 *                     no properties should be passed with the annotation.
+	 * @param propertyInfo Information about properties which should be set for the
+	 *                     annotation. Could be left empty if no properties should
+	 *                     be passed with the annotation.
 	 * @return The annotation source model which has been added.
 	 */
 	public AnnotationSourceModel addAnnotation(AnnotationBearer ab, String name, Object... propertyInfo) {
@@ -91,14 +93,19 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Adds an attribute for the passed column service object to the passed class source model.
+	 * Adds an attribute for the passed column service object to the passed class
+	 * source model.
 	 * 
-	 * @param csm    The class source model which the attribute is to add to.
-	 * @param column The column service object which the attribute source model is to add for.
-	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
-	 *         be added.
+	 * @param csm                      The class source model which the attribute is
+	 *                                 to add to.
+	 * @param column                   The column service object which the attribute
+	 *                                 source model is to add for.
+	 * @param referenceClassNameFinder A name finder for the referenced class.
+	 * @return An optional with the added attribute source model or an empty
+	 *         optional if no attribute source model could be added.
 	 */
-	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column,
+			NameFinder<TableSO> referenceClassNameFinder) {
 		String attributeName = this.nameConverter.columnNameToAttributeName(column);
 		AttributeSourceModel asm = null;
 		ForeignKeySO[] foreignKeys = getForeignkeyByColumn(column);
@@ -106,10 +113,18 @@ public class ClassSourceModelUtils {
 			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
 			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
 			csm.getAttributes().add(asm);
+			if (typeName.equals("LocalDate")) {
+				addImport(csm, "java.time", "LocalDate");
+			} else if (typeName.equals("LocalTime")) {
+				addImport(csm, "java.time", "LocalTime");
+			} else if (typeName.equals("LocalDateTime")) {
+				addImport(csm, "java.time", "LocalDatetime");
+			}
 		} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
 			ReferenceSO reference = foreignKeys[0].getReferences().get(0);
-			String referencedClassName = this.nameConverter
-					.tableNameToDBOClassName(reference.getReferencedColumn().getTable());
+			String referencedClassName = (referenceClassNameFinder != null
+					? referenceClassNameFinder.getName(reference.getReferencedColumn().getTable())
+					: reference.getReferencedColumn().getTable().getName());
 			LOG.debug("Attribute '" + csm.getName() + "." + attributeName + "' is a reference to '"
 					+ referencedClassName + "'.");
 			asm = new AttributeSourceModel().setName(attributeName).setType(referencedClassName);
@@ -123,10 +138,27 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new CRUD repository interface source model based on the passed table service object.
+	 * Adds an attribute for the passed column service object to the passed class
+	 * source model.
+	 * 
+	 * @param csm    The class source model which the attribute is to add to.
+	 * @param column The column service object which the attribute source model is
+	 *               to add for.
+	 * @return An optional with the added attribute source model or an empty
+	 *         optional if no attribute source model could be added.
+	 */
+	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+		return addAttributeForColumn(csm, column, null);
+	}
+
+	/**
+	 * Creates a new CRUD repository interface source model based on the passed
+	 * table service object.
 	 *
-	 * @param tableSO The table service object which the interface source model is to create for.
-	 * @return An interface source model for a CRUD repository interface based on the passed table service object.
+	 * @param tableSO The table service object which the interface source model is
+	 *                to create for.
+	 * @return An interface source model for a CRUD repository interface based on
+	 *         the passed table service object.
 	 */
 	public InterfaceSourceModel createCRUDRepitoryInterfaceSourceModel(TableSO tableSO) {
 		return new InterfaceSourceModel().setName(this.nameConverter.tableNameToRepositoryInterfaceName(tableSO));
@@ -142,10 +174,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new DBO converter class source model based on the passed table service object.
+	 * Creates a new DBO converter class source model based on the passed table
+	 * service object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return An interface source model for a DBO converter class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return An interface source model for a DBO converter class based on the
+	 *         passed table service object.
 	 */
 	public ClassSourceModel createDBOConverterClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToDBOConverterClassName(tableSO));
@@ -161,10 +196,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new DTO class source model based on the passed table service object.
+	 * Creates a new DTO class source model based on the passed table service
+	 * object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return An interface source model for a DTO class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return An interface source model for a DTO class based on the passed table
+	 *         service object.
 	 */
 	public ClassSourceModel createDTOClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToDTOClassName(tableSO));
@@ -180,10 +218,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new DTO converter class source model based on the passed table service object.
+	 * <<<<<<< HEAD Creates a new DTO converter class source model based on the
+	 * passed table service object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return An interface source model for a DTO converter class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return An interface source model for a DTO converter class based on the
+	 *         passed table service object.
 	 */
 	public ClassSourceModel createDTOConverterClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToDTOConverterClassName(tableSO));
@@ -199,10 +240,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new JPA model class source model based on the passed table service object.
+	 * Creates a new JPA model class source model based on the passed table service
+	 * object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return A class source model for a JPA model class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return A class source model for a JPA model class based on the passed table
+	 *         service object.
 	 */
 	public ClassSourceModel createJPAModelClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToDBOClassName(tableSO));
@@ -218,10 +262,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new persistence adapter class source model based on the passed table service object.
+	 * Creates a new persistence adapter class source model based on the passed
+	 * table service object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return An interface source model for a persistence adapter class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return An interface source model for a persistence adapter class based on
+	 *         the passed table service object.
 	 */
 	public ClassSourceModel createPersistenceAdapterClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToPersistenceAdapterClassName(tableSO));
@@ -237,10 +284,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new persistence port class source model based on the passed table service object.
+	 * Creates a new persistence port class source model based on the passed table
+	 * service object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return An interface source model for a persistence port class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return An interface source model for a persistence port class based on the
+	 *         passed table service object.
 	 */
 	public ClassSourceModel createPersistencePortInterfaceSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToPersistencePortInterfaceName(tableSO));
@@ -256,10 +306,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Creates a new service object class source model based on the passed table service object.
+	 * Creates a new service object class source model based on the passed table
+	 * service object.
 	 *
-	 * @param tableSO The table service object which the class source model is to create for.
-	 * @return An interface source model for a service object class based on the passed table service object.
+	 * @param tableSO The table service object which the class source model is to
+	 *                create for.
+	 * @return An interface source model for a service object class based on the
+	 *         passed table service object.
 	 */
 	public ClassSourceModel createServiceObjectClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToServiceObjectClassName(tableSO));
@@ -275,11 +328,13 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * Returns the foreign key service objects which contain the passed column service object as referencing column.
+	 * Returns the foreign key service objects which contain the passed column
+	 * service object as referencing column.
 	 * 
 	 * @param column The column which the related foreign keys are to get for.
-	 * @return The foreign key service object which the passed column acts a referencing column for. An empty array will
-	 *         returned in case of no related foreign keys found..
+	 * @return The foreign key service object which the passed column acts a
+	 *         referencing column for. An empty array will returned in case of no
+	 *         related foreign keys found..
 	 */
 	public ForeignKeySO[] getForeignkeyByColumn(ColumnSO column) {
 		if (column == null) {
