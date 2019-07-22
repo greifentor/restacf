@@ -29,8 +29,10 @@ public class DTOConverterClassGenerator {
 	 * Create a new DTO converter class generator with the passed parameters.
 	 *
 	 * @param classSourceModelUtils An access to the class source model utils.
-	 * @param nameConverter         An access to the name converter of the application.
-	 * @param typeConverter         An access to the type converter of the application.
+	 * @param nameConverter         An access to the name converter of the
+	 *                              application.
+	 * @param typeConverter         An access to the type converter of the
+	 *                              application.
 	 */
 	public DTOConverterClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
@@ -43,20 +45,27 @@ public class DTOConverterClassGenerator {
 	/**
 	 * Generates a DTO converter class for the passed database table service object.
 	 * 
-	 * @param tableSO    The database table service object which the class is to create for.
+	 * @param tableSO    The database table service object which the class is to
+	 *                   create for.
 	 * @param authorName The name which should be inserted as author name.
-	 * @returns A DTO converter class for passed database table or a "null" value if a "null" value is passed.
+	 * @returns A DTO converter class for passed database table or a "null" value if
+	 *          a "null" value is passed.
 	 */
 	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
 			return null;
 		}
 		ClassSourceModel csm = this.classSourceModelUtils.createDTOConverterClassSourceModel(tableSO);
+		String dtoClassName = this.classSourceModelUtils.createDTOClassSourceModel(tableSO).getName();
+		String soClassName = this.classSourceModelUtils.createServiceObjectClassSourceModel(tableSO).getName();
 		csm.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createDTOConverterPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "org.springframework.stereotype", "Component");
-		this.classSourceModelUtils.addImport(csm, "de.ollie.library.rest.v1.dto", "RackDTO");
-		this.classSourceModelUtils.addImport(csm, "de.ollie.library.service.so", "RackSO");
+		this.classSourceModelUtils.addImport(csm,
+				"${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix(), dtoClassName);
+		this.classSourceModelUtils.addImport(csm,
+				"${base.package.name}." + this.classSourceModelUtils.createServiceObjectPackageNameSuffix(),
+				soClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "Component");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * A converter for " + tableSO.getName().toLowerCase() + " DTO's.\n" //
@@ -65,8 +74,6 @@ public class DTOConverterClassGenerator {
 				+ " *\n" //
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
-		String dtoClassName = this.classSourceModelUtils.createDTOClassSourceModel(tableSO).getName();
-		String soClassName = this.classSourceModelUtils.createServiceObjectClassSourceModel(tableSO).getName();
 		StringBuilder code = new StringBuilder("\t\tif (so == null) {\n");
 		code.append("\t\t\treturn null;\n");
 		code.append("\t\t}\n");

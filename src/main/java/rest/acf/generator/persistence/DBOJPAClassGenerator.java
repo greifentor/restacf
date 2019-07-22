@@ -86,6 +86,11 @@ public class DBOJPAClassGenerator {
 						}
 					});
 		}
+		for (ForeignKeySO fk : tableSO.getForeignKeys()) {
+			if (fk.getReferences().size() == 1) {
+				this.classSourceModelUtils.addImport(csm, "javax.persistence", "JoinColumn");
+			}
+		}
 		return csm;
 	}
 

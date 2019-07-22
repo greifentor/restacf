@@ -118,7 +118,7 @@ public class ClassSourceModelUtils {
 			} else if (typeName.equals("LocalTime")) {
 				addImport(csm, "java.time", "LocalTime");
 			} else if (typeName.equals("LocalDateTime")) {
-				addImport(csm, "java.time", "LocalDatetime");
+				addImport(csm, "java.time", "LocalDateTime");
 			}
 		} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
 			ReferenceSO reference = foreignKeys[0].getReferences().get(0);
