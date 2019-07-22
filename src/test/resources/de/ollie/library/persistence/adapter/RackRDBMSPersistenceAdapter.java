@@ -13,19 +13,19 @@ import de.ollie.library.service.so.RackSO;
 /**
  * An implementation of the rack persistence port interface for RDBMS.
  *
- * @author ollie
+ * @author rest-acf
  *
  * GENERATED CODE!!! DO NOT CHANGE!!!
  */
 @Service
 public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 
-	private final RackDBOConverter rackConverter;
+	private final RackDBOConverter rackDBOConverter;
 	private final RackRepository rackRepository;
 
-	public RackRDBMSPersistenceAdapter(RackDBOConverter rackConverter, RackRepository rackRepository) {
+	public RackRDBMSPersistenceAdapter(RackDBOConverter rackDBOConverter, RackRepository rackRepository) {
 		super();
-		this.rackConverter = rackConverter;
+		this.rackDBOConverter = rackDBOConverter;
 		this.rackRepository = rackRepository;
 	}
 
@@ -35,7 +35,7 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 		if (dbo.isEmpty()) {
 			return Optional.empty();
 		}
-		return Optional.of(this.rackConverter.convertDBOToSO(dbo.get()));
+		return Optional.of(this.rackDBOConverter.convertDBOToSO(dbo.get()));
 	}
 
 }

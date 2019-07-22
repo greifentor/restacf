@@ -25,6 +25,7 @@ import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.persistence.CRUDRepositoryInterfaceGenerator;
 import rest.acf.generator.persistence.DBOConverterClassGenerator;
 import rest.acf.generator.persistence.DBOJPAClassGenerator;
+import rest.acf.generator.persistence.PersistenceAdapterClassGenerator;
 import rest.acf.generator.rest.DTOClassGenerator;
 import rest.acf.generator.rest.DTOConverterClassGenerator;
 import rest.acf.generator.service.SOClassGenerator;
@@ -72,6 +73,9 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		CRUDRepositoryInterfaceGenerator crudRepositoryGenerator = new CRUDRepositoryInterfaceGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		PersistenceAdapterClassGenerator persistenceAdapterGenerator = new PersistenceAdapterClassGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
@@ -143,6 +147,22 @@ public class RESTServerCodeFactory implements CodeFactory {
 			}
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = dtoConverterClassGenerator.generate(table, "rest-acf");
+				csm.getPackageModel().setPackageName(
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				new File(p).mkdirs();
+				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				code = code.replace("${base.package.name}", basePackageName);
+				try {
+					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
+							StandardOpenOption.CREATE_NEW);
+					System.out.println(p + "/" + csm.getName() + ".java");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			for (TableSO table : scheme.getTables()) {
+				ClassSourceModel csm = persistenceAdapterGenerator.generate(table, "rest-acf");
 				csm.getPackageModel().setPackageName(
 						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");

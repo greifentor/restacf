@@ -27,6 +27,50 @@ public class NameConverterTest {
 	@InjectMocks
 	private NameConverter unitUnderTest;
 
+	@Test
+	public void classNameToAttributeName_PassANullValue_ReturnsANullValue() {
+		// Prepare
+		String expected = null;
+		String passed = null;
+		// Run
+		String returned = this.unitUnderTest.classNameToAttrName(passed);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void classNameToAttributeName_PassAnEmptyString_ReturnsAnEmptyString() {
+		// Prepare
+		String expected = "";
+		String passed = "";
+		// Run
+		String returned = this.unitUnderTest.classNameToAttrName(passed);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void classNameToAttributeName_PassAClassName_ReturnsAnAttributeNameForThePassedClassName() {
+		// Prepare
+		String expected = "aClass";
+		String passed = "AClass";
+		// Run
+		String returned = this.unitUnderTest.classNameToAttrName(passed);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void classNameToAttributeName_PassAClassNameWithUnderscores_ReturnsAnAttributeNameForThePassedClassName() {
+		// Prepare
+		String expected = "aClass";
+		String passed = "A_Class";
+		// Run
+		String returned = this.unitUnderTest.classNameToAttrName(passed);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void columnNameToAttributeName_PassColumnSOWithEmptyName_ThrowsException() {
 		// Prepare

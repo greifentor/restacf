@@ -3,6 +3,8 @@ package rest.acf.generator.persistence;
 import java.util.Arrays;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.ReferenceSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
@@ -29,10 +31,8 @@ public class DBOConverterClassGenerator {
 	 * Create a new DBO converter class generator with the passed parameters.
 	 *
 	 * @param classSourceModelUtils An access to the class source model utils.
-	 * @param nameConverter         An access to the name converter of the
-	 *                              application.
-	 * @param typeConverter         An access to the type converter of the
-	 *                              application.
+	 * @param nameConverter         An access to the name converter of the application.
+	 * @param typeConverter         An access to the type converter of the application.
 	 */
 	public DBOConverterClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
@@ -45,11 +45,9 @@ public class DBOConverterClassGenerator {
 	/**
 	 * Generates a DBO converter class for the passed database table service object.
 	 * 
-	 * @param tableSO    The database table service object which the class is to
-	 *                   create for.
+	 * @param tableSO    The database table service object which the class is to create for.
 	 * @param authorName The name which should be inserted as author name.
-	 * @returns A DBO converter class for passed database table or a "null" value if
-	 *          a "null" value is passed.
+	 * @returns A DBO converter class for passed database table or a "null" value if a "null" value is passed.
 	 */
 	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
@@ -79,8 +77,22 @@ public class DBOConverterClassGenerator {
 		code.append("\t\t}\n");
 		code.append("\t\treturn new ").append(soClassName).append("()");
 		for (ColumnSO column : tableSO.getColumns()) {
-			code.append(".").append(this.nameConverter.getSetterName(column)).append("(dbo.")
-					.append(this.nameConverter.getGetterName(column)).append("())");
+			ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
+			if (foreignKeys.length == 0) {
+				code.append(".").append(this.nameConverter.getSetterName(column)).append("(dbo.")
+						.append(this.nameConverter.getGetterName(column)).append("())");
+			} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
+				this.classSourceModelUtils.addImport(csm, "org.springframework.beans.factory.annotation", "Autowired");
+				ReferenceSO reference = foreignKeys[0].getReferences().get(0);
+				TableSO referencedTable = reference.getReferencedColumn().getTable();
+				String dboConverterClassName = this.nameConverter.tableNameToDBOConverterClassName(referencedTable);
+				String dboConverterAttrName = this.nameConverter.classNameToAttrName(dboConverterClassName);
+				this.classSourceModelUtils.addAttributeForClassName(csm, dboConverterClassName)
+						.ifPresent(asm -> classSourceModelUtils.addAnnotation(asm, "Autowired"));
+				code.append(".").append(this.nameConverter.getSetterName(column)).append("(this.")
+						.append(dboConverterAttrName).append(".convertDBOToSO(dbo.")
+						.append(this.nameConverter.getGetterName(column)).append("()))");
+			}
 		}
 		code.append(";\n");
 		code.append("\t}\n");

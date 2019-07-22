@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * A model for a method source.
+ * A model for a constructor source.
  * 
  * @author ollie
  *
@@ -16,11 +16,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
-public class MethodSourceModel {
+public class ConstructorSourceModel {
 
-	private String name;
 	private String code;
-	private String returnType;
 	private List<ParameterSourceModel> parameters = new ArrayList<>();
 
 }

@@ -18,6 +18,28 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 public class NameConverter {
 
 	/**
+	 * Converts a class name to an attribute name.
+	 *
+	 * @param className The name of the class which is to convert to an attribute name.
+	 * @return The attribute name for the passed class name.
+	 */
+	public String classNameToAttrName(String className) {
+		if ((className == null) || className.isEmpty()) {
+			return className;
+		}
+		if (containsUnderScores(className)) {
+			className = buildTableNameFromUnderScoreString(className);
+		} else if (allCharactersAreUpperCase(className)) {
+			className = className.toLowerCase();
+		}
+		if (startsWithUpperCaseCharacter(className)) {
+			className = firstCharToLowerCase(className);
+		}
+		return className;
+
+	}
+
+	/**
 	 * Converts a column name into a Java attribute name.
 	 * 
 	 * @param columnSO The column service object whose name is to convert.

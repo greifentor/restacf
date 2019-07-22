@@ -24,7 +24,9 @@ public class ClassSourceModel implements AnnotationBearer, ImportBearer {
 	private ClassCommentSourceModel comment;
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
 	private List<AttributeSourceModel> attributes = new ArrayList<>();
+	private List<ConstructorSourceModel> constructors = new ArrayList<>();
 	private List<ImportSourceModel> imports = new ArrayList<>();
+	private List<ExtensionSourceModel> interfaces = new ArrayList<>();
 	private List<MethodSourceModel> methods = new ArrayList<>();
 
 }
