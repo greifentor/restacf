@@ -25,6 +25,7 @@ import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -80,7 +81,9 @@ public class DTOClassGeneratorTest {
 				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("chain").setContent("true")));
 		AnnotationSourceModel annotationData = new AnnotationSourceModel().setName("Data");
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		attribute0.addModifier(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		attribute1.addModifier(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel expected = new ClassSourceModel().setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * A data transfer object class for " + TABLE_NAME.toLowerCase() + "s.\n" //

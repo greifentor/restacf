@@ -11,12 +11,14 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
+import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ConstructorSourceModel;
 import rest.acf.model.ExtensionSourceModel;
 import rest.acf.model.MethodSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
 
@@ -71,12 +73,12 @@ public class PersistenceAdapterClassGenerator {
 				.getName();
 		String repositoryClassName = this.classSourceModelUtils.createCRUDRepitoryInterfaceSourceModel(tableSO)
 				.getName();
-		String soClassName = this.classSourceModelUtils.createServiceObjectClassSourceModel(tableSO).getName();
+		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
 		String dboPackageName = this.classSourceModelUtils.createJPAModelPackageNameSuffix();
 		String dboConverterPackageName = this.classSourceModelUtils.createDBOConverterPackageNameSuffix();
 		String persistencePortPackageName = this.classSourceModelUtils.createPersistencePortPackageNameSuffix();
 		String repositoryPackageName = this.classSourceModelUtils.createCRUDRepositoryPackageNameSuffix();
-		String soPackageName = this.classSourceModelUtils.createServiceObjectPackageNameSuffix();
+		String soPackageName = this.classSourceModelUtils.createSOPackageNameSuffix();
 		ClassSourceModel csm = this.classSourceModelUtils.createPersistenceAdapterClassSourceModel(tableSO);
 		csm.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createPersistenceAdapterPackageNameSuffix()));
@@ -104,7 +106,9 @@ public class PersistenceAdapterClassGenerator {
 		Optional<AttributeSourceModel> repositoryAttrOpt = this.classSourceModelUtils.addAttributeForClassName(csm,
 				repositoryClassName);
 		if (dboConverterAttrOpt.isPresent() && repositoryAttrOpt.isPresent()) {
+			dboConverterAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE, ModifierSourceModel.FINAL);
 			String dboConverterAttrName = dboConverterAttrOpt.get().getName();
+			repositoryAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE, ModifierSourceModel.FINAL);
 			String repositoryAttrName = repositoryAttrOpt.get().getName();
 			ConstructorSourceModel cosm = new ConstructorSourceModel();
 			cosm.getParameters()
@@ -120,6 +124,7 @@ public class PersistenceAdapterClassGenerator {
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
 			MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
+			methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
 			methodFindById.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
 			methodFindById.setReturnType("Optional<" + soClassName + ">");
 			methodFindById.setCode( //
@@ -129,6 +134,7 @@ public class PersistenceAdapterClassGenerator {
 							+ "\t\t}\n"//
 							+ "\t\treturn Optional.of(this." + dboConverterAttrName + ".convertDBOToSO(dbo.get()));\n" //
 							+ "\t}\n");
+			csm.getMethods().add(methodFindById);
 		}
 		return csm;
 	}

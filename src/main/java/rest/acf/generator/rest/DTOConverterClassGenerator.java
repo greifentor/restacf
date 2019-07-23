@@ -55,14 +55,14 @@ public class DTOConverterClassGenerator {
 		}
 		ClassSourceModel csm = this.classSourceModelUtils.createDTOConverterClassSourceModel(tableSO);
 		String dtoClassName = this.classSourceModelUtils.createDTOClassSourceModel(tableSO).getName();
-		String soClassName = this.classSourceModelUtils.createServiceObjectClassSourceModel(tableSO).getName();
+		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
 		csm.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createDTOConverterPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "org.springframework.stereotype", "Component");
 		this.classSourceModelUtils.addImport(csm,
 				"${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix(), dtoClassName);
 		this.classSourceModelUtils.addImport(csm,
-				"${base.package.name}." + this.classSourceModelUtils.createServiceObjectPackageNameSuffix(),
+				"${base.package.name}." + this.classSourceModelUtils.createSOPackageNameSuffix(),
 				soClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "Component");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //

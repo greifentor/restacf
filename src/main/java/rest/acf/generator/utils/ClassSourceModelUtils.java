@@ -279,8 +279,8 @@ public class ClassSourceModelUtils {
 	 * @param tableSO The table service object which the class source model is to create for.
 	 * @return An interface source model for a persistence port class based on the passed table service object.
 	 */
-	public ClassSourceModel createPersistencePortInterfaceSourceModel(TableSO tableSO) {
-		return new ClassSourceModel().setName(this.nameConverter.tableNameToPersistencePortInterfaceName(tableSO));
+	public InterfaceSourceModel createPersistencePortInterfaceSourceModel(TableSO tableSO) {
+		return new InterfaceSourceModel().setName(this.nameConverter.tableNameToPersistencePortInterfaceName(tableSO));
 	}
 
 	/**
@@ -298,7 +298,7 @@ public class ClassSourceModelUtils {
 	 * @param tableSO The table service object which the class source model is to create for.
 	 * @return An interface source model for a service object class based on the passed table service object.
 	 */
-	public ClassSourceModel createServiceObjectClassSourceModel(TableSO tableSO) {
+	public ClassSourceModel createSOClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToServiceObjectClassName(tableSO));
 	}
 
@@ -307,7 +307,7 @@ public class ClassSourceModelUtils {
 	 * 
 	 * @return The package name suffix for the persistence port generated class.
 	 */
-	public String createServiceObjectPackageNameSuffix() {
+	public String createSOPackageNameSuffix() {
 		return "service.so";
 	}
 
