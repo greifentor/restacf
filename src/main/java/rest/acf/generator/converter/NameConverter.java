@@ -86,7 +86,7 @@ public class NameConverter {
 		if (column == null) {
 			return null;
 		}
-		return (isBooleanColumn(column) ? "is" : "get")
+		return (isBooleanColumn(column) && !column.isNullable() ? "is" : "get")
 				+ this.firstCharToUpperCase(this.columnNameToAttributeName(column));
 	}
 

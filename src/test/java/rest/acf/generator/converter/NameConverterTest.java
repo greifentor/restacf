@@ -282,6 +282,18 @@ public class NameConverterTest {
 	}
 
 	@Test
+	public void getGetterName_PassAColumnSOWithNullableBooleanType_ReturnsACorrectGetterName() {
+		// Prepare
+		String expected = "getColumnName";
+		ColumnSO columnSO = new ColumnSO().setName("column_name").setType(new TypeSO().setSqlType(Types.BOOLEAN))
+				.setNullable(true);
+		// Run
+		String returned = this.unitUnderTest.getGetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
 	public void getSetterName_PassANullValue_ReturnsANullValue() {
 		// Prepare
 		String expected = null;
