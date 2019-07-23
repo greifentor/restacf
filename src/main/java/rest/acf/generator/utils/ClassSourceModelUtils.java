@@ -93,12 +93,14 @@ public class ClassSourceModelUtils {
 	/**
 	 * Adds an attribute for the passed column service object to the passed class source model.
 	 * 
-	 * @param csm    The class source model which the attribute is to add to.
-	 * @param column The column service object which the attribute source model is to add for.
+	 * @param csm                      The class source model which the attribute is to add to.
+	 * @param column                   The column service object which the attribute source model is to add for.
+	 * @param referenceClassNameFinder A name finder for the referenced class.
 	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
 	 *         be added.
 	 */
-	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column,
+			NameFinder<TableSO> referenceClassNameFinder) {
 		String attributeName = this.nameConverter.columnNameToAttributeName(column);
 		AttributeSourceModel asm = null;
 		ForeignKeySO[] foreignKeys = getForeignkeyByColumn(column);
@@ -106,10 +108,18 @@ public class ClassSourceModelUtils {
 			String typeName = this.typeConverter.typeSOToTypeString(column.getType(), column.isNullable());
 			asm = new AttributeSourceModel().setName(attributeName).setType(typeName);
 			csm.getAttributes().add(asm);
+			if (typeName.equals("LocalDate")) {
+				addImport(csm, "java.time", "LocalDate");
+			} else if (typeName.equals("LocalTime")) {
+				addImport(csm, "java.time", "LocalTime");
+			} else if (typeName.equals("LocalDateTime")) {
+				addImport(csm, "java.time", "LocalDateTime");
+			}
 		} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
 			ReferenceSO reference = foreignKeys[0].getReferences().get(0);
-			String referencedClassName = this.nameConverter
-					.tableNameToDBOClassName(reference.getReferencedColumn().getTable());
+			String referencedClassName = (referenceClassNameFinder != null
+					? referenceClassNameFinder.getName(reference.getReferencedColumn().getTable())
+					: reference.getReferencedColumn().getTable().getName());
 			LOG.debug("Attribute '" + csm.getName() + "." + attributeName + "' is a reference to '"
 					+ referencedClassName + "'.");
 			asm = new AttributeSourceModel().setName(attributeName).setType(referencedClassName);
@@ -120,6 +130,33 @@ public class ClassSourceModelUtils {
 		}
 		LOG.debug("Added attribute '" + asm + "' to class source model: " + csm);
 		return Optional.of(asm);
+	}
+
+	/**
+	 * Adds an attribute for the passed class name to the passed class source model.
+	 * 
+	 * @param csm       The class source model which the attribute is to add to.
+	 * @param className The class name which an attribute is to ad for.
+	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
+	 *         be added.
+	 */
+	public Optional<AttributeSourceModel> addAttributeForClassName(ClassSourceModel csm, String className) {
+		AttributeSourceModel asm = new AttributeSourceModel().setName(this.nameConverter.classNameToAttrName(className))
+				.setType(className);
+		csm.getAttributes().add(asm);
+		return Optional.of(asm);
+	}
+
+	/**
+	 * Adds an attribute for the passed column service object to the passed class source model.
+	 * 
+	 * @param csm    The class source model which the attribute is to add to.
+	 * @param column The column service object which the attribute source model is to add for.
+	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
+	 *         be added.
+	 */
+	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
+		return addAttributeForColumn(csm, column, null);
 	}
 
 	/**
@@ -180,6 +217,25 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * <<<<<<< HEAD Creates a new DTO converter class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a DTO converter class based on the passed table service object.
+	 */
+	public ClassSourceModel createDTOConverterClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToDTOConverterClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the DTO converter generated class.
+	 * 
+	 * @return The package name suffix for the DTO converter generated class.
+	 */
+	public String createDTOConverterPackageNameSuffix() {
+		return "rest.v1.converter";
+	}
+
+	/**
 	 * Creates a new JPA model class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.
@@ -223,8 +279,8 @@ public class ClassSourceModelUtils {
 	 * @param tableSO The table service object which the class source model is to create for.
 	 * @return An interface source model for a persistence port class based on the passed table service object.
 	 */
-	public ClassSourceModel createPersistencePortInterfaceSourceModel(TableSO tableSO) {
-		return new ClassSourceModel().setName(this.nameConverter.tableNameToPersistencePortInterfaceName(tableSO));
+	public InterfaceSourceModel createPersistencePortInterfaceSourceModel(TableSO tableSO) {
+		return new InterfaceSourceModel().setName(this.nameConverter.tableNameToPersistencePortInterfaceName(tableSO));
 	}
 
 	/**
@@ -242,7 +298,7 @@ public class ClassSourceModelUtils {
 	 * @param tableSO The table service object which the class source model is to create for.
 	 * @return An interface source model for a service object class based on the passed table service object.
 	 */
-	public ClassSourceModel createServiceObjectClassSourceModel(TableSO tableSO) {
+	public ClassSourceModel createSOClassSourceModel(TableSO tableSO) {
 		return new ClassSourceModel().setName(this.nameConverter.tableNameToServiceObjectClassName(tableSO));
 	}
 
@@ -251,7 +307,7 @@ public class ClassSourceModelUtils {
 	 * 
 	 * @return The package name suffix for the persistence port generated class.
 	 */
-	public String createServiceObjectPackageNameSuffix() {
+	public String createSOPackageNameSuffix() {
 		return "service.so";
 	}
 

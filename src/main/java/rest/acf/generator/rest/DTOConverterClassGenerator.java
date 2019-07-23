@@ -1,4 +1,4 @@
-package rest.acf.generator.persistence;
+package rest.acf.generator.rest;
 
 import java.util.Arrays;
 
@@ -16,25 +16,25 @@ import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
 
 /**
- * A generator for DBO converter classes.
+ * A generator for DTO converter classes.
  *
  * @author ollie
  *
  */
-public class DBOConverterClassGenerator {
+public class DTOConverterClassGenerator {
 
 	private final ClassSourceModelUtils classSourceModelUtils;
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
 	/**
-	 * Create a new DBO converter class generator with the passed parameters.
+	 * Create a new DTO converter class generator with the passed parameters.
 	 *
 	 * @param classSourceModelUtils An access to the class source model utils.
 	 * @param nameConverter         An access to the name converter of the application.
 	 * @param typeConverter         An access to the type converter of the application.
 	 */
-	public DBOConverterClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
+	public DTOConverterClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
@@ -43,63 +43,63 @@ public class DBOConverterClassGenerator {
 	}
 
 	/**
-	 * Generates a DBO converter class for the passed database table service object.
+	 * Generates a DTO converter class for the passed database table service object.
 	 * 
 	 * @param tableSO    The database table service object which the class is to create for.
 	 * @param authorName The name which should be inserted as author name.
-	 * @returns A DBO converter class for passed database table or a "null" value if a "null" value is passed.
+	 * @returns A DTO converter class for passed database table or a "null" value if a "null" value is passed.
 	 */
 	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
 			return null;
 		}
-		ClassSourceModel csm = this.classSourceModelUtils.createDBOConverterClassSourceModel(tableSO);
-		String dboClassName = this.classSourceModelUtils.createJPAModelClassSourceModel(tableSO).getName();
+		ClassSourceModel csm = this.classSourceModelUtils.createDTOConverterClassSourceModel(tableSO);
+		String dtoClassName = this.classSourceModelUtils.createDTOClassSourceModel(tableSO).getName();
 		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
 		csm.setPackageModel(new PackageSourceModel().setPackageName(
-				"${base.package.name}." + this.classSourceModelUtils.createDBOConverterPackageNameSuffix()));
+				"${base.package.name}." + this.classSourceModelUtils.createDTOConverterPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "org.springframework.stereotype", "Component");
 		this.classSourceModelUtils.addImport(csm,
-				"${base.package.name}." + this.classSourceModelUtils.createJPAModelPackageNameSuffix(), dboClassName);
+				"${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix(), dtoClassName);
 		this.classSourceModelUtils.addImport(csm,
 				"${base.package.name}." + this.classSourceModelUtils.createSOPackageNameSuffix(),
 				soClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "Component");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
-				+ " * A converter for " + tableSO.getName().toLowerCase() + " DBO's.\n" //
+				+ " * A converter for " + tableSO.getName().toLowerCase() + " DTO's.\n" //
 				+ " *\n" //
 				+ " * @author " + authorName + "\n" //
 				+ " *\n" //
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
-		StringBuilder code = new StringBuilder("\t\tif (dbo == null) {\n");
+		StringBuilder code = new StringBuilder("\t\tif (so == null) {\n");
 		code.append("\t\t\treturn null;\n");
 		code.append("\t\t}\n");
-		code.append("\t\treturn new ").append(soClassName).append("()");
+		code.append("\t\treturn new ").append(dtoClassName).append("()");
 		for (ColumnSO column : tableSO.getColumns()) {
 			ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
 			if (foreignKeys.length == 0) {
-				code.append(".").append(this.nameConverter.getSetterName(column)).append("(dbo.")
+				code.append(".").append(this.nameConverter.getSetterName(column)).append("(so.")
 						.append(this.nameConverter.getGetterName(column)).append("())");
 			} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
 				this.classSourceModelUtils.addImport(csm, "org.springframework.beans.factory.annotation", "Autowired");
 				ReferenceSO reference = foreignKeys[0].getReferences().get(0);
 				TableSO referencedTable = reference.getReferencedColumn().getTable();
-				String dboConverterClassName = this.nameConverter.tableNameToDBOConverterClassName(referencedTable);
-				String dboConverterAttrName = this.nameConverter.classNameToAttrName(dboConverterClassName);
-				this.classSourceModelUtils.addAttributeForClassName(csm, dboConverterClassName)
+				String dtoConverterClassName = this.nameConverter.tableNameToDTOConverterClassName(referencedTable);
+				String dtoConverterAttrName = this.nameConverter.classNameToAttrName(dtoConverterClassName);
+				this.classSourceModelUtils.addAttributeForClassName(csm, dtoConverterClassName)
 						.ifPresent(asm -> classSourceModelUtils.addAnnotation(asm, "Autowired"));
 				code.append(".").append(this.nameConverter.getSetterName(column)).append("(this.")
-						.append(dboConverterAttrName).append(".convertDBOToSO(dbo.")
+						.append(dtoConverterAttrName).append(".convertSOToDTO(so.")
 						.append(this.nameConverter.getGetterName(column)).append("()))");
 			}
 		}
 		code.append(";\n");
 		code.append("\t}\n");
 		csm.getMethods().add(new MethodSourceModel() //
-				.setReturnType(soClassName) //
-				.setName("convertDBOToSO") //
-				.setParameters(Arrays.asList(new ParameterSourceModel().setName("dbo").setType(dboClassName))) //
+				.setReturnType(dtoClassName) //
+				.setName("convertSOToDTO") //
+				.setParameters(Arrays.asList(new ParameterSourceModel().setName("so").setType(soClassName))) //
 				.setCode(code.toString()));
 		return csm;
 	}

@@ -1,12 +1,17 @@
 package rest.acf.generator.converter;
 
+import java.util.List;
+import java.util.Set;
+
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.ConstructorSourceModel;
 import rest.acf.model.ExtensionSourceModel;
 import rest.acf.model.ImportSourceModel;
 import rest.acf.model.InterfaceSourceModel;
 import rest.acf.model.MethodSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
 import rest.acf.model.PropertySourceModel;
@@ -75,7 +80,7 @@ public class ModelToJavaSourceCodeConverter {
 			}
 			code += "\n";
 		}
-		code += "public class " + csm.getName() + " {\n";
+		code += "public class " + csm.getName() + getImplementsString(csm.getInterfaces()) + " {\n";
 		code += "\n";
 		for (AttributeSourceModel asm : csm.getAttributes()) {
 			for (AnnotationSourceModel ansm : asm.getAnnotations()) {
@@ -94,12 +99,41 @@ public class ModelToJavaSourceCodeConverter {
 				}
 				code += "\n";
 			}
-			code += "\tprivate " + asm.getType() + " " + asm.getName() + ";\n";
+			code += "\t" + getModifierString(asm.getModifiers()) + asm.getType() + " " + asm.getName() + ";\n";
 		}
 		if (csm.getAttributes().size() > 0) {
 			code += "\n";
 		}
+		for (ConstructorSourceModel cosm : csm.getConstructors()) {
+			code += "\tpublic " + csm.getName() + "(";
+			String paramStr = "";
+			for (ParameterSourceModel param : cosm.getParameters()) {
+				if (!paramStr.isEmpty()) {
+					paramStr += ", ";
+				}
+				paramStr += param.getType() + " " + param.getName();
+			}
+			code += paramStr;
+			code += ") {\n";
+			code += cosm.getCode() + "\n";
+		}
 		for (MethodSourceModel method : csm.getMethods()) {
+			for (AnnotationSourceModel ansm : method.getAnnotations()) {
+				code += "\t@" + ansm.getName();
+				if (!ansm.getProperties().isEmpty()) {
+					code += "(";
+					boolean first = true;
+					for (PropertySourceModel<?> prosm : ansm.getProperties()) {
+						if (!first) {
+							code += ", ";
+						}
+						code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+						first = false;
+					}
+					code += ")";
+				}
+				code += "\n";
+			}
 			code += "\tpublic " + method.getReturnType() + " " + method.getName() + "(";
 			String paramStr = "";
 			for (ParameterSourceModel param : method.getParameters()) {
@@ -123,11 +157,38 @@ public class ModelToJavaSourceCodeConverter {
 		return s;
 	}
 
+	private String getImplementsString(List<ExtensionSourceModel> interfaces) {
+		String s = "";
+		for (ExtensionSourceModel esm : interfaces) {
+			if (!s.isEmpty()) {
+				s += ",";
+			} else {
+				s = " implements";
+			}
+			s += " " + esm.getParentClassName();
+		}
+		return s;
+	}
+
 	private String getJavaConstantValue(Object value) {
 		if (value instanceof String) {
 			return "\"" + String.valueOf(value) + "\"";
 		}
 		return String.valueOf(value);
+	}
+
+	private String getModifierString(Set<ModifierSourceModel> modifiers) {
+		String s = "";
+		if (modifiers.contains(ModifierSourceModel.PRIVATE)) {
+			s += "private ";
+		}
+		if (modifiers.contains(ModifierSourceModel.PUBLIC)) {
+			s += "public ";
+		}
+		if (modifiers.contains(ModifierSourceModel.FINAL)) {
+			s += "final ";
+		}
+		return s;
 	}
 
 	/**
@@ -187,6 +248,20 @@ public class ModelToJavaSourceCodeConverter {
 			code += "\n";
 		}
 		code += "public interface " + insm.getName() + createExtendsStatement(insm.getExtendsModel()) + " {\n";
+		boolean hasMethod = false;
+		for (MethodSourceModel method : insm.getMethods()) {
+			hasMethod = true;
+			code += "\n\t" + method.getReturnType() + " " + method.getName() + "(";
+			String paramStr = "";
+			for (ParameterSourceModel param : method.getParameters()) {
+				if (!paramStr.isEmpty()) {
+					paramStr += ", ";
+				}
+				paramStr += param.getType() + " " + param.getName();
+			}
+			code += paramStr;
+			code += ");\n\n";
+		}
 		code += "}";
 		return code;
 	}

@@ -19,13 +19,13 @@ import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
-import rest.acf.generator.persistence.DBOJPAClassGenerator;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -96,9 +96,11 @@ public class DBOJPAClassGeneratorTest {
 				.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Id"),
 						new AnnotationSourceModel().setName("Column").setProperties(Arrays
 								.asList(new PropertySourceModel<String>().setName("name").setContent(COLUMN_NAME_0)))));
+		attribute0.addModifier(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String")
 				.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Column").setProperties(
 						Arrays.asList(new PropertySourceModel<String>().setName("name").setContent(COLUMN_NAME_1)))));
+		attribute1.addModifier(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel expected = new ClassSourceModel().setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * A ORM mapping and database access class for " + TABLE_NAME.toLowerCase() + "s.\n" //

@@ -18,6 +18,7 @@ import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -53,7 +54,9 @@ public class ModelToJavaSourceCodeConverterTest {
 				+ "}";
 		PackageSourceModel packageModel = new PackageSourceModel().setPackageName(PACKAGE_NAME);
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		attribute1.getModifiers().add(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
 				.setPackageModel(packageModel);
@@ -75,7 +78,9 @@ public class ModelToJavaSourceCodeConverterTest {
 				+ "}";
 		AnnotationSourceModel annotation = new AnnotationSourceModel().setName("Entity");
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		attribute1.getModifiers().add(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
 				.setAnnotations(Arrays.asList(annotation));
@@ -99,7 +104,9 @@ public class ModelToJavaSourceCodeConverterTest {
 				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("name").setContent("aName"),
 						new PropertySourceModel<Integer>().setName("value").setContent(4711)));
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		attribute1.getModifiers().add(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
 				.setAnnotations(Arrays.asList(annotation));
@@ -125,7 +132,9 @@ public class ModelToJavaSourceCodeConverterTest {
 		ImportSourceModel importWholePackage = new ImportSourceModel()
 				.setPackageModel(new PackageSourceModel().setPackageName("another.pack.age"));
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
+		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		attribute1.getModifiers().add(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
 				.setImports(Arrays.asList(importSingleClass, importWholePackage));
@@ -156,7 +165,9 @@ public class ModelToJavaSourceCodeConverterTest {
 		attribute0.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Id"),
 				new AnnotationSourceModel().setName("Column").setProperties(
 						Arrays.asList(new PropertySourceModel<String>().setName("name").setContent("Column0")))));
+		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
+		attribute1.getModifiers().add(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel classSourceModel = new ClassSourceModel().setAttributes(attributes).setName(TABLE_NAME)
 				.setImports(Arrays.asList(importSingleClass, importWholePackage));

@@ -24,5 +24,6 @@ public class InterfaceSourceModel implements AnnotationBearer, ImportBearer {
 	private ClassCommentSourceModel comment;
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
 	private List<ImportSourceModel> imports = new ArrayList<>();
+	private List<MethodSourceModel> methods = new ArrayList<>();
 
 }

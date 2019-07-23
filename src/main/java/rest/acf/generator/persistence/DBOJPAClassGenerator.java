@@ -8,6 +8,7 @@ import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 
 /**
@@ -69,16 +70,24 @@ public class DBOJPAClassGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		for (ColumnSO column : tableSO.getColumns()) {
-			this.classSourceModelUtils.addAttributeForColumn(csm, column).ifPresent(asm -> {
-				if (column.isPkMember()) {
-					this.classSourceModelUtils.addAnnotation(asm, "Id");
-				}
-				this.classSourceModelUtils.addAnnotation(asm, "Column", "name", column.getName());
-				ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
-				if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
-					this.classSourceModelUtils.addAnnotation(asm, "JoinColumn", "name", column.getName());
-				}
-			});
+			this.classSourceModelUtils
+					.addAttributeForColumn(csm, column, t -> this.nameConverter.tableNameToDBOClassName(t))
+					.ifPresent(asm -> {
+						if (column.isPkMember()) {
+							this.classSourceModelUtils.addAnnotation(asm, "Id");
+						}
+						this.classSourceModelUtils.addAnnotation(asm, "Column", "name", column.getName());
+						ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
+						if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
+							this.classSourceModelUtils.addAnnotation(asm, "JoinColumn", "name", column.getName());
+						}
+						asm.getModifiers().add(ModifierSourceModel.PRIVATE);
+					});
+		}
+		for (ForeignKeySO fk : tableSO.getForeignKeys()) {
+			if (fk.getReferences().size() == 1) {
+				this.classSourceModelUtils.addImport(csm, "javax.persistence", "JoinColumn");
+			}
 		}
 		return csm;
 	}

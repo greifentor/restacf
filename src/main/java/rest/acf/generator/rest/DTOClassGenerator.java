@@ -7,6 +7,7 @@ import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 
 /**
@@ -48,8 +49,8 @@ public class DTOClassGenerator {
 			return null;
 		}
 		ClassSourceModel csm = this.classSourceModelUtils.createDTOClassSourceModel(tableSO);
-		csm.setPackageModel(new PackageSourceModel().setPackageName(
-				"${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix()));
+		csm.setPackageModel(new PackageSourceModel()
+				.setPackageName("${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "lombok", "Data");
 		this.classSourceModelUtils.addImport(csm, "lombok.experimental", "Accessors");
 		this.classSourceModelUtils.addAnnotation(csm, "Accessors", "chain", true);
@@ -62,8 +63,11 @@ public class DTOClassGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		for (ColumnSO column : tableSO.getColumns()) {
-			this.classSourceModelUtils.addAttributeForColumn(csm, column).ifPresent(asm -> {
-			});
+			this.classSourceModelUtils
+					.addAttributeForColumn(csm, column, t -> this.nameConverter.tableNameToDTOClassName(t))
+					.ifPresent(asm -> {
+						asm.getModifiers().add(ModifierSourceModel.PRIVATE);
+					});
 		}
 		return csm;
 	}
