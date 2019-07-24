@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.DatabaseSO;
 import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
 import de.ollie.archimedes.alexandrian.service.ReferenceSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
@@ -157,6 +158,16 @@ public class ClassSourceModelUtils {
 	 */
 	public Optional<AttributeSourceModel> addAttributeForColumn(ClassSourceModel csm, ColumnSO column) {
 		return addAttributeForColumn(csm, column, null);
+	}
+
+	/**
+	 * Creates a new application class source model based on the passed database service object.
+	 *
+	 * @param databaseSO The database service object which the class source model is to create for.
+	 * @return An class source model for an application class based on the passed database service object.
+	 */
+	public ClassSourceModel createApplicationClassSourceModel(DatabaseSO databaseSO) {
+		return new ClassSourceModel().setName(this.nameConverter.schemeNameToApplicationClassName(databaseSO));
 	}
 
 	/**

@@ -31,4 +31,5 @@ public class AttributeSourceModel implements AnnotationBearer {
 		}
 		return this;
 	}
+
 }

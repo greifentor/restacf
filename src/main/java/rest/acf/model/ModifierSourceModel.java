@@ -8,6 +8,6 @@ package rest.acf.model;
  */
 public enum ModifierSourceModel {
 
-	PUBLIC, PRIVATE, FINAL;
+	PUBLIC, PRIVATE, STATIC, FINAL;
 
 }

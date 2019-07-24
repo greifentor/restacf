@@ -18,6 +18,7 @@ import baccara.gui.GUIBundle;
 import de.ollie.archimedes.alexandrian.service.DatabaseSO;
 import de.ollie.archimedes.alexandrian.service.SchemeSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
+import rest.acf.generator.ApplicationClassGenerator;
 import rest.acf.generator.converter.DataModelToSOConverter;
 import rest.acf.generator.converter.ModelToJavaSourceCodeConverter;
 import rest.acf.generator.converter.NameConverter;
@@ -84,6 +85,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new TypeConverter());
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
 		String basePackageName = this.dataModel.getBasePackageName();
+		createApplicationClass(databaseSO, path, basePackageName);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
@@ -219,6 +221,26 @@ public class RESTServerCodeFactory implements CodeFactory {
 			}
 		}
 		return false;
+	}
+
+	private void createApplicationClass(DatabaseSO databaseSO, String path, String basePackageName) {
+		ApplicationClassGenerator applicationClassGenerator = new ApplicationClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		ClassSourceModel csm = applicationClassGenerator.generate(databaseSO, "rest-acf");
+		csm.getPackageModel().setPackageName(
+				csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+		String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+		new File(p).mkdirs();
+		String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+		code = code.replace("${base.package.name}", basePackageName);
+		try {
+			Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(), StandardOpenOption.CREATE_NEW);
+			System.out.println(p + "/" + csm.getName() + ".java");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override

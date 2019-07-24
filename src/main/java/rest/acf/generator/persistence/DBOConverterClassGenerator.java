@@ -12,6 +12,7 @@ import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.MethodSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
 
@@ -62,8 +63,7 @@ public class DBOConverterClassGenerator {
 		this.classSourceModelUtils.addImport(csm,
 				"${base.package.name}." + this.classSourceModelUtils.createJPAModelPackageNameSuffix(), dboClassName);
 		this.classSourceModelUtils.addImport(csm,
-				"${base.package.name}." + this.classSourceModelUtils.createSOPackageNameSuffix(),
-				soClassName);
+				"${base.package.name}." + this.classSourceModelUtils.createSOPackageNameSuffix(), soClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "Component");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * A converter for " + tableSO.getName().toLowerCase() + " DBO's.\n" //
@@ -97,6 +97,7 @@ public class DBOConverterClassGenerator {
 		code.append(";\n");
 		code.append("\t}\n");
 		csm.getMethods().add(new MethodSourceModel() //
+				.addModifier(ModifierSourceModel.PUBLIC) //
 				.setReturnType(soClassName) //
 				.setName("convertDBOToSO") //
 				.setParameters(Arrays.asList(new ParameterSourceModel().setName("dbo").setType(dboClassName))) //

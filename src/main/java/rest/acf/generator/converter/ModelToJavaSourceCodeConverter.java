@@ -134,7 +134,8 @@ public class ModelToJavaSourceCodeConverter {
 				}
 				code += "\n";
 			}
-			code += "\tpublic " + method.getReturnType() + " " + method.getName() + "(";
+			code += "\t" + getModifierString(method.getModifiers()) + method.getReturnType() + " " + method.getName()
+					+ "(";
 			String paramStr = "";
 			for (ParameterSourceModel param : method.getParameters()) {
 				if (!paramStr.isEmpty()) {
@@ -184,6 +185,9 @@ public class ModelToJavaSourceCodeConverter {
 		}
 		if (modifiers.contains(ModifierSourceModel.PUBLIC)) {
 			s += "public ";
+		}
+		if (modifiers.contains(ModifierSourceModel.STATIC)) {
+			s += "static ";
 		}
 		if (modifiers.contains(ModifierSourceModel.FINAL)) {
 			s += "final ";
