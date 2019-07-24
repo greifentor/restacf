@@ -12,6 +12,7 @@ import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.MethodSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
 
@@ -62,8 +63,7 @@ public class DTOConverterClassGenerator {
 		this.classSourceModelUtils.addImport(csm,
 				"${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix(), dtoClassName);
 		this.classSourceModelUtils.addImport(csm,
-				"${base.package.name}." + this.classSourceModelUtils.createSOPackageNameSuffix(),
-				soClassName);
+				"${base.package.name}." + this.classSourceModelUtils.createSOPackageNameSuffix(), soClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "Component");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * A converter for " + tableSO.getName().toLowerCase() + " DTO's.\n" //
@@ -97,6 +97,7 @@ public class DTOConverterClassGenerator {
 		code.append(";\n");
 		code.append("\t}\n");
 		csm.getMethods().add(new MethodSourceModel() //
+				.addModifier(ModifierSourceModel.PUBLIC) //
 				.setReturnType(dtoClassName) //
 				.setName("convertSOToDTO") //
 				.setParameters(Arrays.asList(new ParameterSourceModel().setName("so").setType(soClassName))) //

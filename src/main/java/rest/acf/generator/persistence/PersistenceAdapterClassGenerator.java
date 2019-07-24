@@ -124,6 +124,7 @@ public class PersistenceAdapterClassGenerator {
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
 			MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
+			methodFindById.addModifier(ModifierSourceModel.PUBLIC);
 			methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
 			methodFindById.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
 			methodFindById.setReturnType("Optional<" + soClassName + ">");

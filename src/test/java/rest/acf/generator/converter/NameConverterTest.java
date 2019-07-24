@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.DatabaseSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 
@@ -387,6 +388,107 @@ public class NameConverterTest {
 		ColumnSO columnSO = new ColumnSO().setName("column_name");
 		// Run
 		String returned = this.unitUnderTest.getSetterName(columnSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void schemeNameToApplicationClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		DatabaseSO databaseSO = new DatabaseSO().setName("");
+		// Run
+		this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.schemeNameToApplicationClassName(null), nullValue());
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSOWithNameCamelCase_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TestTableApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSOWithNameUpperCase_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TableApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TableNameApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TableNameApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TableNameApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSOWithNameLowerCase_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TableApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassTableSONameSingleUpperCase_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void schemeNameToApplicationClassName_PassDatabaseSONameSinglelowerCase_ReturnsACorrectApplicationClassName() {
+		// Prepare
+		String expected = "TApplication";
+		DatabaseSO databaseSO = new DatabaseSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
 		// Check
 		assertThat(returned, equalTo(expected));
 	}

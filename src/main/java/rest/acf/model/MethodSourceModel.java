@@ -1,7 +1,9 @@
 package rest.acf.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +25,13 @@ public class MethodSourceModel implements AnnotationBearer {
 	private String returnType;
 	private List<ParameterSourceModel> parameters = new ArrayList<>();
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
+	private Set<ModifierSourceModel> modifiers = new HashSet<>();
+
+	public MethodSourceModel addModifier(ModifierSourceModel... modifiers) {
+		for (ModifierSourceModel msm : modifiers) {
+			this.modifiers.add(msm);
+		}
+		return this;
+	}
 
 }

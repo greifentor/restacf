@@ -7,6 +7,7 @@ import java.sql.Types;
 import org.apache.commons.lang3.StringUtils;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.DatabaseSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 
 /**
@@ -159,6 +160,34 @@ public class NameConverter {
 
 	private String firstCharToUpperCase(String s) {
 		return StringUtils.left(s, 1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");
+	}
+
+	/**
+	 * Converts the name of the passed database service object into an application class name.
+	 * 
+	 * @param databaseSO The database service object whose name is to convert into an application class name.
+	 * @return The application class name for the passed database service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String schemeNameToApplicationClassName(DatabaseSO databaseSO) {
+		if (databaseSO == null) {
+			return null;
+		}
+		return getClassName(databaseSO) + "Application";
+	}
+
+	private String getClassName(DatabaseSO databaseSO) {
+		String databaseName = databaseSO.getName();
+		ensure(!databaseName.isEmpty(), "database name cannot be empty.");
+		if (containsUnderScores(databaseName)) {
+			databaseName = buildTableNameFromUnderScoreString(databaseName);
+		} else if (allCharactersAreUpperCase(databaseName)) {
+			databaseName = databaseName.toLowerCase();
+		}
+		if (startsWithLowerCaseCharacter(databaseName)) {
+			databaseName = firstCharToUpperCase(databaseName);
+		}
+		return databaseName;
 	}
 
 	/**
