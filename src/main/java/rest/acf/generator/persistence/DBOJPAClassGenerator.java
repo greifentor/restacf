@@ -76,10 +76,14 @@ public class DBOJPAClassGenerator {
 						if (column.isPkMember()) {
 							this.classSourceModelUtils.addAnnotation(asm, "Id");
 						}
-						this.classSourceModelUtils.addAnnotation(asm, "Column", "name", column.getName());
 						ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
 						if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
-							this.classSourceModelUtils.addAnnotation(asm, "JoinColumn", "name", column.getName());
+							this.classSourceModelUtils.addAnnotation(asm, "ManyToOne");
+							this.classSourceModelUtils.addAnnotation(asm, "JoinColumn", "name", column.getName(),
+									"referencedColumnName",
+									foreignKeys[0].getReferences().get(0).getReferencedColumn().getName());
+						} else {
+							this.classSourceModelUtils.addAnnotation(asm, "Column", "name", column.getName());
 						}
 						asm.getModifiers().add(ModifierSourceModel.PRIVATE);
 					});
@@ -87,6 +91,7 @@ public class DBOJPAClassGenerator {
 		for (ForeignKeySO fk : tableSO.getForeignKeys()) {
 			if (fk.getReferences().size() == 1) {
 				this.classSourceModelUtils.addImport(csm, "javax.persistence", "JoinColumn");
+				this.classSourceModelUtils.addImport(csm, "javax.persistence", "ManyToOne");
 			}
 		}
 		return csm;
