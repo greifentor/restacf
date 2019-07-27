@@ -304,6 +304,25 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Creates a new service class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return An interface source model for a service class based on the passed table service object.
+	 */
+	public InterfaceSourceModel createServiceInterfaceSourceModel(TableSO tableSO) {
+		return new InterfaceSourceModel().setName(this.nameConverter.tableNameToServiceInterfaceName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the service generated class.
+	 * 
+	 * @return The package name suffix for the service generated class.
+	 */
+	public String createServicePackageNameSuffix() {
+		return "service";
+	}
+
+	/**
 	 * Creates a new service object class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.
