@@ -11,8 +11,9 @@ import de.ollie.library.service.so.RackSO;
 /**
  * An implementation of the rack service interface.
  *
- * @author ollie
+ * @author rest-acf
  *
+ * GENERATED CODE!!! DO NOT CHANGE!!!
  */
 @Service
 public class RackServiceImpl implements RackService {

@@ -1199,6 +1199,107 @@ public class NameConverterTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToServiceImplClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToServiceImplClassName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSOWithNameCamelCase_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TestTableServiceImpl";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSOWithNameUpperCase_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TableServiceImpl";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TableNameServiceImpl";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TableNameServiceImpl";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TableNameServiceImpl";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSOWithNameLowerCase_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TableServiceImpl";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSONameSingleUpperCase_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TServiceImpl";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToServiceImplClassName_PassTableSONameSinglelowerCase_ReturnsACorrectServiceImplClassName() {
+		// Prepare
+		String expected = "TServiceImpl";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void tableNameToServiceInterfaceName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
