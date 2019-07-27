@@ -31,6 +31,8 @@ import rest.acf.generator.rest.DTOClassGenerator;
 import rest.acf.generator.rest.DTOConverterClassGenerator;
 import rest.acf.generator.service.PersistencePortInterfaceGenerator;
 import rest.acf.generator.service.SOClassGenerator;
+import rest.acf.generator.service.ServiceImplClassGenerator;
+import rest.acf.generator.service.ServiceInterfaceGenerator;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.InterfaceSourceModel;
@@ -81,6 +83,12 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		PersistenceAdapterClassGenerator persistenceAdapterGenerator = new PersistenceAdapterClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		ServiceInterfaceGenerator serviceGenerator = new ServiceInterfaceGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		ServiceImplClassGenerator serviceImplClassGenerator = new ServiceImplClassGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
@@ -184,6 +192,22 @@ public class RESTServerCodeFactory implements CodeFactory {
 				}
 			}
 			for (TableSO table : scheme.getTables()) {
+				ClassSourceModel csm = serviceImplClassGenerator.generate(table, "rest-acf");
+				csm.getPackageModel().setPackageName(
+						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				new File(p).mkdirs();
+				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+				code = code.replace("${base.package.name}", basePackageName);
+				try {
+					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
+							StandardOpenOption.CREATE_NEW);
+					System.out.println(p + "/" + csm.getName() + ".java");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			for (TableSO table : scheme.getTables()) {
 				InterfaceSourceModel ism = crudRepositoryGenerator.generate(table, "rest-acf");
 				if (ism != null) {
 					ism.getPackageModel().setPackageName(
@@ -203,6 +227,24 @@ public class RESTServerCodeFactory implements CodeFactory {
 			}
 			for (TableSO table : scheme.getTables()) {
 				InterfaceSourceModel ism = persistencePortGenerator.generate(table, "rest-acf");
+				if (ism != null) {
+					ism.getPackageModel().setPackageName(
+							ism.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+					String p = path + "/" + ism.getPackageModel().getPackageName().replace(".", "/");
+					new File(p).mkdirs();
+					String code = new ModelToJavaSourceCodeConverter().interfaceSourceModelToJavaSourceCode(ism);
+					code = code.replace("${base.package.name}", basePackageName);
+					try {
+						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes(),
+								StandardOpenOption.CREATE_NEW);
+						System.out.println(p + "/" + ism.getName() + ".java");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			for (TableSO table : scheme.getTables()) {
+				InterfaceSourceModel ism = serviceGenerator.generate(table, "rest-acf");
 				if (ism != null) {
 					ism.getPackageModel().setPackageName(
 							ism.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));

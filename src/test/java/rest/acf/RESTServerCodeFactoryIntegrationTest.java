@@ -230,6 +230,44 @@ public class RESTServerCodeFactoryIntegrationTest {
 		assertEquals(expected.toString(), generated.toString());
 	}
 
+	@Test
+	public void generate_PassADataModel_CreatesCorrectServiceInterfaceFile() throws Exception {
+		String path = "target/test/output";
+		if (new File(path).exists()) {
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+					.forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(path);
+		assertThat(new File(path).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(
+				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "RackService.java")));
+		String generated = new String(
+				Files.readAllBytes(Paths.get(path, "de", "ollie", "library", "service", "RackService.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModel_CreatesCorrectServiceImplClassFile() throws Exception {
+		String path = "target/test/output";
+		if (new File(path).exists()) {
+			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
+					.forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(path);
+		assertThat(new File(path).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(
+				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "impl", "RackServiceImpl.java")));
+		String generated = new String(Files
+				.readAllBytes(Paths.get(path, "de", "ollie", "library", "service", "impl", "RackServiceImpl.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
 	@Ignore
 	@Test
 	public void generate_PassADataModel_CreatesCorrectCityDBOFile() throws Exception {

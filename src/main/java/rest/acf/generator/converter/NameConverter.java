@@ -275,6 +275,34 @@ public class NameConverter {
 	}
 
 	/**
+	 * Converts the name of the passed table service object into a service interface name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a service interface name.
+	 * @return The service interface name for the passed table service object. Passing a "null" value delivers a "null"
+	 *         value also.
+	 */
+	public String tableNameToServiceInterfaceName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "Service";
+	}
+
+	/**
+	 * Converts the name of the passed table service object into a service impl class name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a service impl class name.
+	 * @return The service impl class name for the passed table service object. Passing a "null" value delivers a "null"
+	 *         value also.
+	 */
+	public String tableNameToServiceImplClassName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return tableNameToServiceInterfaceName(tableSO) + "Impl";
+	}
+
+	/**
 	 * Converts the name of the passed table service object into a service object class name.
 	 * 
 	 * @param tableSO The table service object whose name is to convert into a service object class name.
