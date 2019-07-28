@@ -149,6 +149,23 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Adds an attribute for the passed class name to the passed class source model.
+	 * 
+	 * @param csm          The class source model which the attribute is to add to.
+	 * @param className    The class name which an attribute is to ad for.
+	 * @param initialValue An initial value for the attribute.
+	 * @return An optional with the added attribute source model or an empty optional if no attribute source model could
+	 *         be added.
+	 */
+	public Optional<AttributeSourceModel> addAttributeForClassName(ClassSourceModel csm, String className,
+			String initialValue) {
+		AttributeSourceModel asm = new AttributeSourceModel().setName(this.nameConverter.classNameToAttrName(className))
+				.setType(className).setInitialValue(initialValue);
+		csm.getAttributes().add(asm);
+		return Optional.of(asm);
+	}
+
+	/**
 	 * Adds an attribute for the passed column service object to the passed class source model.
 	 * 
 	 * @param csm    The class source model which the attribute is to add to.
@@ -228,7 +245,7 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
-	 * <<<<<<< HEAD Creates a new DTO converter class source model based on the passed table service object.
+	 * Creates a new DTO converter class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.
 	 * @return An interface source model for a DTO converter class based on the passed table service object.
@@ -301,6 +318,25 @@ public class ClassSourceModelUtils {
 	 */
 	public String createPersistencePortPackageNameSuffix() {
 		return "service.persistence.port";
+	}
+
+	/**
+	 * Creates a new REST controller class source model based on the passed table service object.
+	 *
+	 * @param tableSO The table service object which the class source model is to create for.
+	 * @return A class source model for a REST controller class based on the passed table service object.
+	 */
+	public ClassSourceModel createRESTControllerClassSourceModel(TableSO tableSO) {
+		return new ClassSourceModel().setName(this.nameConverter.tableNameToRESTControllerClassName(tableSO));
+	}
+
+	/**
+	 * Returns the package name suffix for the REST controller generated class.
+	 * 
+	 * @return The package name suffix for the REST controller generated class.
+	 */
+	public String createRESTControllerClassPackageNameSuffix() {
+		return "rest.v1.controller";
 	}
 
 	/**

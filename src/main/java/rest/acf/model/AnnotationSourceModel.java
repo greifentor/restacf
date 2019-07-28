@@ -19,6 +19,7 @@ import lombok.experimental.Accessors;
 public class AnnotationSourceModel {
 
 	private String name;
+	private String value;
 	private List<PropertySourceModel<?>> properties = new ArrayList<>();
 
 }
