@@ -19,6 +19,7 @@ import de.ollie.archimedes.alexandrian.service.DatabaseSO;
 import de.ollie.archimedes.alexandrian.service.SchemeSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.ApplicationClassGenerator;
+import rest.acf.generator.ApplicationPropertiesGenerator;
 import rest.acf.generator.converter.DataModelToSOConverter;
 import rest.acf.generator.converter.ModelToJavaSourceCodeConverter;
 import rest.acf.generator.converter.NameConverter;
@@ -98,7 +99,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
 		String basePackageName = this.dataModel.getBasePackageName();
 		createApplicationClass(databaseSO, path, basePackageName);
-		createApplicationProperties(databaseSO, path, basePackageName);
+		createApplicationProperties(databaseSO, path);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
@@ -306,26 +307,16 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	}
 
-	private void createApplicationProperties(DatabaseSO databaseSO, String path, String basePackageName) {
-		NameConverter nameConverter = new NameConverter();
+	private void createApplicationProperties(DatabaseSO databaseSO, String path) {
 		String p = path + "/../resources";
+		String fileName = "application.properties";
 		new File(p).mkdirs();
-		String code = "app.version=@project.version@\n" //
-				+ "\n" //
-				+ "spring.liquibase.change-log=classpath:db/change-log/change-log-master.xml\n" //
-				+ "\n" //
-				+ "spring.jpa.hibernate.ddl-auto=update\n" //
-				+ "\n" //
-				+ "logging.level.root=INFO\n" //
-				+ "\n" //
-				+ "spring.datasource.url=jdbc:hsqldb:mem:" + nameConverter.classNameToAttrName(databaseSO.getName())
-				+ "\n" //
-				+ "spring.datasource.driverClassName=org.hsqldb.jdbc.JDBCDriver\n" //
-				+ "spring.datasource.username=sa\n" //
-				+ "spring.datasource.password=";
+		String code = new ApplicationPropertiesGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter())
+						.generate(databaseSO);
 		try {
-			Files.write(Paths.get(p + "/application.properties"), code.getBytes(), StandardOpenOption.CREATE_NEW);
-			System.out.println(p + "/application.properties");
+			Files.write(Paths.get(p + "/" + fileName), code.getBytes(), StandardOpenOption.CREATE_NEW);
+			System.out.println(p + "/" + fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
