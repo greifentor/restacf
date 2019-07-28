@@ -22,6 +22,7 @@ public class AttributeSourceModel implements AnnotationBearer {
 
 	private String name;
 	private String type;
+	private String initialValue;
 	private Set<ModifierSourceModel> modifiers = new HashSet<>();
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
 

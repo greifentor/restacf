@@ -77,6 +77,8 @@ public class ModelToJavaSourceCodeConverter {
 					first = false;
 				}
 				code += ")";
+			} else if (asm.getValue() != null) {
+				code += "(\"" + asm.getValue() + "\")";
 			}
 			code += "\n";
 		}
@@ -99,7 +101,11 @@ public class ModelToJavaSourceCodeConverter {
 				}
 				code += "\n";
 			}
-			code += "\t" + getModifierString(asm.getModifiers()) + asm.getType() + " " + asm.getName() + ";\n";
+			code += "\t" + getModifierString(asm.getModifiers()) + asm.getType() + " " + asm.getName();
+			if (asm.getInitialValue() != null) {
+				code += " = " + asm.getInitialValue();
+			}
+			code += ";\n";
 		}
 		if (csm.getAttributes().size() > 0) {
 			code += "\n";
@@ -131,6 +137,8 @@ public class ModelToJavaSourceCodeConverter {
 						first = false;
 					}
 					code += ")";
+				} else if (ansm.getValue() != null) {
+					code += "(\"" + ansm.getValue() + "\")";
 				}
 				code += "\n";
 			}
@@ -140,6 +148,24 @@ public class ModelToJavaSourceCodeConverter {
 			for (ParameterSourceModel param : method.getParameters()) {
 				if (!paramStr.isEmpty()) {
 					paramStr += ", ";
+				}
+				for (AnnotationSourceModel ansm : param.getAnnotations()) {
+					code += "@" + ansm.getName();
+					if (!ansm.getProperties().isEmpty()) {
+						code += "(";
+						boolean first = true;
+						for (PropertySourceModel<?> prosm : ansm.getProperties()) {
+							if (!first) {
+								code += ", ";
+							}
+							code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+							first = false;
+						}
+						code += ")";
+					} else if (ansm.getValue() != null) {
+						code += "(\"" + ansm.getValue() + "\")";
+					}
+					code += " ";
 				}
 				paramStr += param.getType() + " " + param.getName();
 			}

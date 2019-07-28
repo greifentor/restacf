@@ -1199,6 +1199,107 @@ public class NameConverterTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void tableNameToRESTControllerClassName_PassTableSOWithEmptyName_ThrowsException() {
+		// Prepare
+		TableSO tableSO = new TableSO().setName("");
+		// Run
+		this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassNullValue_ReturnsNullValue() {
+		assertThat(this.unitUnderTest.tableNameToRESTControllerClassName(null), nullValue());
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSOWithNameCamelCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TestTableRESTController";
+		TableSO tableSO = new TableSO().setName("TestTable");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSOWithNameUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableRESTController";
+		TableSO tableSO = new TableSO().setName("TABLE");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSOWithNameUnderScoreUpperCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRESTController";
+		TableSO tableSO = new TableSO().setName("TABLE_NAME");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSOWithNameUnderScoreLowerCaseOnly_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRESTController";
+		TableSO tableSO = new TableSO().setName("table_name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSOWithNameUnderScoreMixedCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableNameRESTController";
+		TableSO tableSO = new TableSO().setName("Table_Name");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSOWithNameLowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TableRESTController";
+		TableSO tableSO = new TableSO().setName("table");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSONameSingleUpperCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TRESTController";
+		TableSO tableSO = new TableSO().setName("T");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void tableNameToRESTControllerClassName_PassTableSONameSinglelowerCase_ReturnsACorrectDBOName() {
+		// Prepare
+		String expected = "TRESTController";
+		TableSO tableSO = new TableSO().setName("t");
+		// Run
+		String returned = this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void tableNameToServiceImplClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");

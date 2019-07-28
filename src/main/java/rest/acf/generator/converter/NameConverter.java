@@ -275,6 +275,20 @@ public class NameConverter {
 	}
 
 	/**
+	 * Converts the name of the passed table service object into a REST controller class name.
+	 * 
+	 * @param tableSO The table service object whose name is to convert into a REST controller class name.
+	 * @return The REST controller class name for the passed table service object. Passing a "null" value delivers a
+	 *         "null" value also.
+	 */
+	public String tableNameToRESTControllerClassName(TableSO tableSO) {
+		if (tableSO == null) {
+			return null;
+		}
+		return getClassName(tableSO) + "RESTController";
+	}
+
+	/**
 	 * Converts the name of the passed table service object into a service interface name.
 	 * 
 	 * @param tableSO The table service object whose name is to convert into a service interface name.
