@@ -12,7 +12,6 @@ import java.util.Comparator;
 import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -293,23 +292,20 @@ public class RESTServerCodeFactoryIntegrationTest {
 		assertEquals(expected.toString(), generated.toString());
 	}
 
-	@Ignore
 	@Test
-	public void generate_PassADataModel_CreatesCorrectCityDBOFile() throws Exception {
-		String path = "target/test/output";
-		if (new File(path).exists()) {
-			Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).peek(System.out::println)
-					.forEach(File::delete);
+	public void generate_PassADataModel_CreatesCorrectInitialDBXMLFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
 		}
 		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
-		DataModel dm = (Diagramm) reader.read("src/test/resources/TestDataModel.xml");
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
 		this.unitUnderTest.setDataModel(dm);
-		this.unitUnderTest.generate(path);
-		assertThat(new File(path).exists(), equalTo(true));
-		String expected = new String(Files.readAllBytes(
-				Paths.get("src/test/resources/", "de", "ollie", "library", "persistence", "dbo", "CityDBO.java")));
-		String generated = new String(
-				Files.readAllBytes(Paths.get(path, "de", "ollie", "library", "persistence", "dbo", "CityDBO.java")));
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "InitialDB.xml")));
+		String generated = new String(Files.readAllBytes(
+				Paths.get(OUTPUT_PATH, "..", "resources", "db", "change-log", "InitialDB", "InitialDB.xml")));
 		assertEquals(expected.toString(), generated.toString());
 	}
 
