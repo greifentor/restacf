@@ -20,6 +20,7 @@ import de.ollie.archimedes.alexandrian.service.SchemeSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.ApplicationClassGenerator;
 import rest.acf.generator.ApplicationPropertiesGenerator;
+import rest.acf.generator.InitialDBXMLGenerator;
 import rest.acf.generator.converter.DataModelToSOConverter;
 import rest.acf.generator.converter.ModelToJavaSourceCodeConverter;
 import rest.acf.generator.converter.NameConverter;
@@ -100,6 +101,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		String basePackageName = this.dataModel.getBasePackageName();
 		createApplicationClass(databaseSO, path, basePackageName);
 		createApplicationProperties(databaseSO, path);
+		createInitialDBXML(databaseSO, path, "rest-acf");
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
@@ -314,6 +316,21 @@ public class RESTServerCodeFactory implements CodeFactory {
 		String code = new ApplicationPropertiesGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter())
 						.generate(databaseSO);
+		try {
+			Files.write(Paths.get(p + "/" + fileName), code.getBytes(), StandardOpenOption.CREATE_NEW);
+			System.out.println(p + "/" + fileName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void createInitialDBXML(DatabaseSO databaseSO, String path, String authorName) {
+		String p = path + "/../resources/db/change-log/InitialDB";
+		String fileName = "InitialDB.xml";
+		new File(p).mkdirs();
+		String code = new InitialDBXMLGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+				new NameConverter(), new TypeConverter()).generate(databaseSO, authorName);
 		try {
 			Files.write(Paths.get(p + "/" + fileName), code.getBytes(), StandardOpenOption.CREATE_NEW);
 			System.out.println(p + "/" + fileName);

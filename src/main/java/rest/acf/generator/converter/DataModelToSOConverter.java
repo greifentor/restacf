@@ -49,6 +49,7 @@ public class DataModelToSOConverter {
 				cso.setPkMember(cm.isPrimaryKey());
 				cso.setNullable(!cm.isNotNull());
 				cso.setTable(tso);
+				cso.setUnique(cm.isUnique());
 				tso.getColumns().add(cso);
 			}
 			sso.getTables().add(tso);

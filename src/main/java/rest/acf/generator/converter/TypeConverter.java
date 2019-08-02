@@ -65,4 +65,28 @@ public class TypeConverter {
 		return simpleTypeName;
 	}
 
+	/**
+	 * Converts a type service object to an SQL type String.
+	 * 
+	 * @param typeSO The type service object which is to convert.
+	 * @return An SQL type string for the passed type service object or a "null" value if one is passed.
+	 */
+	public String typeSOToSQLTypeString(TypeSO typeSO) {
+		if (typeSO == null) {
+			return null;
+		}
+		if (typeSO.getSqlType() == Types.BIGINT) {
+			return "BIGINT";
+		} else if ((typeSO.getSqlType() == Types.BIT) || (typeSO.getSqlType() == Types.BOOLEAN)) {
+			return "BOOLEAN";
+		} else if (typeSO.getSqlType() == Types.CHAR) {
+			return "CHAR" + (typeSO.getLength() != null ? "(" + typeSO.getLength() + ")" : "");
+		} else if (typeSO.getSqlType() == Types.INTEGER) {
+			return "INT";
+		} else if (typeSO.getSqlType() == Types.VARCHAR) {
+			return "VARCHAR" + (typeSO.getLength() != null ? "(" + typeSO.getLength() + ")" : "");
+		}
+		return "UNKNOWN";
+	}
+
 }

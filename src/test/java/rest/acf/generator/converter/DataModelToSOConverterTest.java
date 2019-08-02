@@ -56,7 +56,7 @@ public class DataModelToSOConverterTest {
 	public void convert_PassADataModel_ReturnsADatabaseSOWithTheDataOfThePassedModel() {
 		// Prepare
 		ColumnSO column0 = new ColumnSO().setName(COLUMN0_NAME).setType(new TypeSO().setSqlType(TYPE_BIGINT))
-				.setNullable(false).setPkMember(true);
+				.setNullable(false).setPkMember(true).setUnique(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN1_NAME)
 				.setType(new TypeSO().setSqlType(TYPE_VARCHAR).setLength(TYPE_VARCHAR_LENGTH)).setNullable(true);
 		ColumnSO column2 = new ColumnSO().setName("Reference").setType(new TypeSO().setSqlType(TYPE_BIGINT))
@@ -86,6 +86,7 @@ public class DataModelToSOConverterTest {
 		when(cm0.getDomain()).thenReturn(domBigInt);
 		when(cm0.isNotNull()).thenReturn(true);
 		when(cm0.isPrimaryKey()).thenReturn(true);
+		when(cm0.isUnique()).thenReturn(true);
 		when(cm1.getName()).thenReturn(COLUMN1_NAME);
 		when(cm1.getDomain()).thenReturn(domVarchar);
 		when(cm1.isNotNull()).thenReturn(false);
