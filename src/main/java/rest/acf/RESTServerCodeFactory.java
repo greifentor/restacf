@@ -330,7 +330,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		String fileName = "InitialDB.xml";
 		new File(p).mkdirs();
 		String code = new InitialDBXMLGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
-				new NameConverter()).generate(databaseSO, authorName);
+				new NameConverter(), new TypeConverter()).generate(databaseSO, authorName);
 		try {
 			Files.write(Paths.get(p + "/" + fileName), code.getBytes(), StandardOpenOption.CREATE_NEW);
 			System.out.println(p + "/" + fileName);

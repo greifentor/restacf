@@ -294,18 +294,19 @@ public class RESTServerCodeFactoryIntegrationTest {
 
 	@Test
 	public void generate_PassADataModel_CreatesCorrectInitialDBXMLFile() throws Exception {
-		if (new File(OUTPUT_PATH).exists()) {
-			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+		String outputPath = "target/test/output";
+		if (new File(outputPath).exists()) {
+			Files.walk(Paths.get(outputPath)).sorted(Comparator.reverseOrder()).map(Path::toFile)
 					.peek(System.out::println).forEach(File::delete);
 		}
 		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
 		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
 		this.unitUnderTest.setDataModel(dm);
-		this.unitUnderTest.generate(OUTPUT_PATH);
-		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		this.unitUnderTest.generate(outputPath);
+		assertThat(new File(outputPath).exists(), equalTo(true));
 		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "InitialDB.xml")));
 		String generated = new String(Files.readAllBytes(
-				Paths.get(OUTPUT_PATH, "..", "resources", "db", "change-log", "InitialDB", "InitialDB.xml")));
+				Paths.get(outputPath, "..", "resources", "db", "change-log", "InitialDB", "InitialDB.xml")));
 		assertEquals(expected.toString(), generated.toString());
 	}
 

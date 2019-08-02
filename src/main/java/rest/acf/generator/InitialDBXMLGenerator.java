@@ -9,6 +9,7 @@ import de.ollie.archimedes.alexandrian.service.DatabaseSO;
 import de.ollie.archimedes.alexandrian.service.SchemeSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import rest.acf.generator.converter.NameConverter;
+import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 
 /**
@@ -23,17 +24,21 @@ public class InitialDBXMLGenerator {
 
 	private final ClassSourceModelUtils classSourceModelUtils;
 	private final NameConverter nameConverter;
+	private final TypeConverter typeConverter;
 
 	/**
 	 * Creates a new Liquibase DB update script file generator with the passed parameters.
 	 *
 	 * @param classSourceModelUtils An access to the class source model utils.
 	 * @param nameConverter         An access to the name converter of the application.
+	 * @param typeConverter         An access to the type converter of the application.
 	 */
-	public InitialDBXMLGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter) {
+	public InitialDBXMLGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
+			TypeConverter typeConverter) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
 		this.nameConverter = nameConverter;
+		this.typeConverter = typeConverter;
 	}
 
 	/**
@@ -76,12 +81,27 @@ public class InitialDBXMLGenerator {
 		String code = "";
 		for (ColumnSO columnSO : columns) {
 			code += "			<column name=\"" + columnSO.getName() //
-					+ "\" type=\"" + columnSO.getType().toString() + "\">\n" //
-					+ "				<constraints nullable=\"" + columnSO.isNullable() //
-					+ "\" primaryKey=\"" + columnSO.isPkMember() + "\"/>\n" //
-					+ "			</column>\n";
+					+ "\" type=\"" + this.typeConverter.typeSOToSQLTypeString(columnSO.getType()) + "\">\n";
+			if (!columnSO.isNullable() || columnSO.isPkMember() || columnSO.isUnique()) {
+				code += "				" + getConstraintsTag(columnSO);
+			}
+			code += "			</column>\n";
 		}
 		return code;
+	}
+
+	private String getConstraintsTag(ColumnSO columnSO) {
+		StringBuilder sb = new StringBuilder();
+		if (!columnSO.isNullable()) {
+			sb.append(" nullable=\"false\"");
+		}
+		if (columnSO.isPkMember()) {
+			sb.append(" primaryKey=\"true\"");
+		}
+		if (columnSO.isUnique()) {
+			sb.append(" unique=\"true\"");
+		}
+		return sb.length() > 0 ? "<constraints" + sb.toString() + "/>\n" : "";
 	}
 
 }

@@ -21,6 +21,7 @@ public class ColumnSO {
 	private TypeSO type;
 	private boolean nullable;
 	private boolean pkMember;
+	private boolean unique;
 	@NonNull
 	private TableSO table;
 
@@ -48,9 +49,9 @@ public class ColumnSO {
 
 	@Override
 	public String toString() {
-		return "ColumnSO(name=" + (name != null ? name : null) + ", type=" + (type != null ? type : null)
-				+ ", nullable=" + nullable + ", pkMember=" + pkMember + ", table="
-				+ (table != null ? table.getName() : null) + ")";
+		return "ColumnSO(name=" + (this.name != null ? this.name : null) + ", type="
+				+ (this.type != null ? this.type : null) + ", nullable=" + this.nullable + ", pkMember=" + this.pkMember
+				+ ", table=" + (this.table != null ? this.table.getName() : null) + ", unique=" + this.unique + ")";
 	}
 
 }

@@ -45,7 +45,7 @@ public class ColumnSOTest {
 
 	private ColumnSO createFullyLoadedColumnSO() {
 		ColumnSO column0 = new ColumnSO().setName(COLUMN0_NAME).setType(new TypeSO().setSqlType(TYPE_BIGINT))
-				.setNullable(false).setPkMember(true);
+				.setNullable(false).setPkMember(true).setUnique(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN1_NAME)
 				.setType(new TypeSO().setSqlType(TYPE_VARCHAR).setLength(TYPE_VARCHAR_LENGTH)).setNullable(true);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(Arrays.asList(column0, column1));
@@ -160,7 +160,8 @@ public class ColumnSOTest {
 	public void toString_ReturnsACorrectStringRepresentation() {
 		// Prepare
 		String expected = "ColumnSO(name=" + COLUMN0_NAME + ", type=TypeSO(sqlType=" + TYPE_BIGINT
-				+ ", length=null, precision=null), nullable=false, pkMember=true, table=" + TABLE_NAME + ")";
+				+ ", length=null, precision=null), nullable=false, pkMember=true, table=" + TABLE_NAME
+				+ ", unique=true)";
 		// Run
 		String returned = createFullyLoadedColumnSO().toString();
 		// Check

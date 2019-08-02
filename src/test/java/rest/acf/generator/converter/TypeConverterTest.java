@@ -23,6 +23,8 @@ import de.ollie.archimedes.alexandrian.service.TypeSO;
 @RunWith(MockitoJUnitRunner.class)
 public class TypeConverterTest {
 
+	private static final String UNKNOWN = "UNKNOWN";
+
 	@InjectMocks
 	private TypeConverter unitUnderTest;
 
@@ -753,6 +755,109 @@ public class TypeConverterTest {
 		TypeSO typeSO = new TypeSO().setSqlType(Types.VARCHAR).setLength(50);
 		// Run
 		String returned = this.unitUnderTest.typeSOToTypeString(typeSO, true);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassANullValue_ReturnsANullValue() {
+		// Prepare
+		String expected = null;
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(null);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnArrayTypeSO_ReturnsUNKNOWN() {
+		// Prepare
+		String expected = UNKNOWN;
+		int[] unknownTypes = new int[] { Types.ARRAY, Types.BINARY, Types.BLOB, Types.CLOB, Types.DATALINK };
+		for (int i : unknownTypes) {
+			TypeSO type = new TypeSO().setSqlType(i);
+			// Run
+			String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+			// Check
+			assertThat(returned, equalTo(expected));
+		}
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnBigIntTypeSO_ReturnsAnSQLBigInt() {
+		// Prepare
+		String expected = "BIGINT";
+		TypeSO type = new TypeSO().setSqlType(Types.BIGINT);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnBitTypeSO_ReturnsAnSQLBoolean() {
+		// Prepare
+		String expected = "BOOLEAN";
+		TypeSO type = new TypeSO().setSqlType(Types.BIT);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnBooleanTypeSO_ReturnsAnSQLBoolean() {
+		// Prepare
+		String expected = "BOOLEAN";
+		TypeSO type = new TypeSO().setSqlType(Types.BOOLEAN);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnCharTypeSO_ReturnsAnSQLChar() {
+		// Prepare
+		String expected = "CHAR";
+		TypeSO type = new TypeSO().setSqlType(Types.CHAR);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnCharWithLengthTypeSO_ReturnsAnSQLCharWithLength() {
+		// Prepare
+		int length = 42;
+		String expected = "CHAR(" + length + ")";
+		TypeSO type = new TypeSO().setSqlType(Types.CHAR).setLength(length);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnIntegerTypeSO_ReturnsAnSQLInteger() {
+		// Prepare
+		String expected = "INT";
+		TypeSO type = new TypeSO().setSqlType(Types.INTEGER);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
+		// Check
+		assertThat(returned, equalTo(expected));
+	}
+
+	@Test
+	public void typeSOToSQLTypeString_PassAnVarcharWithLengthTypeSO_ReturnsAnSQLCharWithLength() {
+		// Prepare
+		int length = 42;
+		String expected = "VARCHAR(" + length + ")";
+		TypeSO type = new TypeSO().setSqlType(Types.VARCHAR).setLength(length);
+		// Run
+		String returned = this.unitUnderTest.typeSOToSQLTypeString(type);
 		// Check
 		assertThat(returned, equalTo(expected));
 	}
