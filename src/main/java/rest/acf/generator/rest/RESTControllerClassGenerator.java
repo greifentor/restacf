@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
+import rest.acf.ClassCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -27,7 +28,7 @@ import rest.acf.model.ParameterSourceModel;
  * @author ollie
  *
  */
-public class RESTControllerClassGenerator {
+public class RESTControllerClassGenerator implements ClassCodeFactory {
 
 	private static final Logger LOG = Logger.getLogger(RESTControllerClassGenerator.class);
 
@@ -35,13 +36,6 @@ public class RESTControllerClassGenerator {
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
-	/**
-	 * Create a new REST controller classes generator with the passed parameters.
-	 *
-	 * @param classSourceModelUtils An access to the class source model utils.
-	 * @param nameConverter         An access to the name converter of the application.
-	 * @param typeConverter         An access to the type converter of the application.
-	 */
 	public RESTControllerClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
 		super();
@@ -50,13 +44,7 @@ public class RESTControllerClassGenerator {
 		this.typeConverter = typeConverter;
 	}
 
-	/**
-	 * Generates a REST controller classes for the passed database table service object.
-	 * 
-	 * @param tableSO    The database table service object which the class is to create for.
-	 * @param authorName The name which should be inserted as author name.
-	 * @returns A REST controller classes for passed database table or a "null" value if a "null" value is passed.
-	 */
+	@Override
 	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
 			return null;

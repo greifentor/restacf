@@ -2,6 +2,7 @@ package rest.acf.generator.service;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
+import rest.acf.ClassCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -16,19 +17,12 @@ import rest.acf.model.PackageSourceModel;
  * @author ollie
  *
  */
-public class SOClassGenerator {
+public class SOClassGenerator implements ClassCodeFactory {
 
 	private final ClassSourceModelUtils classSourceModelUtils;
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
-	/**
-	 * Create a new service object class generator with the passed parameters.
-	 *
-	 * @param classSourceModelUtils An access to the class source model utils.
-	 * @param nameConverter         An access to the name converter of the application.
-	 * @param typeConverter         An access to the type converter of the application.
-	 */
 	public SOClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
 			TypeConverter typeConverter) {
 		super();
@@ -37,13 +31,7 @@ public class SOClassGenerator {
 		this.typeConverter = typeConverter;
 	}
 
-	/**
-	 * Generates a service object class for the passed database table service object.
-	 * 
-	 * @param tableSO    The database table service object which the class is to create for.
-	 * @param authorName The name which should be inserted as author name.
-	 * @returns A JPA mapping class for passed database table or a "null" value if a "null" value is passed.
-	 */
+	@Override
 	public ClassSourceModel generate(TableSO tableSO, String authorName) {
 		if (tableSO == null) {
 			return null;

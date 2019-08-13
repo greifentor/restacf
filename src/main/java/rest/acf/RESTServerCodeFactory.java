@@ -3,7 +3,6 @@ package rest.acf;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,37 +63,31 @@ public class RESTServerCodeFactory implements CodeFactory {
 	public boolean generate(String path) {
 		LOG.info("Started code generation");
 		new File(path).mkdirs();
-		DBOJPAClassGenerator jpaClassGenerator = new DBOJPAClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		DBOConverterClassGenerator dboConverterClassGenerator = new DBOConverterClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		DTOClassGenerator dtoClassGenerator = new DTOClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		DTOConverterClassGenerator dtoConverterClassGenerator = new DTOConverterClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		SOClassGenerator soClassGenerator = new SOClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
+		ClassCodeFactory[] classCodeFactories = new ClassCodeFactory[] {
+				new DBOJPAClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()),
+				new DBOConverterClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()),
+				new DTOClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()),
+				new DTOConverterClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()),
+				new SOClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()),
+				new PersistenceAdapterClassGenerator(
+						new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+						new TypeConverter()),
+				new RESTControllerClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()),
+				new ServiceImplClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+						new NameConverter(), new TypeConverter()) };
 		CRUDRepositoryInterfaceGenerator crudRepositoryGenerator = new CRUDRepositoryInterfaceGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		PersistencePortInterfaceGenerator persistencePortGenerator = new PersistencePortInterfaceGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
-		PersistenceAdapterClassGenerator persistenceAdapterGenerator = new PersistenceAdapterClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		RESTControllerClassGenerator restControllerClassGenerator = new RESTControllerClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
 		ServiceInterfaceGenerator serviceGenerator = new ServiceInterfaceGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
-		ServiceImplClassGenerator serviceImplClassGenerator = new ServiceImplClassGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		DatabaseSO databaseSO = new DataModelToSOConverter().convert(this.dataModel);
@@ -104,131 +97,20 @@ public class RESTServerCodeFactory implements CodeFactory {
 		createInitialDBXML(databaseSO, path, "rest-acf");
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = jpaClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = dboConverterClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = soClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = dtoClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = dtoConverterClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = persistenceAdapterGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = serviceImplClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			for (TableSO table : scheme.getTables()) {
-				ClassSourceModel csm = restControllerClassGenerator.generate(table, "rest-acf");
-				csm.getPackageModel().setPackageName(
-						csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
-				String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
-				new File(p).mkdirs();
-				String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
-				code = code.replace("${base.package.name}", basePackageName);
-				try {
-					Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(),
-							StandardOpenOption.CREATE_NEW);
-					System.out.println(p + "/" + csm.getName() + ".java");
-				} catch (Exception e) {
-					e.printStackTrace();
+				for (ClassCodeFactory ccf : classCodeFactories) {
+					ClassSourceModel csm = ccf.generate(table, "rest-acf");
+					csm.getPackageModel().setPackageName(
+							csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+					String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+					new File(p).mkdirs();
+					String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+					code = code.replace("${base.package.name}", basePackageName);
+					try {
+						Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes());
+						System.out.println(p + "/" + csm.getName() + ".java");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			for (TableSO table : scheme.getTables()) {
@@ -241,8 +123,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 					String code = new ModelToJavaSourceCodeConverter().interfaceSourceModelToJavaSourceCode(ism);
 					code = code.replace("${base.package.name}", basePackageName);
 					try {
-						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes(),
-								StandardOpenOption.CREATE_NEW);
+						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes());
 						System.out.println(p + "/" + ism.getName() + ".java");
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -259,8 +140,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 					String code = new ModelToJavaSourceCodeConverter().interfaceSourceModelToJavaSourceCode(ism);
 					code = code.replace("${base.package.name}", basePackageName);
 					try {
-						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes(),
-								StandardOpenOption.CREATE_NEW);
+						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes());
 						System.out.println(p + "/" + ism.getName() + ".java");
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -277,8 +157,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 					String code = new ModelToJavaSourceCodeConverter().interfaceSourceModelToJavaSourceCode(ism);
 					code = code.replace("${base.package.name}", basePackageName);
 					try {
-						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes(),
-								StandardOpenOption.CREATE_NEW);
+						Files.write(Paths.get(p + "/" + ism.getName() + ".java"), code.getBytes());
 						System.out.println(p + "/" + ism.getName() + ".java");
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -301,7 +180,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
 		code = code.replace("${base.package.name}", basePackageName);
 		try {
-			Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes(), StandardOpenOption.CREATE_NEW);
+			Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes());
 			System.out.println(p + "/" + csm.getName() + ".java");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -317,7 +196,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter())
 						.generate(databaseSO);
 		try {
-			Files.write(Paths.get(p + "/" + fileName), code.getBytes(), StandardOpenOption.CREATE_NEW);
+			Files.write(Paths.get(p + "/" + fileName), code.getBytes());
 			System.out.println(p + "/" + fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -332,7 +211,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		String code = new InitialDBXMLGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
 				new NameConverter(), new TypeConverter()).generate(databaseSO, authorName);
 		try {
-			Files.write(Paths.get(p + "/" + fileName), code.getBytes(), StandardOpenOption.CREATE_NEW);
+			Files.write(Paths.get(p + "/" + fileName), code.getBytes());
 			System.out.println(p + "/" + fileName);
 		} catch (Exception e) {
 			e.printStackTrace();
