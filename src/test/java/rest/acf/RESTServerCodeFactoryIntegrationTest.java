@@ -310,4 +310,22 @@ public class RESTServerCodeFactoryIntegrationTest {
 		assertEquals(expected.toString(), generated.toString());
 	}
 
+	@Test
+	public void generate_PassADataModel_CreatesCorrectPersistenceExceptionClassFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "de", "ollie", "library",
+				"service", "persistence", "exception", "PersistenceException.java")));
+		String generated = new String(Files.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service",
+				"persistence", "exception", "PersistenceException.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
 }

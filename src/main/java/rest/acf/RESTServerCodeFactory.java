@@ -31,6 +31,7 @@ import rest.acf.generator.persistence.PersistenceAdapterClassGenerator;
 import rest.acf.generator.rest.DTOClassGenerator;
 import rest.acf.generator.rest.DTOConverterClassGenerator;
 import rest.acf.generator.rest.RESTControllerClassGenerator;
+import rest.acf.generator.service.PersistenceExceptionClassGenerator;
 import rest.acf.generator.service.PersistencePortInterfaceGenerator;
 import rest.acf.generator.service.SOClassGenerator;
 import rest.acf.generator.service.ServiceImplClassGenerator;
@@ -84,6 +85,9 @@ public class RESTServerCodeFactory implements CodeFactory {
 		CRUDRepositoryInterfaceGenerator crudRepositoryGenerator = new CRUDRepositoryInterfaceGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
+		PersistenceExceptionClassGenerator persistenceExceptionGenerator = new PersistenceExceptionClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
 		PersistencePortInterfaceGenerator persistencePortGenerator = new PersistencePortInterfaceGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
@@ -95,6 +99,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		createApplicationClass(databaseSO, path, basePackageName);
 		createApplicationProperties(databaseSO, path);
 		createInitialDBXML(databaseSO, path, "rest-acf");
+		createPersistenceExceptionClass(path, "rest-acf", basePackageName);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				for (ClassCodeFactory ccf : classCodeFactories) {
@@ -185,7 +190,6 @@ public class RESTServerCodeFactory implements CodeFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void createApplicationProperties(DatabaseSO databaseSO, String path) {
@@ -201,7 +205,6 @@ public class RESTServerCodeFactory implements CodeFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void createInitialDBXML(DatabaseSO databaseSO, String path, String authorName) {
@@ -216,7 +219,25 @@ public class RESTServerCodeFactory implements CodeFactory {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	private void createPersistenceExceptionClass(String path, String authorName, String basePackageName) {
+		PersistenceExceptionClassGenerator persistenceExceptionClassGenerator = new PersistenceExceptionClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		ClassSourceModel csm = persistenceExceptionClassGenerator.generate("rest-acf");
+		csm.getPackageModel().setPackageName(
+				csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+		String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+		new File(p).mkdirs();
+		String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+		code = code.replace("${base.package.name}", basePackageName);
+		try {
+			Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes());
+			System.out.println(p + "/" + csm.getName() + ".java");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

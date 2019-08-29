@@ -22,4 +22,11 @@ public class RackDBOConverter {
 		return new RackSO().setId(dbo.getId()).setName(dbo.getName());
 	}
 
+	public RackDBO convertSOToDBO(RackSO so) {
+		if (so == null) {
+			return null;
+		}
+		return new RackDBO().setId(so.getId()).setName(so.getName());
+	}
+
 }

@@ -7,6 +7,7 @@ import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ConstructorSourceModel;
+import rest.acf.model.EnumTypeSourceModel;
 import rest.acf.model.ExtensionSourceModel;
 import rest.acf.model.ImportSourceModel;
 import rest.acf.model.InterfaceSourceModel;
@@ -15,6 +16,7 @@ import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
 import rest.acf.model.PropertySourceModel;
+import rest.acf.model.ThrownExceptionSourceModel;
 
 /**
  * A converter to convert source models to Java source code.
@@ -82,8 +84,21 @@ public class ModelToJavaSourceCodeConverter {
 			}
 			code += "\n";
 		}
-		code += "public class " + csm.getName() + getImplementsString(csm.getInterfaces()) + " {\n";
+		code += "public class " + csm.getName() + createExtendsStatement(csm.getExtendsModel())
+				+ getImplementsString(csm.getInterfaces()) + " {\n";
 		code += "\n";
+		for (EnumTypeSourceModel etsm : csm.getEnums()) {
+			String enumCode = "\t" + getModifierString(etsm.getModifiers()) + "enum " + etsm.getName();
+			String ids = "";
+			for (String id : etsm.getIdentifiers()) {
+				if (!ids.isEmpty()) {
+					ids += ", ";
+				}
+				ids += id;
+			}
+			enumCode += " { " + ids + " }\n\n";
+			code += enumCode;
+		}
 		for (AttributeSourceModel asm : csm.getAttributes()) {
 			for (AnnotationSourceModel ansm : asm.getAnnotations()) {
 				code += "\t@" + ansm.getName();
@@ -170,7 +185,17 @@ public class ModelToJavaSourceCodeConverter {
 				paramStr += param.getType() + " " + param.getName();
 			}
 			code += paramStr;
-			code += ") {\n";
+			code += ")";
+			String thrownExceptions = "";
+			for (ThrownExceptionSourceModel e : method.getThrownExceptions()) {
+				if (!thrownExceptions.isEmpty()) {
+					thrownExceptions += ", ";
+				} else {
+					thrownExceptions += " throws ";
+				}
+				thrownExceptions += e.getName();
+			}
+			code += thrownExceptions + " {\n";
 			code += method.getCode() + "\n";
 		}
 		code += "}";
@@ -280,8 +305,11 @@ public class ModelToJavaSourceCodeConverter {
 		code += "public interface " + insm.getName() + createExtendsStatement(insm.getExtendsModel()) + " {\n";
 		boolean hasMethod = false;
 		for (MethodSourceModel method : insm.getMethods()) {
+			if (!hasMethod) {
+				code += "\n";
+			}
+			code += "\t" + method.getReturnType() + " " + method.getName() + "(";
 			hasMethod = true;
-			code += "\n\t" + method.getReturnType() + " " + method.getName() + "(";
 			String paramStr = "";
 			for (ParameterSourceModel param : method.getParameters()) {
 				if (!paramStr.isEmpty()) {
@@ -290,7 +318,17 @@ public class ModelToJavaSourceCodeConverter {
 				paramStr += param.getType() + " " + param.getName();
 			}
 			code += paramStr;
-			code += ");\n\n";
+			code += ")";
+			String thrownExceptions = "";
+			for (ThrownExceptionSourceModel e : method.getThrownExceptions()) {
+				if (!thrownExceptions.isEmpty()) {
+					thrownExceptions += ", ";
+				} else {
+					thrownExceptions += " throws ";
+				}
+				thrownExceptions += e.getName();
+			}
+			code += thrownExceptions + ";\n\n";
 		}
 		code += "}";
 		return code;

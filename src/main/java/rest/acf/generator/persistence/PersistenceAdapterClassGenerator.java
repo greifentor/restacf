@@ -57,6 +57,10 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 		}
 		String dboClassName = this.classSourceModelUtils.createJPAModelClassSourceModel(tableSO).getName();
 		String dboConverterClassName = this.classSourceModelUtils.createDBOConverterClassSourceModel(tableSO).getName();
+		String persistenceExceptionClassName = this.classSourceModelUtils.createPersistenceExceptionClassSourceModel()
+				.getName();
+		String persistenceExceptionPackageName = this.classSourceModelUtils
+				.createPersistenceExceptionPackageNameSuffix();
 		String persistenceClassName = this.classSourceModelUtils.createPersistencePortInterfaceSourceModel(tableSO)
 				.getName();
 		String repositoryClassName = this.classSourceModelUtils.createCRUDRepitoryInterfaceSourceModel(tableSO)
@@ -76,6 +80,8 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 				dboConverterClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + dboPackageName, dboClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + repositoryPackageName, repositoryClassName);
+		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + persistenceExceptionPackageName,
+				persistenceExceptionClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + persistencePortPackageName,
 				persistenceClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + soPackageName, soClassName);
@@ -111,19 +117,8 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 					+ "\t}\n";
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
-			MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
-			methodFindById.addModifier(ModifierSourceModel.PUBLIC);
-			methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
-			methodFindById.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
-			methodFindById.setReturnType("Optional<" + soClassName + ">");
-			methodFindById.setCode( //
-					"\t\tOptional<" + dboClassName + "> dbo = this." + repositoryAttrName + ".findById(id);\n" //
-							+ "\t\tif (dbo.isEmpty()) {\n" //
-							+ "\t\t\treturn Optional.empty();\n" //
-							+ "\t\t}\n"//
-							+ "\t\treturn Optional.of(this." + dboConverterAttrName + ".convertDBOToSO(dbo.get()));\n" //
-							+ "\t}\n");
-			csm.getMethods().add(methodFindById);
+			csm.getMethods().add(createFindById(soClassName, dboClassName, repositoryAttrName, dboConverterAttrName));
+			csm.getMethods().add(createSave(soClassName, dboClassName, repositoryAttrName, dboConverterAttrName));
 		}
 		return csm;
 	}
@@ -136,6 +131,47 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 			}
 		}
 		return pkMembers;
+	}
+
+	private MethodSourceModel createFindById(String soClassName, String dboClassName, String repositoryAttrName,
+			String dboConverterAttrName) {
+		MethodSourceModel msm = new MethodSourceModel().setName("findById");
+		msm.addModifier(ModifierSourceModel.PUBLIC);
+		msm.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
+		msm.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
+		msm.setReturnType("Optional<" + soClassName + ">");
+		msm.setCode( //
+				"\t\ttry {\n" //
+						+ "\t\t\tOptional<" + dboClassName + "> dbo = this." + repositoryAttrName + ".findById(id);\n" //
+						+ "\t\t\tif (dbo.isEmpty()) {\n" //
+						+ "\t\t\t\treturn Optional.empty();\n" //
+						+ "\t\t\t}\n"//
+						+ "\t\t\treturn Optional.of(this." + dboConverterAttrName + ".convertDBOToSO(dbo.get()));\n" //
+						+ "\t\t} catch (Exception e) {\n" //
+						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.ReadError, " //
+						+ "\"error while finding by id: \" + id, e);\n" //
+						+ "\t\t}\n" //
+						+ "\t}\n");
+		return msm;
+	}
+
+	private MethodSourceModel createSave(String soClassName, String dboClassName, String repositoryAttrName,
+			String dboConverterAttrName) {
+		MethodSourceModel msm = new MethodSourceModel().setName("save");
+		msm.addModifier(ModifierSourceModel.PUBLIC);
+		msm.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
+		msm.getParameters().add(new ParameterSourceModel().setName("so").setType(soClassName));
+		msm.setReturnType("void");
+		msm.setCode( //
+				"\t\ttry {\n" //
+						+ "\t\t\t" + dboClassName + " dbo = this." + dboConverterAttrName + ".convertSOToDBO(so);\n" //
+						+ "\t\t\tthis.rackRepository.save(dbo);\n" //
+						+ "\t\t} catch (Exception e) {\n" //
+						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
+						+ "\"error while saving: \" + so, e);\n" //
+						+ "\t\t}\n" //
+						+ "\t}\n");
+		return msm;
 	}
 
 }

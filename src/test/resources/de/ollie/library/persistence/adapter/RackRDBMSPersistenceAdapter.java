@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import de.ollie.library.persistence.converter.RackDBOConverter;
 import de.ollie.library.persistence.dbo.RackDBO;
 import de.ollie.library.persistence.repository.RackRepository;
+import de.ollie.library.service.persistence.exception.PersistenceException;
 import de.ollie.library.service.persistence.port.RackPersistencePort;
 import de.ollie.library.service.so.RackSO;
 
@@ -31,11 +32,25 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 
 	@Override
 	public Optional<RackSO> findById(long id) {
-		Optional<RackDBO> dbo = this.rackRepository.findById(id);
-		if (dbo.isEmpty()) {
-			return Optional.empty();
+		try {
+			Optional<RackDBO> dbo = this.rackRepository.findById(id);
+			if (dbo.isEmpty()) {
+				return Optional.empty();
+			}
+			return Optional.of(this.rackDBOConverter.convertDBOToSO(dbo.get()));
+		} catch (Exception e) {
+			throw new PersistenceException(PersistenceException.Type.ReadError, "error while finding by id: " + id, e);
 		}
-		return Optional.of(this.rackDBOConverter.convertDBOToSO(dbo.get()));
+	}
+
+	@Override
+	public void save(RackSO so) {
+		try {
+			RackDBO dbo = this.rackDBOConverter.convertSOToDBO(so);
+			this.rackRepository.save(dbo);
+		} catch (Exception e) {
+			throw new PersistenceException(PersistenceException.Type.WriteError, "error while saving: " + so, e);
+		}
 	}
 
 }

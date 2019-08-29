@@ -15,6 +15,7 @@ import rest.acf.model.InterfaceSourceModel;
 import rest.acf.model.MethodSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
+import rest.acf.model.ThrownExceptionSourceModel;
 
 /**
  * A generator for persistence port interfaces.
@@ -62,11 +63,17 @@ public class PersistencePortInterfaceGenerator {
 			return null;
 		}
 		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
+		String persistenceExceptionClassName = this.classSourceModelUtils.createPersistenceExceptionClassSourceModel()
+				.getName();
 		String soClassPackageName = this.classSourceModelUtils.createSOPackageNameSuffix();
+		String persistenceExceptionPackageName = this.classSourceModelUtils
+				.createPersistenceExceptionPackageNameSuffix();
 		InterfaceSourceModel ism = this.classSourceModelUtils.createPersistencePortInterfaceSourceModel(tableSO);
 		ism.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createPersistencePortPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(ism, "java.util", "Optional");
+		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + persistenceExceptionPackageName,
+				persistenceExceptionClassName);
 		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + soClassPackageName, soClassName);
 		ism.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * An interface for " + tableSO.getName().toLowerCase() + " persistence ports.\n" //
@@ -75,10 +82,8 @@ public class PersistencePortInterfaceGenerator {
 				+ " *\n" //
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
-		MethodSourceModel msm = new MethodSourceModel().setName("findById")
-				.setReturnType("Optional<" + soClassName + ">");
-		msm.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
-		ism.getMethods().add(msm);
+		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
+		ism.getMethods().add(createSave(soClassName, persistenceExceptionClassName));
 		return ism;
 	}
 
@@ -90,6 +95,21 @@ public class PersistencePortInterfaceGenerator {
 			}
 		}
 		return pkMembers;
+	}
+
+	private MethodSourceModel createFindById(String soClassName, String persistenceExceptionClassName) {
+		MethodSourceModel msm = new MethodSourceModel().setName("findById")
+				.setReturnType("Optional<" + soClassName + ">");
+		msm.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
+		msm.getThrownExceptions().add(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
+		return msm;
+	}
+
+	private MethodSourceModel createSave(String soClassName, String persistenceExceptionClassName) {
+		MethodSourceModel msm = new MethodSourceModel().setName("save").setReturnType("void");
+		msm.getParameters().add(new ParameterSourceModel().setName("so").setType(soClassName));
+		msm.getThrownExceptions().add(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
+		return msm;
 	}
 
 }

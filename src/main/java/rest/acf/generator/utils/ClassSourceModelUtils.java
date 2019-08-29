@@ -302,6 +302,24 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Returns the package name suffix for the persistence exception generated class.
+	 * 
+	 * @return The package name suffix for the persistence exception generated class.
+	 */
+	public String createPersistenceExceptionPackageNameSuffix() {
+		return "service.persistence.exception";
+	}
+
+	/**
+	 * Creates a new persistence exception class source model.
+	 *
+	 * @return A new persistence exception class source model.
+	 */
+	public ClassSourceModel createPersistenceExceptionClassSourceModel() {
+		return new ClassSourceModel().setName("PersistenceException");
+	}
+
+	/**
 	 * Creates a new persistence port class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.

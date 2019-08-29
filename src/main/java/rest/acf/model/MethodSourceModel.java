@@ -26,6 +26,7 @@ public class MethodSourceModel implements AnnotationBearer {
 	private List<ParameterSourceModel> parameters = new ArrayList<>();
 	private List<AnnotationSourceModel> annotations = new ArrayList<>();
 	private Set<ModifierSourceModel> modifiers = new HashSet<>();
+	private Set<ThrownExceptionSourceModel> thrownExceptions = new HashSet<>();
 
 	public MethodSourceModel addModifier(ModifierSourceModel... modifiers) {
 		for (ModifierSourceModel msm : modifiers) {
