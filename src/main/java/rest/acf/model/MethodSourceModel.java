@@ -28,9 +28,30 @@ public class MethodSourceModel implements AnnotationBearer {
 	private Set<ModifierSourceModel> modifiers = new HashSet<>();
 	private Set<ThrownExceptionSourceModel> thrownExceptions = new HashSet<>();
 
-	public MethodSourceModel addModifier(ModifierSourceModel... modifiers) {
+	public MethodSourceModel addAnnotations(AnnotationSourceModel... annotations) {
+		for (AnnotationSourceModel asm : annotations) {
+			this.annotations.add(asm);
+		}
+		return this;
+	}
+
+	public MethodSourceModel addModifiers(ModifierSourceModel... modifiers) {
 		for (ModifierSourceModel msm : modifiers) {
 			this.modifiers.add(msm);
+		}
+		return this;
+	}
+
+	public MethodSourceModel addParameters(ParameterSourceModel... parameters) {
+		for (ParameterSourceModel psm : parameters) {
+			this.parameters.add(psm);
+		}
+		return this;
+	}
+
+	public MethodSourceModel addThrownExceptions(ThrownExceptionSourceModel... thrownExceptions) {
+		for (ThrownExceptionSourceModel tesm : thrownExceptions) {
+			this.thrownExceptions.add(tesm);
 		}
 		return this;
 	}

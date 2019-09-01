@@ -101,7 +101,7 @@ public class PersistenceExceptionClassGenerator {
 
 	private MethodSourceModel createGetType() {
 		MethodSourceModel msm = new MethodSourceModel().setName("getType");
-		msm.addModifier(ModifierSourceModel.PUBLIC);
+		msm.addModifiers(ModifierSourceModel.PUBLIC);
 		msm.setReturnType("Type");
 		msm.setCode("\t\treturn this.type;\n" //
 				+ "\t}\n");

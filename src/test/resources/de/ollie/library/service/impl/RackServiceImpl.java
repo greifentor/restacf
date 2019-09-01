@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import de.ollie.library.service.RackService;
+import de.ollie.library.service.persistence.exception.PersistenceException;
 import de.ollie.library.service.persistence.port.RackPersistencePort;
 import de.ollie.library.service.so.RackSO;
 
@@ -26,8 +27,13 @@ public class RackServiceImpl implements RackService {
 	}
 
 	@Override
-	public Optional<RackSO> findById(long id) {
+	public Optional<RackSO> findById(long id) throws PersistenceException {
 		return this.rackPersistencePort.findById(id);
+	}
+
+	@Override
+	public void save(RackSO rack) throws PersistenceException {
+		this.rackPersistencePort.save(rack);
 	}
 
 }

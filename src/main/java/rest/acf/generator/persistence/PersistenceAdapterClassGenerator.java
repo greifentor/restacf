@@ -22,6 +22,7 @@ import rest.acf.model.MethodSourceModel;
 import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
+import rest.acf.model.ThrownExceptionSourceModel;
 
 /**
  * A generator for persistence adapter classes.
@@ -136,10 +137,11 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 	private MethodSourceModel createFindById(String soClassName, String dboClassName, String repositoryAttrName,
 			String dboConverterAttrName) {
 		MethodSourceModel msm = new MethodSourceModel().setName("findById");
-		msm.addModifier(ModifierSourceModel.PUBLIC);
+		msm.addModifiers(ModifierSourceModel.PUBLIC);
 		msm.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
 		msm.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
 		msm.setReturnType("Optional<" + soClassName + ">");
+		msm.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException"));
 		msm.setCode( //
 				"\t\ttry {\n" //
 						+ "\t\t\tOptional<" + dboClassName + "> dbo = this." + repositoryAttrName + ".findById(id);\n" //
@@ -158,10 +160,11 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 	private MethodSourceModel createSave(String soClassName, String dboClassName, String repositoryAttrName,
 			String dboConverterAttrName) {
 		MethodSourceModel msm = new MethodSourceModel().setName("save");
-		msm.addModifier(ModifierSourceModel.PUBLIC);
+		msm.addModifiers(ModifierSourceModel.PUBLIC);
 		msm.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
 		msm.getParameters().add(new ParameterSourceModel().setName("so").setType(soClassName));
 		msm.setReturnType("void");
+		msm.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException"));
 		msm.setCode( //
 				"\t\ttry {\n" //
 						+ "\t\t\t" + dboClassName + " dbo = this." + dboConverterAttrName + ".convertSOToDBO(so);\n" //

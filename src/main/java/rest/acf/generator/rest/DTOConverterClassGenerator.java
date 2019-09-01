@@ -60,6 +60,13 @@ public class DTOConverterClassGenerator implements ClassCodeFactory {
 				+ " *\n" //
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
+		csm.getMethods().add(createConvertSOToDTO(dtoClassName, soClassName, tableSO, csm));
+		csm.getMethods().add(createConvertDTOToSO(dtoClassName, soClassName, tableSO, csm));
+		return csm;
+	}
+
+	private MethodSourceModel createConvertSOToDTO(String dtoClassName, String soClassName, TableSO tableSO,
+			ClassSourceModel csm) {
 		StringBuilder code = new StringBuilder("\t\tif (so == null) {\n");
 		code.append("\t\t\treturn null;\n");
 		code.append("\t\t}\n");
@@ -84,13 +91,46 @@ public class DTOConverterClassGenerator implements ClassCodeFactory {
 		}
 		code.append(";\n");
 		code.append("\t}\n");
-		csm.getMethods().add(new MethodSourceModel() //
-				.addModifier(ModifierSourceModel.PUBLIC) //
+		return new MethodSourceModel() //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.setReturnType(dtoClassName) //
 				.setName("convertSOToDTO") //
 				.setParameters(Arrays.asList(new ParameterSourceModel().setName("so").setType(soClassName))) //
-				.setCode(code.toString()));
-		return csm;
+				.setCode(code.toString());
+	}
+
+	private MethodSourceModel createConvertDTOToSO(String dtoClassName, String soClassName, TableSO tableSO,
+			ClassSourceModel csm) {
+		StringBuilder code = new StringBuilder("\t\tif (dto == null) {\n");
+		code.append("\t\t\treturn null;\n");
+		code.append("\t\t}\n");
+		code.append("\t\treturn new ").append(soClassName).append("()");
+		for (ColumnSO column : tableSO.getColumns()) {
+			ForeignKeySO[] foreignKeys = this.classSourceModelUtils.getForeignkeyByColumn(column);
+			if (foreignKeys.length == 0) {
+				code.append(".").append(this.nameConverter.getSetterName(column)).append("(dto.")
+						.append(this.nameConverter.getGetterName(column)).append("())");
+			} else if ((foreignKeys.length == 1) && (foreignKeys[0].getReferences().size() == 1)) {
+				this.classSourceModelUtils.addImport(csm, "org.springframework.beans.factory.annotation", "Autowired");
+				ReferenceSO reference = foreignKeys[0].getReferences().get(0);
+				TableSO referencedTable = reference.getReferencedColumn().getTable();
+				String dtoConverterClassName = this.nameConverter.tableNameToDTOConverterClassName(referencedTable);
+				String dtoConverterAttrName = this.nameConverter.classNameToAttrName(dtoConverterClassName);
+				this.classSourceModelUtils.addAttributeForClassName(csm, dtoConverterClassName)
+						.ifPresent(asm -> classSourceModelUtils.addAnnotation(asm, "Autowired"));
+				code.append(".").append(this.nameConverter.getSetterName(column)).append("(this.")
+						.append(dtoConverterAttrName).append(".convertDTOToSO(dto.")
+						.append(this.nameConverter.getGetterName(column)).append("()))");
+			}
+		}
+		code.append(";\n");
+		code.append("\t}\n");
+		return new MethodSourceModel() //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.setReturnType(soClassName) //
+				.setName("convertDTOToSO") //
+				.setParameters(Arrays.asList(new ParameterSourceModel().setName("dto").setType(dtoClassName))) //
+				.setCode(code.toString());
 	}
 
 }

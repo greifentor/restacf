@@ -67,7 +67,7 @@ public class ApplicationClassGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		MethodSourceModel methodMain = new MethodSourceModel().setName("main");
-		methodMain.addModifier(ModifierSourceModel.PUBLIC, ModifierSourceModel.STATIC);
+		methodMain.addModifiers(ModifierSourceModel.PUBLIC, ModifierSourceModel.STATIC);
 		methodMain.setReturnType("void");
 		methodMain.getParameters().add(new ParameterSourceModel().setName("args").setType("String[]"));
 		methodMain.setCode( //

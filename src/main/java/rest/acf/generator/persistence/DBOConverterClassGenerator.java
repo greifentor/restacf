@@ -62,13 +62,13 @@ public class DBOConverterClassGenerator implements ClassCodeFactory {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		csm.getMethods().add(new MethodSourceModel() //
-				.addModifier(ModifierSourceModel.PUBLIC) //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.setReturnType(soClassName) //
 				.setName("convertDBOToSO") //
 				.setParameters(Arrays.asList(new ParameterSourceModel().setName("dbo").setType(dboClassName))) //
 				.setCode(createConvertDBOToSO(tableSO.getColumns(), soClassName, csm)));
 		csm.getMethods().add(new MethodSourceModel() //
-				.addModifier(ModifierSourceModel.PUBLIC) //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.setReturnType(dboClassName) //
 				.setName("convertSOToDBO") //
 				.setParameters(Arrays.asList(new ParameterSourceModel().setName("so").setType(soClassName))) //

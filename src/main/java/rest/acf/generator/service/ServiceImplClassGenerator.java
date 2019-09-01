@@ -22,6 +22,7 @@ import rest.acf.model.MethodSourceModel;
 import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.ParameterSourceModel;
+import rest.acf.model.ThrownExceptionSourceModel;
 
 /**
  * A generator for service impl classes.
@@ -55,11 +56,15 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 			LOG.error("table '" + tableSO.getName() + "' has not a primary key with one member: " + pkMembers.size());
 			return null;
 		}
+		String persistenceExceptionClassName = this.classSourceModelUtils.createPersistenceExceptionClassSourceModel()
+				.getName();
 		String persistencePortClassName = this.classSourceModelUtils.createPersistencePortInterfaceSourceModel(tableSO)
 				.getName();
 		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
 		String serviceClassName = this.classSourceModelUtils.createServiceInterfaceSourceModel(tableSO).getName();
 		String persistencePortPackageName = this.classSourceModelUtils.createPersistencePortPackageNameSuffix();
+		String persistenceExceptionPackageName = this.classSourceModelUtils
+				.createPersistenceExceptionPackageNameSuffix();
 		String soPackageName = this.classSourceModelUtils.createSOPackageNameSuffix();
 		String servicePackageName = this.classSourceModelUtils.createServicePackageNameSuffix();
 		ClassSourceModel csm = this.classSourceModelUtils.createServiceImplClassSourceModel(tableSO);
@@ -68,6 +73,8 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 		this.classSourceModelUtils.addImport(csm, "java.util", "Optional");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.stereotype", "Service");
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + servicePackageName, serviceClassName);
+		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + persistenceExceptionPackageName,
+				persistenceExceptionClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + persistencePortPackageName,
 				persistencePortClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + soPackageName, soClassName);
@@ -95,15 +102,9 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 					+ "\t}\n";
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
-			MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
-			methodFindById.addModifier(ModifierSourceModel.PUBLIC);
-			methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
-			methodFindById.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
-			methodFindById.setReturnType("Optional<" + soClassName + ">");
-			methodFindById.setCode( //
-					"\t\treturn this." + persistencePortAttrName + ".findById(id);\n" //
-							+ "\t}\n");
-			csm.getMethods().add(methodFindById);
+			csm.getMethods().add(createFindById(soClassName, persistencePortAttrName, persistenceExceptionClassName));
+			csm.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
+					persistencePortAttrName, persistenceExceptionClassName));
 		}
 		return csm;
 	}
@@ -116,6 +117,34 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 			}
 		}
 		return pkMembers;
+	}
+
+	private MethodSourceModel createFindById(String soClassName, String persistencePortAttrName,
+			String persistenceExceptionClassName) {
+		MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
+		methodFindById.addModifiers(ModifierSourceModel.PUBLIC);
+		methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
+		methodFindById.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
+		methodFindById.setReturnType("Optional<" + soClassName + ">");
+		methodFindById.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
+		methodFindById.setCode( //
+				"\t\treturn this." + persistencePortAttrName + ".findById(id);\n" //
+						+ "\t}\n");
+		return methodFindById;
+	}
+
+	private MethodSourceModel createSave(String soClassName, String soAttrName, String persistencePortAttrName,
+			String persistenceExceptionClassName) {
+		MethodSourceModel methodFindById = new MethodSourceModel().setName("save");
+		methodFindById.addModifiers(ModifierSourceModel.PUBLIC);
+		methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
+		methodFindById.getParameters().add(new ParameterSourceModel().setName(soAttrName).setType(soClassName));
+		methodFindById.setReturnType("void");
+		methodFindById.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
+		methodFindById.setCode( //
+				"\t\tthis." + persistencePortAttrName + ".save(" + soAttrName + ");\n" //
+						+ "\t}\n");
+		return methodFindById;
 	}
 
 }

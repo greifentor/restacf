@@ -22,4 +22,11 @@ public class RackDTOConverter {
 		return new RackDTO().setId(so.getId()).setName(so.getName());
 	}
 
+	public RackSO convertDTOToSO(RackDTO dto) {
+		if (dto == null) {
+			return null;
+		}
+		return new RackSO().setId(dto.getId()).setName(dto.getName());
+	}
+
 }

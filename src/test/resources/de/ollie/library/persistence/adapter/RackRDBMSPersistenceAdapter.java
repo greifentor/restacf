@@ -31,7 +31,7 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 	}
 
 	@Override
-	public Optional<RackSO> findById(long id) {
+	public Optional<RackSO> findById(long id) throws PersistenceException {
 		try {
 			Optional<RackDBO> dbo = this.rackRepository.findById(id);
 			if (dbo.isEmpty()) {
@@ -44,7 +44,7 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 	}
 
 	@Override
-	public void save(RackSO so) {
+	public void save(RackSO so) throws PersistenceException {
 		try {
 			RackDBO dbo = this.rackDBOConverter.convertSOToDBO(so);
 			this.rackRepository.save(dbo);

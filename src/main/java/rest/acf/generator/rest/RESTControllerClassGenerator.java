@@ -69,9 +69,12 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 		this.classSourceModelUtils.addImport(csm, "java.util", "Optional");
 		this.classSourceModelUtils.addImport(csm, "org.apache.logging.log4j", "LogManager");
 		this.classSourceModelUtils.addImport(csm, "org.apache.logging.log4j", "Logger");
+		this.classSourceModelUtils.addImport(csm, "org.springframework.http", "HttpStatus");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.http", "ResponseEntity");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "GetMapping");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "PathVariable");
+		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "PostMapping");
+		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "RequestBody");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "RequestMapping");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "RestController");
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + dtoConverterPackageName,
@@ -117,24 +120,9 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 					+ "\t}\n";
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
-			MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
-			methodFindById.addModifier(ModifierSourceModel.PUBLIC);
-			methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("GetMapping").setValue("/{id}"));
-			ParameterSourceModel paramId = new ParameterSourceModel().setName("id").setType("long");
-			paramId.getAnnotations().add(new AnnotationSourceModel().setName("PathVariable").setValue("id"));
-			methodFindById.getParameters().add(paramId);
-			methodFindById.setReturnType("ResponseEntity<" + dtoClassName + ">");
-			methodFindById.setCode( //
-					"\t\tOptional<" + soClassName + "> so = this." + serviceAttrName + ".findById(id);\n" //
-							+ "\t\tif (so.isEmpty()) {\n" //
-							+ "\t\t\tlogger.debug(\"no " + tableSO.getName().toLowerCase()
-							+ " found for id: \" + id);\n" //
-							+ "\t\t\treturn ResponseEntity.notFound().build();\n" //
-							+ "\t\t}\n"//
-							+ "\t\treturn ResponseEntity.ok().body(this." + dtoConverterAttrName
-							+ ".convertSOToDTO(so.get()));\n" //
-							+ "\t}\n");
-			csm.getMethods().add(methodFindById);
+			csm.getMethods()
+					.add(createFindById(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
+			csm.getMethods().add(createSave(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
 		}
 		return csm;
 	}
@@ -147,6 +135,53 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 			}
 		}
 		return pkMembers;
+	}
+
+	private MethodSourceModel createFindById(String dtoClassName, String soClassName, String serviceAttrName,
+			TableSO tableSO, String dtoConverterAttrName) {
+		ParameterSourceModel paramId = new ParameterSourceModel().setName("id").setType("long");
+		paramId.getAnnotations().add(new AnnotationSourceModel().setName("PathVariable").setValue("id"));
+		return new MethodSourceModel().setName("findById") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("GetMapping").setValue("/{id}")) //
+				.addParameters(paramId) //
+				.setReturnType("ResponseEntity<" + dtoClassName + ">") //
+				.setCode( //
+						"\t\ttry {\n" //
+								+ "\t\t\tOptional<" + soClassName + "> so = this." + serviceAttrName
+								+ ".findById(id);\n" //
+								+ "\t\t\tif (so.isEmpty()) {\n" //
+								+ "\t\t\t\tlogger.debug(\"no " + tableSO.getName().toLowerCase()
+								+ " found for id: \" + id);\n" //
+								+ "\t\t\t\treturn ResponseEntity.notFound().build();\n" //
+								+ "\t\t\t}\n"//
+								+ "\t\t\treturn ResponseEntity.ok().body(this." + dtoConverterAttrName
+								+ ".convertSOToDTO(so.get()));\n" //
+								+ "\t\t} catch (Exception e) {\n" //
+								+ "\t\t\treturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();\n" //
+								+ "\t\t}\n" //
+								+ "\t}\n");
+	}
+
+	private MethodSourceModel createSave(String dtoClassName, String soClassName, String serviceAttrName,
+			TableSO tableSO, String dtoConverterAttrName) {
+		ParameterSourceModel paramId = new ParameterSourceModel().setName("dto").setType(dtoClassName);
+		paramId.getAnnotations().add(new AnnotationSourceModel().setName("RequestBody"));
+		return new MethodSourceModel().setName("save") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("PostMapping")) //
+				.addParameters(paramId) //
+				.setReturnType("ResponseEntity") //
+				.setCode( //
+						"\t\t" + soClassName + " so = this." + dtoConverterAttrName + ".convertDTOToSO(dto);\n" //
+								+ "\t\ttry {\n" //
+								+ "\t\t\tlogger.debug(\"saving " + tableSO.getName().toLowerCase() + ": \" + so);\n" //
+								+ "\t\t\tthis." + serviceAttrName + ".save(so);\n" //
+								+ "\t\t} catch (Exception e) {\n"//
+								+ "\t\t\treturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();\n"//
+								+ "\t\t}\n"//
+								+ "\t\treturn ResponseEntity.ok().build();\n" //
+								+ "\t}\n");
 	}
 
 }
