@@ -1,7 +1,7 @@
 package rest.acf.generator.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,10 +10,10 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.nullValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import archimedes.model.ColumnModel;
 import archimedes.model.DataModel;
@@ -33,7 +33,7 @@ import de.ollie.archimedes.alexandrian.service.TypeSO;
  * @author ollie
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DataModelToSOConverterTest {
 
 	private static final String COLUMN0_NAME = "Column0";

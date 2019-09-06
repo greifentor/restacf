@@ -1,17 +1,17 @@
 package de.ollie.archimedes.alexandrian.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit tests for class "ColumnSO".
@@ -19,7 +19,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * @author ollie
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ColumnSOTest {
 
 	private static final String COLUMN0_NAME = "Column0";

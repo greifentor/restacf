@@ -1,7 +1,7 @@
 package rest.acf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -11,10 +11,10 @@ import java.util.Comparator;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import archimedes.model.DataModel;
 import archimedes.scheme.ArchimedesObjectFactory;
@@ -27,14 +27,14 @@ import archimedes.scheme.xml.ModelXMLReader;
  * @author ollie
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RESTServerCodeFactoryIntegrationTest {
 
 	private static final String OUTPUT_PATH = "target/test/output/src/main/java";
 
 	private RESTServerCodeFactory unitUnderTest;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		System.setProperty("corentx.util.Str.suppress.html.note", "true");
 		System.setProperty("corent.base.StrUtil.suppress.html.note", "true");

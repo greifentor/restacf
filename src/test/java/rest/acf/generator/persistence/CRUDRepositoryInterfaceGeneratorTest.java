@@ -1,25 +1,24 @@
 package rest.acf.generator.persistence;
 
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
-import rest.acf.generator.persistence.CRUDRepositoryInterfaceGenerator;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
@@ -33,7 +32,7 @@ import rest.acf.model.PackageSourceModel;
  *
  * @author ollie
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CRUDRepositoryInterfaceGeneratorTest {
 
 	private static final String AUTHOR_NAME = "rest-acf";
@@ -51,7 +50,7 @@ public class CRUDRepositoryInterfaceGeneratorTest {
 
 	private CRUDRepositoryInterfaceGenerator unitUnderTest;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.classSourceModelUtils = new ClassSourceModelUtils(this.nameConverter, this.typeConverter);
 		this.unitUnderTest = new CRUDRepositoryInterfaceGenerator(this.classSourceModelUtils, this.nameConverter,

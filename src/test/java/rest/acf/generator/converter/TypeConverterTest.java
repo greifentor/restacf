@@ -1,16 +1,17 @@
 package rest.acf.generator.converter;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Types;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.ollie.archimedes.alexandrian.service.TypeSO;
 
@@ -20,7 +21,7 @@ import de.ollie.archimedes.alexandrian.service.TypeSO;
  * @author ollie
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TypeConverterTest {
 
 	private static final String UNKNOWN = "UNKNOWN";
@@ -33,12 +34,14 @@ public class TypeConverterTest {
 		assertThat(this.unitUnderTest.typeSOToTypeString(null, false), nullValue());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfARRAY_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.ARRAY);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -63,12 +66,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfBINARY_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.BINARY);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	public void typeSOToTypeSourceModel_PassTypeSOOfBIT_ReturnsAStringWithTheCorrectJavaType() {
@@ -81,12 +86,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfBLOB_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.BLOB);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -155,20 +162,24 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfCLOB_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.CLOB);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfDATALINK_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.DATALINK);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -215,12 +226,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfDISTINCT_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.DISTINCT);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -289,12 +302,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfJAVA_OBJECT_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.JAVA_OBJECT);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -341,12 +356,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfLONGVARBINARY_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.LONGVARBINARY);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -437,20 +454,24 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfNCLOB_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.NCLOB);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfNULL_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.NULL);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -519,12 +540,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfOTHER_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.OTHER);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -549,28 +572,34 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfREF_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.REF);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfREF_CURSOR_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.REF_CURSOR);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfROWID_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.ROWID);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -595,20 +624,24 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfSQLXML_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.SQLXML);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfSTRUCT_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.STRUCT);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -633,12 +666,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfTIME_WITH_TIMEZONE_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.TIME_WITH_TIMEZONE);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
@@ -707,12 +742,14 @@ public class TypeConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void typeSOToTypeSourceModel_PassTypeSOOfVARBINARY_ReturnsAStringWithTheCorrectJavaType() {
 		// Prepare
 		TypeSO typeSO = new TypeSO().setSqlType(Types.VARBINARY);
 		// Run
-		this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.typeSOToTypeString(typeSO, false);
+		});
 	}
 
 	@Test
