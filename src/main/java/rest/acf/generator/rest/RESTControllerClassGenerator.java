@@ -71,6 +71,7 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 		this.classSourceModelUtils.addImport(csm, "org.apache.logging.log4j", "Logger");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.http", "HttpStatus");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.http", "ResponseEntity");
+		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "DeleteMapping");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "GetMapping");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "PathVariable");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "PostMapping");
@@ -121,6 +122,8 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
 			csm.getMethods()
+					.add(createDelete(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
+			csm.getMethods()
 					.add(createFindById(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
 			csm.getMethods().add(createSave(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
 		}
@@ -135,6 +138,28 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 			}
 		}
 		return pkMembers;
+	}
+
+	private MethodSourceModel createDelete(String dtoClassName, String soClassName, String serviceAttrName,
+			TableSO tableSO, String dtoConverterAttrName) {
+		ParameterSourceModel paramId = new ParameterSourceModel().setName("id").setType("long");
+		paramId.getAnnotations().add(new AnnotationSourceModel().setName("PathVariable").setValue("id"));
+		return new MethodSourceModel().setName("delete") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("DeleteMapping").setValue("/{id}")) //
+				.addParameters(paramId) //
+				.setReturnType("ResponseEntity") //
+				.setCode("\t\ttry {\n" //
+						+ "\t\t\tlogger.debug(\"deleting " + this.nameConverter.classNameToAttrName(tableSO.getName())
+						+ " with id: \" + id);\n" //
+						+ "\t\t\tif (!this." + serviceAttrName + ".delete(id)) {\n" //
+						+ "\t\t\t\treturn ResponseEntity.status(HttpStatus.NOT_FOUND).build();\n" //
+						+ "\t\t\t}\n" //
+						+ "\t\t} catch (Exception e) {\n"//
+						+ "\t\t\treturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();\n" //
+						+ "\t\t}\n"//
+						+ "\t\treturn ResponseEntity.ok().build();\n" //
+						+ "\t}\n");
 	}
 
 	private MethodSourceModel createFindById(String dtoClassName, String soClassName, String serviceAttrName,

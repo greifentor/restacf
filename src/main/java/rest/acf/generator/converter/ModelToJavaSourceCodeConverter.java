@@ -47,7 +47,6 @@ public class ModelToJavaSourceCodeConverter {
 			for (ImportSourceModel ism : csm.getImports()) {
 				String packageName = ism.getPackageModel().getPackageName();
 				if (!importStart.equals(getFirstPackageNamePart(packageName))) {
-					System.out.println(importStart + "-" + getFirstPackageNamePart(packageName));
 					if (!importStart.isEmpty()) {
 						code += "\n";
 					}
@@ -267,7 +266,6 @@ public class ModelToJavaSourceCodeConverter {
 			for (ImportSourceModel ism : insm.getImports()) {
 				String packageName = ism.getPackageModel().getPackageName();
 				if (!importStart.equals(getFirstPackageNamePart(packageName))) {
-					System.out.println(importStart + "-" + getFirstPackageNamePart(packageName));
 					if (!importStart.isEmpty()) {
 						code += "\n";
 					}

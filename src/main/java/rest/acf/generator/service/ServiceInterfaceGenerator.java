@@ -62,6 +62,9 @@ public class ServiceInterfaceGenerator {
 			LOG.error("table '" + tableSO.getName() + "' has not a primary key with one member: " + pkMembers.size());
 			return null;
 		}
+		String pkAttrName = this.nameConverter.columnNameToAttributeName(pkMembers.get(0));
+		String pkClassName = this.typeConverter.typeSOToTypeString(pkMembers.get(0).getType(),
+				pkMembers.get(0).isNullable());
 		String persistenceExceptionClassName = this.classSourceModelUtils.createPersistenceExceptionClassSourceModel()
 				.getName();
 		String persistenceExceptionPackageName = this.classSourceModelUtils
@@ -82,6 +85,7 @@ public class ServiceInterfaceGenerator {
 				+ " *\n" //
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
+		ism.getMethods().add(createDelete(pkClassName, pkAttrName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
 				persistenceExceptionClassName));
@@ -96,6 +100,14 @@ public class ServiceInterfaceGenerator {
 			}
 		}
 		return pkMembers;
+	}
+
+	private MethodSourceModel createDelete(String pkClassName, String pkAttrName,
+			String persistenceExceptionClassName) {
+		return new MethodSourceModel().setName("delete") //
+				.setReturnType("boolean") //
+				.addParameters(new ParameterSourceModel().setName(pkAttrName).setType(pkClassName)) //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}
 
 	private MethodSourceModel createFindById(String soClassName, String persistenceExceptionClassName) {

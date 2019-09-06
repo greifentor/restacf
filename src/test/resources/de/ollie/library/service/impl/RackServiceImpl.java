@@ -27,6 +27,11 @@ public class RackServiceImpl implements RackService {
 	}
 
 	@Override
+	public boolean delete(long id) throws PersistenceException {
+		return this.rackPersistencePort.delete(id);
+	}
+
+	@Override
 	public Optional<RackSO> findById(long id) throws PersistenceException {
 		return this.rackPersistencePort.findById(id);
 	}

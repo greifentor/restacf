@@ -31,6 +31,21 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 	}
 
 	@Override
+	public boolean delete(long id) throws PersistenceException {
+		boolean result = false;
+		try {
+			Optional<RackDBO> dbo = this.rackRepository.findById(id);
+			if (dbo.isPresent()) {
+				this.rackRepository.delete(dbo.get());
+				result = true;
+			}
+		} catch (Exception e) {
+			throw new PersistenceException(PersistenceException.Type.WriteError, "error while deleting rack with id: " + id, e);
+		}
+		return result;
+	}
+
+	@Override
 	public Optional<RackSO> findById(long id) throws PersistenceException {
 		try {
 			Optional<RackDBO> dbo = this.rackRepository.findById(id);

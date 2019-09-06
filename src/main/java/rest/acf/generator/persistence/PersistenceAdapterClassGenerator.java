@@ -56,6 +56,9 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 			LOG.error("table '" + tableSO.getName() + "' has not a primary key with one member: " + pkMembers.size());
 			return null;
 		}
+		String pkAttrName = this.nameConverter.columnNameToAttributeName(pkMembers.get(0));
+		String pkClassName = this.typeConverter.typeSOToTypeString(pkMembers.get(0).getType(),
+				pkMembers.get(0).isNullable());
 		String dboClassName = this.classSourceModelUtils.createJPAModelClassSourceModel(tableSO).getName();
 		String dboConverterClassName = this.classSourceModelUtils.createDBOConverterClassSourceModel(tableSO).getName();
 		String persistenceExceptionClassName = this.classSourceModelUtils.createPersistenceExceptionClassSourceModel()
@@ -118,7 +121,10 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 					+ "\t}\n";
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
-			csm.getMethods().add(createFindById(soClassName, dboClassName, repositoryAttrName, dboConverterAttrName));
+			csm.getMethods().add(createDelete(dboClassName, pkAttrName, pkClassName, dboConverterAttrName, tableSO,
+					repositoryAttrName));
+			csm.getMethods().add(createFindById(soClassName, dboClassName, pkAttrName, pkClassName, repositoryAttrName,
+					dboConverterAttrName));
 			csm.getMethods().add(createSave(soClassName, dboClassName, repositoryAttrName, dboConverterAttrName));
 		}
 		return csm;
@@ -134,47 +140,78 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 		return pkMembers;
 	}
 
-	private MethodSourceModel createFindById(String soClassName, String dboClassName, String repositoryAttrName,
-			String dboConverterAttrName) {
-		MethodSourceModel msm = new MethodSourceModel().setName("findById");
-		msm.addModifiers(ModifierSourceModel.PUBLIC);
-		msm.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
-		msm.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
-		msm.setReturnType("Optional<" + soClassName + ">");
-		msm.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException"));
-		msm.setCode( //
-				"\t\ttry {\n" //
-						+ "\t\t\tOptional<" + dboClassName + "> dbo = this." + repositoryAttrName + ".findById(id);\n" //
-						+ "\t\t\tif (dbo.isEmpty()) {\n" //
-						+ "\t\t\t\treturn Optional.empty();\n" //
-						+ "\t\t\t}\n"//
-						+ "\t\t\treturn Optional.of(this." + dboConverterAttrName + ".convertDBOToSO(dbo.get()));\n" //
+	private MethodSourceModel createDelete(String dboClassName, String pkAttrName, String pkClassName,
+			String dboConverterAttrName, TableSO tableSO, String repositoryAttrName) {
+		return new MethodSourceModel().setName("delete") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.addParameters(new ParameterSourceModel().setName(pkAttrName).setType(pkClassName)) //
+				.setReturnType("boolean") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+				.setCode("\t\tboolean result = false;\n" //
+						+ "\t\ttry {\n" //
+						+ "\t\t\tOptional<" + dboClassName + "> dbo = this." + repositoryAttrName + ".findById(id);\n"
+						+ "\t\t\tif (dbo.isPresent()) {\n" + "\t\t\t\tthis." + repositoryAttrName
+						+ ".delete(dbo.get());\n" //
+						+ "\t\t\t\tresult = true;\n" //
+						+ "\t\t\t}\n" //
 						+ "\t\t} catch (Exception e) {\n" //
-						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.ReadError, " //
-						+ "\"error while finding by id: \" + id, e);\n" //
+						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
+						+ "\"error while deleting " + this.nameConverter.classNameToAttrName(tableSO.getName())
+						+ " with id: \" + id, e);\n" //
 						+ "\t\t}\n" //
+						+ "\t\treturn result;\n" //
 						+ "\t}\n");
-		return msm;
+		/*
+		 * public boolean delete(long id) throws PersistenceException { boolean result = false; try { Optional<RackDBO>
+		 * dbo = this.rackRepository.findById(id); if (dbo.isPresent()) { this.rackRepository.delete(dbo.get()); result
+		 * = true; } } catch (Exception e) { throw new PersistenceException(PersistenceException.Type.WriteError,
+		 * "error while deleting rack with id: " + id, e); } return result; }
+		 */
+	}
+
+	private MethodSourceModel createFindById(String soClassName, String dboClassName, String pkColumnName,
+			String pkClassName, String repositoryAttrName, String dboConverterAttrName) {
+		return new MethodSourceModel().setName("findById") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.addParameters(new ParameterSourceModel().setName(pkColumnName).setType(pkClassName)) //
+				.setReturnType("Optional<" + soClassName + ">") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+				.setCode( //
+						"\t\ttry {\n" //
+								+ "\t\t\tOptional<" + dboClassName + "> dbo = this." + repositoryAttrName
+								+ ".findById(id);\n" //
+								+ "\t\t\tif (dbo.isEmpty()) {\n" //
+								+ "\t\t\t\treturn Optional.empty();\n" //
+								+ "\t\t\t}\n"//
+								+ "\t\t\treturn Optional.of(this." + dboConverterAttrName
+								+ ".convertDBOToSO(dbo.get()));\n" //
+								+ "\t\t} catch (Exception e) {\n" //
+								+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.ReadError, " //
+								+ "\"error while finding by id: \" + id, e);\n" //
+								+ "\t\t}\n" //
+								+ "\t}\n");
 	}
 
 	private MethodSourceModel createSave(String soClassName, String dboClassName, String repositoryAttrName,
 			String dboConverterAttrName) {
-		MethodSourceModel msm = new MethodSourceModel().setName("save");
-		msm.addModifiers(ModifierSourceModel.PUBLIC);
-		msm.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
-		msm.getParameters().add(new ParameterSourceModel().setName("so").setType(soClassName));
-		msm.setReturnType("void");
-		msm.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException"));
-		msm.setCode( //
-				"\t\ttry {\n" //
-						+ "\t\t\t" + dboClassName + " dbo = this." + dboConverterAttrName + ".convertSOToDBO(so);\n" //
-						+ "\t\t\tthis.rackRepository.save(dbo);\n" //
-						+ "\t\t} catch (Exception e) {\n" //
-						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
-						+ "\"error while saving: \" + so, e);\n" //
-						+ "\t\t}\n" //
-						+ "\t}\n");
-		return msm;
+		return new MethodSourceModel().setName("save") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.addParameters(new ParameterSourceModel().setName("so").setType(soClassName)) //
+				.setReturnType("void") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+				.setCode( //
+						"\t\ttry {\n" //
+								+ "\t\t\t" + dboClassName + " dbo = this." + dboConverterAttrName
+								+ ".convertSOToDBO(so);\n" //
+								+ "\t\t\tthis.rackRepository.save(dbo);\n" //
+								+ "\t\t} catch (Exception e) {\n" //
+								+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
+								+ "\"error while saving: \" + so, e);\n" //
+								+ "\t\t}\n" //
+								+ "\t}\n");
 	}
 
 }

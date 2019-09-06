@@ -14,6 +14,8 @@ import de.ollie.library.service.so.RackSO;
  */
 public interface RackPersistencePort {
 
+	boolean delete(long id) throws PersistenceException;
+
 	Optional<RackSO> findById(long id) throws PersistenceException;
 
 	void save(RackSO so) throws PersistenceException;

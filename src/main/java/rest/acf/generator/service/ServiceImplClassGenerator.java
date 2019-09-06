@@ -56,6 +56,9 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 			LOG.error("table '" + tableSO.getName() + "' has not a primary key with one member: " + pkMembers.size());
 			return null;
 		}
+		String pkAttrName = this.nameConverter.columnNameToAttributeName(pkMembers.get(0));
+		String pkClassName = this.typeConverter.typeSOToTypeString(pkMembers.get(0).getType(),
+				pkMembers.get(0).isNullable());
 		String persistenceExceptionClassName = this.classSourceModelUtils.createPersistenceExceptionClassSourceModel()
 				.getName();
 		String persistencePortClassName = this.classSourceModelUtils.createPersistencePortInterfaceSourceModel(tableSO)
@@ -102,6 +105,8 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 					+ "\t}\n";
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
+			csm.getMethods()
+					.add(createDelete(pkClassName, pkAttrName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createFindById(soClassName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
 					persistencePortAttrName, persistenceExceptionClassName));
@@ -119,32 +124,43 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 		return pkMembers;
 	}
 
+	private MethodSourceModel createDelete(String pkClassName, String pkAttrName, String persistencePortAttrName,
+			String persistenceExceptionClassName) {
+		return new MethodSourceModel().setName("delete") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.addParameters(new ParameterSourceModel().setName(pkAttrName).setType(pkClassName)) //
+				.setReturnType("boolean") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
+				.setCode( //
+						"\t\treturn this." + persistencePortAttrName + ".delete(" + pkAttrName + ");\n" //
+								+ "\t}\n");
+	}
+
 	private MethodSourceModel createFindById(String soClassName, String persistencePortAttrName,
 			String persistenceExceptionClassName) {
-		MethodSourceModel methodFindById = new MethodSourceModel().setName("findById");
-		methodFindById.addModifiers(ModifierSourceModel.PUBLIC);
-		methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
-		methodFindById.getParameters().add(new ParameterSourceModel().setName("id").setType("long"));
-		methodFindById.setReturnType("Optional<" + soClassName + ">");
-		methodFindById.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
-		methodFindById.setCode( //
-				"\t\treturn this." + persistencePortAttrName + ".findById(id);\n" //
-						+ "\t}\n");
-		return methodFindById;
+		return new MethodSourceModel().setName("findById") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.addParameters(new ParameterSourceModel().setName("id").setType("long")) //
+				.setReturnType("Optional<" + soClassName + ">") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
+				.setCode( //
+						"\t\treturn this." + persistencePortAttrName + ".findById(id);\n" //
+								+ "\t}\n");
 	}
 
 	private MethodSourceModel createSave(String soClassName, String soAttrName, String persistencePortAttrName,
 			String persistenceExceptionClassName) {
-		MethodSourceModel methodFindById = new MethodSourceModel().setName("save");
-		methodFindById.addModifiers(ModifierSourceModel.PUBLIC);
-		methodFindById.getAnnotations().add(new AnnotationSourceModel().setName("Override"));
-		methodFindById.getParameters().add(new ParameterSourceModel().setName(soAttrName).setType(soClassName));
-		methodFindById.setReturnType("void");
-		methodFindById.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
-		methodFindById.setCode( //
-				"\t\tthis." + persistencePortAttrName + ".save(" + soAttrName + ");\n" //
-						+ "\t}\n");
-		return methodFindById;
+		return new MethodSourceModel().setName("save") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.addParameters(new ParameterSourceModel().setName(soAttrName).setType(soClassName)) //
+				.setReturnType("void") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
+				.setCode( //
+						"\t\tthis." + persistencePortAttrName + ".save(" + soAttrName + ");\n" //
+								+ "\t}\n");
 	}
 
 }
