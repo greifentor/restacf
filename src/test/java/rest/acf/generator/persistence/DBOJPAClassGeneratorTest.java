@@ -1,18 +1,18 @@
 package rest.acf.generator.persistence;
 
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.TableSO;
@@ -34,7 +34,7 @@ import rest.acf.model.PropertySourceModel;
  *
  * @author ollie
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DBOJPAClassGeneratorTest {
 
 	private static final String AUTHOR_NAME = "rest-acf";
@@ -52,7 +52,7 @@ public class DBOJPAClassGeneratorTest {
 
 	private DBOJPAClassGenerator unitUnderTest;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.classSourceModelUtils = new ClassSourceModelUtils(this.nameConverter, this.typeConverter);
 		this.unitUnderTest = new DBOJPAClassGenerator(this.classSourceModelUtils, this.nameConverter,

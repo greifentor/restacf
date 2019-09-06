@@ -1,13 +1,14 @@
 package de.ollie.utils;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for class "Check".
@@ -19,9 +20,11 @@ public class CheckTest {
 
 	private static final String MESSAGE = "message";
 
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void constructor_ThrowsAnUnsupportedOperationException() {
-		new Check();
+		Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+			new Check();
+		});
 	}
 
 	@Test
@@ -40,7 +43,7 @@ public class CheckTest {
 			Check.ensure(false, e);
 			fail("should throw a runtime exception.");
 		} catch (RuntimeException e0) {
-			assertSame("thrown exception should be same as the passed one", e, e0);
+			assertSame(e, e0, "thrown exception should be same as the passed one");
 		}
 	}
 
@@ -59,8 +62,8 @@ public class CheckTest {
 			Check.ensure(false, MESSAGE);
 			fail("should throw a runtime exception.");
 		} catch (RuntimeException e) {
-			assertTrue("exception is not an IllegalArgumentException but a " + e.getClass().getSimpleName(),
-					e instanceof IllegalArgumentException);
+			assertTrue(e instanceof IllegalArgumentException,
+					"exception is not an IllegalArgumentException but a " + e.getClass().getSimpleName());
 			assertThat(e.getMessage(), equalTo(MESSAGE));
 		}
 	}

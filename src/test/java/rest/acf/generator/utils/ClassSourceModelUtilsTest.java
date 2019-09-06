@@ -2,18 +2,18 @@ package rest.acf.generator.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Types;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.nullValue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
@@ -35,7 +35,7 @@ import rest.acf.model.PropertySourceModel;
  * @author Oliver.Lieshoff
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClassSourceModelUtilsTest {
 
 	private static final String COLUMN0_NAME = "Column0";

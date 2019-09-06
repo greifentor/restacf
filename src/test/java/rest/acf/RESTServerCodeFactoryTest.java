@@ -1,23 +1,18 @@
 package rest.acf;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-
-import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.sameInstance;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.internal.util.reflection.Whitebox;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import archimedes.acf.checker.ModelChecker;
-import archimedes.acf.event.CodeFactoryListener;
-import archimedes.model.DataModel;
 import baccara.gui.GUIBundle;
 
 /**
@@ -26,27 +21,14 @@ import baccara.gui.GUIBundle;
  * @author ollie
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RESTServerCodeFactoryTest {
 
 	@InjectMocks
 	private RESTServerCodeFactory unitUnderTest;
 
 	@Test
-	public void addCodeFactoryListener_PassAListener_AddsTheListenerToTheObject() {
-		// Prepare
-		CodeFactoryListener listener = mock(CodeFactoryListener.class);
-		// Run
-		this.unitUnderTest.addCodeFactoryListener(listener);
-		// Check
-		@SuppressWarnings("unchecked")
-		List<CodeFactoryListener> listeners = (List<CodeFactoryListener>) Whitebox.getInternalState(this.unitUnderTest,
-				"listeners");
-		assertThat(listeners.get(0), sameInstance(listener));
-	}
-
-	@Test
-	@Ignore
+	@Disabled
 	public void generate_PassANullValue_ReturnsFalse() {
 		// Prepare
 		boolean expected = false;
@@ -93,31 +75,6 @@ public class RESTServerCodeFactoryTest {
 		// Run
 		String returned = this.unitUnderTest.getVersion();
 		// Check
-		assertThat(returned, equalTo(expected));
-	}
-
-	@Test
-	public void removeCodeFactoryListener_PassAListener_RemovesThePassedListener() {
-		// Prepare
-		CodeFactoryListener listener = mock(CodeFactoryListener.class);
-		this.unitUnderTest.addCodeFactoryListener(listener);
-		// Run
-		this.unitUnderTest.removeCodeFactoryListener(listener);
-		// Check
-		@SuppressWarnings("unchecked")
-		List<CodeFactoryListener> listeners = (List<CodeFactoryListener>) Whitebox.getInternalState(this.unitUnderTest,
-				"listeners");
-		assertThat(listeners.size(), equalTo(0));
-	}
-
-	@Test
-	public void setDataModel_PassADataModel_SetsTheDataModelCorrectly() {
-		// Prepare
-		DataModel expected = mock(DataModel.class);
-		// Run
-		this.unitUnderTest.setDataModel(expected);
-		// Check
-		DataModel returned = (DataModel) Whitebox.getInternalState(this.unitUnderTest, "dataModel");
 		assertThat(returned, equalTo(expected));
 	}
 

@@ -2,14 +2,15 @@ package rest.acf.generator.converter;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Types;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.ollie.archimedes.alexandrian.service.ColumnSO;
 import de.ollie.archimedes.alexandrian.service.DatabaseSO;
@@ -22,7 +23,7 @@ import de.ollie.archimedes.alexandrian.service.TypeSO;
  * @author Oliver.Lieshoff
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NameConverterTest {
 
 	@InjectMocks
@@ -72,12 +73,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void columnNameToAttributeName_PassColumnSOWithEmptyName_ThrowsException() {
 		// Prepare
 		ColumnSO columnSO = new ColumnSO().setName("");
 		// Run
-		this.unitUnderTest.columnNameToAttributeName(columnSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.columnNameToAttributeName(columnSO);
+		});
 	}
 
 	@Test
@@ -392,12 +395,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void schemeNameToApplicationClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		DatabaseSO databaseSO = new DatabaseSO().setName("");
 		// Run
-		this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.schemeNameToApplicationClassName(databaseSO);
+		});
 	}
 
 	@Test
@@ -493,12 +498,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToDBOClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToDBOClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToDBOClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -594,12 +601,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToDBOConverterClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToDBOConverterClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -695,12 +704,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToDTOClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToDTOClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -796,12 +807,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToDTOConverterClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToDTOConverterClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToDTOConverterClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -897,12 +910,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToPersistenceAdapterClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToPersistenceAdapterClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -997,12 +1012,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToPersistencePortInterfaceName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToPersistencePortInterfaceName(tableSO);
+		});
 	}
 
 	@Test
@@ -1097,12 +1114,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToRepositoryInterfaceName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToRepositoryInterfaceName(tableSO);
+		});
 	}
 
 	@Test
@@ -1198,12 +1217,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToRESTControllerClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToRESTControllerClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -1299,12 +1320,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToServiceImplClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToServiceImplClassName(tableSO);
+		});
 	}
 
 	@Test
@@ -1400,12 +1423,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToServiceInterfaceName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToServiceInterfaceName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToServiceInterfaceName(tableSO);
+		});
 	}
 
 	@Test
@@ -1501,12 +1526,14 @@ public class NameConverterTest {
 		assertThat(returned, equalTo(expected));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void tableNameToServiceObjectClassName_PassTableSOWithEmptyName_ThrowsException() {
 		// Prepare
 		TableSO tableSO = new TableSO().setName("");
 		// Run
-		this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			this.unitUnderTest.tableNameToServiceObjectClassName(tableSO);
+		});
 	}
 
 	@Test
