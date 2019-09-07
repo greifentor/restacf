@@ -1,5 +1,6 @@
 package de.ollie.library.service.persistence.port;
 
+import java.util.List;
 import java.util.Optional;
 
 import de.ollie.library.service.persistence.exception.PersistenceException;
@@ -15,6 +16,8 @@ import de.ollie.library.service.so.RackSO;
 public interface RackPersistencePort {
 
 	boolean delete(long id) throws PersistenceException;
+
+	List<RackSO> findAll() throws PersistenceException;
 
 	Optional<RackSO> findById(long id) throws PersistenceException;
 

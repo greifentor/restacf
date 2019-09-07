@@ -1,5 +1,6 @@
 package de.ollie.library.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -29,6 +30,11 @@ public class RackServiceImpl implements RackService {
 	@Override
 	public boolean delete(long id) throws PersistenceException {
 		return this.rackPersistencePort.delete(id);
+	}
+
+	@Override
+	public List<RackSO> findAll() throws PersistenceException {
+		return this.rackPersistencePort.findAll();
 	}
 
 	@Override
