@@ -73,6 +73,7 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 		ClassSourceModel csm = this.classSourceModelUtils.createServiceImplClassSourceModel(tableSO);
 		csm.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createServiceImplPackageNameSuffix()));
+		this.classSourceModelUtils.addImport(csm, "java.util", "List");
 		this.classSourceModelUtils.addImport(csm, "java.util", "Optional");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.stereotype", "Service");
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + servicePackageName, serviceClassName);
@@ -107,6 +108,7 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 			csm.getConstructors().add(cosm);
 			csm.getMethods()
 					.add(createDelete(pkClassName, pkAttrName, persistencePortAttrName, persistenceExceptionClassName));
+			csm.getMethods().add(createFindAll(soClassName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createFindById(soClassName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
 					persistencePortAttrName, persistenceExceptionClassName));
@@ -134,6 +136,18 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
 				.setCode( //
 						"\t\treturn this." + persistencePortAttrName + ".delete(" + pkAttrName + ");\n" //
+								+ "\t}\n");
+	}
+
+	private MethodSourceModel createFindAll(String soClassName, String persistencePortAttrName,
+			String persistenceExceptionClassName) {
+		return new MethodSourceModel().setName("findAll") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.setReturnType("List<" + soClassName + ">") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
+				.setCode( //
+						"\t\treturn this." + persistencePortAttrName + ".findAll();\n" //
 								+ "\t}\n");
 	}
 

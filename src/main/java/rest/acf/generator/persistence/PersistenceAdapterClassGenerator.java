@@ -78,6 +78,8 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 		ClassSourceModel csm = this.classSourceModelUtils.createPersistenceAdapterClassSourceModel(tableSO);
 		csm.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createPersistenceAdapterPackageNameSuffix()));
+		this.classSourceModelUtils.addImport(csm, "java.util", "ArrayList");
+		this.classSourceModelUtils.addImport(csm, "java.util", "List");
 		this.classSourceModelUtils.addImport(csm, "java.util", "Optional");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.stereotype", "Service");
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + dboConverterPackageName,
@@ -104,6 +106,7 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 		Optional<AttributeSourceModel> repositoryAttrOpt = this.classSourceModelUtils.addAttributeForClassName(csm,
 				repositoryClassName);
 		if (dboConverterAttrOpt.isPresent() && repositoryAttrOpt.isPresent()) {
+			String elementName = this.nameConverter.classNameToAttrName(tableSO.getName());
 			dboConverterAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE, ModifierSourceModel.FINAL);
 			String dboConverterAttrName = dboConverterAttrOpt.get().getName();
 			repositoryAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE, ModifierSourceModel.FINAL);
@@ -121,11 +124,12 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 					+ "\t}\n";
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
-			csm.getMethods().add(createDelete(dboClassName, pkAttrName, pkClassName, dboConverterAttrName, tableSO,
-					repositoryAttrName));
+			csm.getMethods().add(createDelete(dboClassName, pkAttrName, pkClassName, elementName, repositoryAttrName));
+			csm.getMethods().add(createFindAll(soClassName, dboClassName, repositoryAttrName, dboConverterAttrName,
+					elementName + "s"));
 			csm.getMethods().add(createFindById(soClassName, dboClassName, pkAttrName, pkClassName, repositoryAttrName,
 					dboConverterAttrName));
-			csm.getMethods().add(createSave(soClassName, dboClassName, repositoryAttrName, dboConverterAttrName));
+			csm.getMethods().add(createSave(soClassName, dboClassName, dboConverterAttrName));
 		}
 		return csm;
 	}
@@ -141,7 +145,7 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 	}
 
 	private MethodSourceModel createDelete(String dboClassName, String pkAttrName, String pkClassName,
-			String dboConverterAttrName, TableSO tableSO, String repositoryAttrName) {
+			String elementName, String repositoryAttrName) {
 		return new MethodSourceModel().setName("delete") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
@@ -157,18 +161,41 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 						+ "\t\t\t}\n" //
 						+ "\t\t} catch (Exception e) {\n" //
 						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
-						+ "\"error while deleting " + this.nameConverter.classNameToAttrName(tableSO.getName())
-						+ " with id: \" + id, e);\n" //
+						+ "\"error while deleting " + elementName + " with id: \" + id, e);\n" //
 						+ "\t\t}\n" //
 						+ "\t\treturn result;\n" //
 						+ "\t}\n");
-		/*
-		 * public boolean delete(long id) throws PersistenceException { boolean result = false; try { Optional<RackDBO>
-		 * dbo = this.rackRepository.findById(id); if (dbo.isPresent()) { this.rackRepository.delete(dbo.get()); result
-		 * = true; } } catch (Exception e) { throw new PersistenceException(PersistenceException.Type.WriteError,
-		 * "error while deleting rack with id: " + id, e); } return result; }
-		 */
 	}
+
+	private MethodSourceModel createFindAll(String soClassName, String dboClassName, String repositoryAttrName,
+			String dboConverterAttrName, String pluralElementName) {
+		return new MethodSourceModel().setName("findAll") //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.setReturnType("List<" + soClassName + ">") //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+				.setCode( //
+						"\t\ttry {\n" //
+								+ "\t\t\tList<" + soClassName + "> sos = new ArrayList<>();\n" //
+								+ "\t\t\tfor (" + dboClassName + " dbo : this." + repositoryAttrName + ".findAll()) {\n" //
+								+ "\t\t\t\tsos.add(this." + dboConverterAttrName + ".convertDBOToSO(dbo));\n" //
+								+ "\t\t\t}\n"//
+								+ "\t\t\treturn sos;\n" //
+								+ "\t\t} catch (Exception e) {\n" //
+								+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.ReadError, " //
+								+ "\"error while finding all " + pluralElementName + ".\", e);\n" //
+								+ "\t\t}\n" //
+								+ "\t}\n");
+	}
+
+	/*
+	 * @Override public List<RackSO> findAll() throws PersistenceException { try { List<RackSO> sos = new ArrayList<>();
+	 * for (RackDBO dbo : this.rackRepository.findAll()) { sos.add(this.rackDBOConverter.convertDBOToSO(dbo)); } return
+	 * sos; } catch (Exception e) { throw new PersistenceException(PersistenceException.Type.ReadError,
+	 * "error while finding all racks.", e); } }
+	 * 
+	 * 
+	 */
 
 	private MethodSourceModel createFindById(String soClassName, String dboClassName, String pkColumnName,
 			String pkClassName, String repositoryAttrName, String dboConverterAttrName) {
@@ -194,8 +221,7 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 								+ "\t}\n");
 	}
 
-	private MethodSourceModel createSave(String soClassName, String dboClassName, String repositoryAttrName,
-			String dboConverterAttrName) {
+	private MethodSourceModel createSave(String soClassName, String dboClassName, String dboConverterAttrName) {
 		return new MethodSourceModel().setName("save") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("Override")) //

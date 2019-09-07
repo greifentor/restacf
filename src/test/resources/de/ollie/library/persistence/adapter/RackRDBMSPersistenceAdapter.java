@@ -1,5 +1,7 @@
 package de.ollie.library.persistence.adapter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -43,6 +45,19 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 			throw new PersistenceException(PersistenceException.Type.WriteError, "error while deleting rack with id: " + id, e);
 		}
 		return result;
+	}
+
+	@Override
+	public List<RackSO> findAll() throws PersistenceException {
+		try {
+			List<RackSO> sos = new ArrayList<>();
+			for (RackDBO dbo : this.rackRepository.findAll()) {
+				sos.add(this.rackDBOConverter.convertDBOToSO(dbo));
+			}
+			return sos;
+		} catch (Exception e) {
+			throw new PersistenceException(PersistenceException.Type.ReadError, "error while finding all racks.", e);
+		}
 	}
 
 	@Override

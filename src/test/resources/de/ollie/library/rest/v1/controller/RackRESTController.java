@@ -1,5 +1,7 @@
 package de.ollie.library.rest.v1.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -51,6 +53,19 @@ public class RackRESTController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping
+	public ResponseEntity<List<RackDTO>> findAll() {
+		try {
+			List<RackDTO> dtos = new ArrayList<>();
+			for (RackSO so : this.rackService.findAll()) {
+				dtos.add(this.rackDTOConverter.convertSOToDTO(so));
+			}
+			return ResponseEntity.ok().body(dtos);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@GetMapping("/{id}")

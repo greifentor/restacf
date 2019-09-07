@@ -74,6 +74,7 @@ public class PersistencePortInterfaceGenerator {
 		InterfaceSourceModel ism = this.classSourceModelUtils.createPersistencePortInterfaceSourceModel(tableSO);
 		ism.setPackageModel(new PackageSourceModel().setPackageName(
 				"${base.package.name}." + this.classSourceModelUtils.createPersistencePortPackageNameSuffix()));
+		this.classSourceModelUtils.addImport(ism, "java.util", "List");
 		this.classSourceModelUtils.addImport(ism, "java.util", "Optional");
 		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + persistenceExceptionPackageName,
 				persistenceExceptionClassName);
@@ -86,6 +87,7 @@ public class PersistencePortInterfaceGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		ism.getMethods().add(createDelete(pkClassName, pkAttrName, persistenceExceptionClassName));
+		ism.getMethods().add(createFindAll(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createSave(soClassName, persistenceExceptionClassName));
 		return ism;
@@ -106,6 +108,12 @@ public class PersistencePortInterfaceGenerator {
 		return new MethodSourceModel().setName("delete") //
 				.setReturnType("boolean") //
 				.addParameters(new ParameterSourceModel().setName(pkAttrName).setType(pkClassName)) //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
+	}
+
+	private MethodSourceModel createFindAll(String soClassName, String persistenceExceptionClassName) {
+		return new MethodSourceModel().setName("findAll") //
+				.setReturnType("List<" + soClassName + ">") //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}
 
