@@ -61,6 +61,10 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
 		String dtoPackageName = this.classSourceModelUtils.createDTOPackageNameSuffix();
 		String dtoConverterPackageName = this.classSourceModelUtils.createDTOConverterPackageNameSuffix();
+		String resultPageClassName = this.classSourceModelUtils.createResultPageDTOClassSourceModel().getName();
+		String resultPageClassPackageName = this.classSourceModelUtils.createResultPageDTOClassPackageNameSuffix();
+		String resultPageSOClassName = this.classSourceModelUtils.createResultPageSOClassSourceModel().getName();
+		String resultPageSOClassPackageName = this.classSourceModelUtils.createResultPageSOClassPackageNameSuffix();
 		String serviceInterfacePackageName = this.classSourceModelUtils.createServicePackageNameSuffix();
 		String soPackageName = this.classSourceModelUtils.createSOPackageNameSuffix();
 		ClassSourceModel csm = this.classSourceModelUtils.createRESTControllerClassSourceModel(tableSO);
@@ -83,9 +87,13 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + dtoConverterPackageName,
 				dtoConverterClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + dtoPackageName, dtoClassName);
+		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + resultPageClassPackageName,
+				resultPageClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + serviceInterfacePackageName,
 				serviceInterfaceClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + soPackageName, soClassName);
+		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + resultPageSOClassPackageName,
+				resultPageSOClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "RestController");
 		csm.getAnnotations().add(new AnnotationSourceModel().setName("RequestMapping")
 				.setValue("api/v1/" + tableSO.getName().toLowerCase() + "s"));
@@ -124,7 +132,8 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 			cosm.setCode(code);
 			csm.getConstructors().add(cosm);
 			csm.getMethods().add(createDelete(serviceAttrName, tableSO));
-			csm.getMethods().add(createFindAll(dtoClassName, soClassName, serviceAttrName, dtoConverterAttrName));
+			csm.getMethods().add(createFindAll(resultPageClassName, resultPageSOClassName, dtoClassName, soClassName,
+					serviceAttrName, dtoConverterAttrName));
 			csm.getMethods()
 					.add(createFindById(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
 			csm.getMethods().add(createSave(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
@@ -163,18 +172,22 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 						+ "\t}\n");
 	}
 
-	private MethodSourceModel createFindAll(String dtoClassName, String soClassName, String serviceAttrName,
-			String dtoConverterAttrName) {
+	private MethodSourceModel createFindAll(String resultPageClassName, String resultPageSOClassName,
+			String dtoClassName, String soClassName, String serviceAttrName, String dtoConverterAttrName) {
+		String returnClassName = resultPageClassName + "<" + dtoClassName + ">";
 		return new MethodSourceModel().setName("findAll") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("GetMapping")) //
-				.setReturnType("ResponseEntity<List<" + dtoClassName + ">>") //
+				.setReturnType("ResponseEntity<" + returnClassName + ">") //
 				.setCode("\t\ttry {\n" //
 						+ "\t\t\tList<" + dtoClassName + "> dtos = new ArrayList<>();\n" //
-						+ "\t\t\tfor (" + soClassName + " so : this." + serviceAttrName + ".findAll()) {\n" //
+						+ "\t\t\t" + resultPageSOClassName + "<" + soClassName + "> result = this." + serviceAttrName
+						+ ".findAll();\n" //
+						+ "\t\t\tfor (" + soClassName + " so : result.getResults()) {\n" //
 						+ "\t\t\t\tdtos.add(this." + dtoConverterAttrName + ".convertSOToDTO(so));\n" //
 						+ "\t\t\t}\n"//
-						+ "\t\t\treturn ResponseEntity.ok().body(dtos);\n" //
+						+ "\t\t\treturn ResponseEntity.ok().body(new " + returnClassName
+						+ "().setCurrentPage(result.getCurrentPage()).setResultsPerPage(result.getResultsPerPage()).setResults(dtos).setTotalResults(result.getTotalResults()));\n" //
 						+ "\t\t} catch (Exception e) {\n" //
 						+ "\t\t\treturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();\n" //
 						+ "\t\t}\n" //

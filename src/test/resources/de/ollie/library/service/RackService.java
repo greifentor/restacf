@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import de.ollie.library.service.persistence.exception.PersistenceException;
 import de.ollie.library.service.so.RackSO;
+import de.ollie.library.service.so.ResultPageSO;
 
 /**
  * An interface for a rack service.
@@ -17,7 +18,7 @@ public interface RackService {
 
 	boolean delete(long id) throws PersistenceException;
 
-	List<RackSO> findAll() throws PersistenceException;
+	ResultPageSO<RackSO> findAll() throws PersistenceException;
 
 	Optional<RackSO> findById(long id) throws PersistenceException;
 
