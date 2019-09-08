@@ -9,6 +9,7 @@ import de.ollie.library.service.RackService;
 import de.ollie.library.service.persistence.exception.PersistenceException;
 import de.ollie.library.service.persistence.port.RackPersistencePort;
 import de.ollie.library.service.so.RackSO;
+import de.ollie.library.service.so.ResultPageSO;
 
 /**
  * An implementation of the rack service interface.
@@ -33,8 +34,9 @@ public class RackServiceImpl implements RackService {
 	}
 
 	@Override
-	public List<RackSO> findAll() throws PersistenceException {
-		return this.rackPersistencePort.findAll();
+	public ResultPageSO<RackSO> findAll() throws PersistenceException {
+		List<RackSO> l = this.rackPersistencePort.findAll();
+		return new ResultPageSO<RackSO>().setCurrentPage(0).setResultsPerPage(l.size()).setResults(l).setTotalResults(l.size());
 	}
 
 	@Override

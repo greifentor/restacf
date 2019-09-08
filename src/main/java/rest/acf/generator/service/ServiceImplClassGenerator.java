@@ -68,6 +68,8 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 		String persistencePortPackageName = this.classSourceModelUtils.createPersistencePortPackageNameSuffix();
 		String persistenceExceptionPackageName = this.classSourceModelUtils
 				.createPersistenceExceptionPackageNameSuffix();
+		String resultPageClassName = this.classSourceModelUtils.createResultPageSOClassSourceModel().getName();
+		String resultPageClassPackageName = this.classSourceModelUtils.createResultPageSOClassPackageNameSuffix();
 		String soPackageName = this.classSourceModelUtils.createSOPackageNameSuffix();
 		String servicePackageName = this.classSourceModelUtils.createServicePackageNameSuffix();
 		ClassSourceModel csm = this.classSourceModelUtils.createServiceImplClassSourceModel(tableSO);
@@ -82,6 +84,8 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + persistencePortPackageName,
 				persistencePortClassName);
 		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + soPackageName, soClassName);
+		this.classSourceModelUtils.addImport(csm, "${base.package.name}." + resultPageClassPackageName,
+				resultPageClassName);
 		this.classSourceModelUtils.addAnnotation(csm, "Service");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * An implementation of the " + tableSO.getName().toLowerCase() + " service interface.\n" //
@@ -108,7 +112,8 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 			csm.getConstructors().add(cosm);
 			csm.getMethods()
 					.add(createDelete(pkClassName, pkAttrName, persistencePortAttrName, persistenceExceptionClassName));
-			csm.getMethods().add(createFindAll(soClassName, persistencePortAttrName, persistenceExceptionClassName));
+			csm.getMethods().add(createFindAll(resultPageClassName, soClassName, persistencePortAttrName,
+					persistenceExceptionClassName));
 			csm.getMethods().add(createFindById(soClassName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
 					persistencePortAttrName, persistenceExceptionClassName));
@@ -139,16 +144,23 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 								+ "\t}\n");
 	}
 
-	private MethodSourceModel createFindAll(String soClassName, String persistencePortAttrName,
-			String persistenceExceptionClassName) {
+	private MethodSourceModel createFindAll(String resultPageClassName, String soClassName,
+			String persistencePortAttrName, String persistenceExceptionClassName) {
+		String returnClassName = resultPageClassName + "<" + soClassName + ">";
 		return new MethodSourceModel().setName("findAll") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
-				.setReturnType("List<" + soClassName + ">") //
+				.setReturnType(returnClassName) //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
-				.setCode( //
-						"\t\treturn this." + persistencePortAttrName + ".findAll();\n" //
-								+ "\t}\n");
+				.setCode("\t\tList<" + soClassName + "> l = this." + persistencePortAttrName + ".findAll();\n" //
+						+ "\t\treturn new " + returnClassName
+						+ "().setCurrentPage(0).setResultsPerPage(l.size()).setResults(l).setTotalResults(l.size());\n"
+						+ "\t}\n");
+		/*
+		 * List<RackSO> l = this.rackPersistencePort.findAll(); return new
+		 * ResultPageSO<RackSO>().setResults(l).setTotalResults(l.size());
+		 * 
+		 */
 	}
 
 	private MethodSourceModel createFindById(String soClassName, String persistencePortAttrName,

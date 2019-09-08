@@ -358,6 +358,42 @@ public class ClassSourceModelUtils {
 	}
 
 	/**
+	 * Creates a new result page service object class source model based on the passed table data transfer object.
+	 *
+	 * @return A class source model for a result page data transfer object class.
+	 */
+	public ClassSourceModel createResultPageDTOClassSourceModel() {
+		return new ClassSourceModel().setName("ResultPageDTO");
+	}
+
+	/**
+	 * Returns the package name suffix for the result page data transfer object generated class.
+	 * 
+	 * @return The package name suffix for the result page data transfer object class.
+	 */
+	public String createResultPageDTOClassPackageNameSuffix() {
+		return "rest.v1.dto";
+	}
+
+	/**
+	 * Creates a new result page service object class source model based on the passed table service object.
+	 *
+	 * @return A class source model for a result page service object class.
+	 */
+	public ClassSourceModel createResultPageSOClassSourceModel() {
+		return new ClassSourceModel().setName("ResultPageSO");
+	}
+
+	/**
+	 * Returns the package name suffix for the result page service object generated class.
+	 * 
+	 * @return The package name suffix for the result page service object class.
+	 */
+	public String createResultPageSOClassPackageNameSuffix() {
+		return "service.so";
+	}
+
+	/**
 	 * Creates a new service class source model based on the passed table service object.
 	 *
 	 * @param tableSO The table service object which the class source model is to create for.

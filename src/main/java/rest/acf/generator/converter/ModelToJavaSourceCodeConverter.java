@@ -9,6 +9,7 @@ import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ConstructorSourceModel;
 import rest.acf.model.EnumTypeSourceModel;
 import rest.acf.model.ExtensionSourceModel;
+import rest.acf.model.GenericParameterSourceModel;
 import rest.acf.model.ImportSourceModel;
 import rest.acf.model.InterfaceSourceModel;
 import rest.acf.model.MethodSourceModel;
@@ -83,8 +84,8 @@ public class ModelToJavaSourceCodeConverter {
 			}
 			code += "\n";
 		}
-		code += "public class " + csm.getName() + createExtendsStatement(csm.getExtendsModel())
-				+ getImplementsString(csm.getInterfaces()) + " {\n";
+		code += "public class " + csm.getName() + createGenericParameters(csm.getGenericParameters())
+				+ createExtendsStatement(csm.getExtendsModel()) + getImplementsString(csm.getInterfaces()) + " {\n";
 		code += "\n";
 		for (EnumTypeSourceModel etsm : csm.getEnums()) {
 			String enumCode = "\t" + getModifierString(etsm.getModifiers()) + "enum " + etsm.getName();
@@ -206,6 +207,27 @@ public class ModelToJavaSourceCodeConverter {
 			return s.substring(0, s.indexOf("."));
 		}
 		return s;
+	}
+
+	private String createGenericParameters(List<GenericParameterSourceModel> gpsms) {
+		if ((gpsms == null) || (gpsms.isEmpty())) {
+			return "";
+		}
+		String p = "";
+		for (GenericParameterSourceModel gpsm : gpsms) {
+			if (!p.isEmpty()) {
+				p += ", ";
+			}
+			p += gpsm.getName();
+		}
+		return "<" + p + ">";
+	}
+
+	private String createExtendsStatement(ExtensionSourceModel esm) {
+		if (esm == null) {
+			return "";
+		}
+		return " extends " + esm.getParentClassName();
 	}
 
 	private String getImplementsString(List<ExtensionSourceModel> interfaces) {
@@ -330,13 +352,6 @@ public class ModelToJavaSourceCodeConverter {
 		}
 		code += "}";
 		return code;
-	}
-
-	private String createExtendsStatement(ExtensionSourceModel esm) {
-		if (esm == null) {
-			return "";
-		}
-		return " extends " + esm.getParentClassName();
 	}
 
 }

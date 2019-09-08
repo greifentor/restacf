@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.ollie.library.rest.v1.converter.RackDTOConverter;
 import de.ollie.library.rest.v1.dto.RackDTO;
+import de.ollie.library.rest.v1.dto.ResultPageDTO;
 import de.ollie.library.service.RackService;
 import de.ollie.library.service.so.RackSO;
+import de.ollie.library.service.so.ResultPageSO;
 
 /**
  * A REST controller for racks.
@@ -56,13 +58,14 @@ public class RackRESTController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<RackDTO>> findAll() {
+	public ResponseEntity<ResultPageDTO<RackDTO>> findAll() {
 		try {
 			List<RackDTO> dtos = new ArrayList<>();
-			for (RackSO so : this.rackService.findAll()) {
+			ResultPageSO<RackSO> result = this.rackService.findAll();
+			for (RackSO so : result.getResults()) {
 				dtos.add(this.rackDTOConverter.convertSOToDTO(so));
 			}
-			return ResponseEntity.ok().body(dtos);
+			return ResponseEntity.ok().body(new ResultPageDTO<RackDTO>().setCurrentPage(result.getCurrentPage()).setResultsPerPage(result.getResultsPerPage()).setResults(dtos).setTotalResults(result.getTotalResults()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}

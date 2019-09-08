@@ -69,6 +69,8 @@ public class ServiceInterfaceGenerator {
 				.getName();
 		String persistenceExceptionPackageName = this.classSourceModelUtils
 				.createPersistenceExceptionPackageNameSuffix();
+		String resultPageClassName = this.classSourceModelUtils.createResultPageSOClassSourceModel().getName();
+		String resultPageClassPackageName = this.classSourceModelUtils.createResultPageSOClassPackageNameSuffix();
 		String soClassName = this.classSourceModelUtils.createSOClassSourceModel(tableSO).getName();
 		String soClassPackageName = this.classSourceModelUtils.createSOPackageNameSuffix();
 		InterfaceSourceModel ism = this.classSourceModelUtils.createServiceInterfaceSourceModel(tableSO);
@@ -79,6 +81,8 @@ public class ServiceInterfaceGenerator {
 		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + persistenceExceptionPackageName,
 				persistenceExceptionClassName);
 		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + soClassPackageName, soClassName);
+		this.classSourceModelUtils.addImport(ism, "${base.package.name}." + resultPageClassPackageName,
+				resultPageClassName);
 		ism.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * An interface for a " + tableSO.getName().toLowerCase() + " service.\n" //
 				+ " *\n" //
@@ -87,7 +91,7 @@ public class ServiceInterfaceGenerator {
 				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
 				+ " */\n"));
 		ism.getMethods().add(createDelete(pkClassName, pkAttrName, persistenceExceptionClassName));
-		ism.getMethods().add(createFindAll(soClassName, persistenceExceptionClassName));
+		ism.getMethods().add(createFindAll(resultPageClassName, soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
 				persistenceExceptionClassName));
@@ -112,9 +116,10 @@ public class ServiceInterfaceGenerator {
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}
 
-	private MethodSourceModel createFindAll(String soClassName, String persistenceExceptionClassName) {
+	private MethodSourceModel createFindAll(String resultPageClassName, String soClassName,
+			String persistenceExceptionClassName) {
 		return new MethodSourceModel().setName("findAll") //
-				.setReturnType("List<" + soClassName + ">") //
+				.setReturnType(resultPageClassName + "<" + soClassName + ">") //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}
 

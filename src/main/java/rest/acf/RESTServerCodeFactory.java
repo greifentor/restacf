@@ -31,8 +31,10 @@ import rest.acf.generator.persistence.PersistenceAdapterClassGenerator;
 import rest.acf.generator.rest.DTOClassGenerator;
 import rest.acf.generator.rest.DTOConverterClassGenerator;
 import rest.acf.generator.rest.RESTControllerClassGenerator;
+import rest.acf.generator.rest.ResultPageDTOClassGenerator;
 import rest.acf.generator.service.PersistenceExceptionClassGenerator;
 import rest.acf.generator.service.PersistencePortInterfaceGenerator;
+import rest.acf.generator.service.ResultPageSOClassGenerator;
 import rest.acf.generator.service.SOClassGenerator;
 import rest.acf.generator.service.ServiceImplClassGenerator;
 import rest.acf.generator.service.ServiceInterfaceGenerator;
@@ -85,9 +87,6 @@ public class RESTServerCodeFactory implements CodeFactory {
 		CRUDRepositoryInterfaceGenerator crudRepositoryGenerator = new CRUDRepositoryInterfaceGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
-		PersistenceExceptionClassGenerator persistenceExceptionGenerator = new PersistenceExceptionClassGenerator(
-				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
-				new TypeConverter());
 		PersistencePortInterfaceGenerator persistencePortGenerator = new PersistencePortInterfaceGenerator(
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
@@ -100,6 +99,8 @@ public class RESTServerCodeFactory implements CodeFactory {
 		createApplicationProperties(databaseSO, path);
 		createInitialDBXML(databaseSO, path, "rest-acf");
 		createPersistenceExceptionClass(path, "rest-acf", basePackageName);
+		createResultPageDTOClass(path, "rest-acf", basePackageName);
+		createResultPageSOClass(path, "rest-acf", basePackageName);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				for (ClassCodeFactory ccf : classCodeFactories) {
@@ -226,6 +227,44 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 				new TypeConverter());
 		ClassSourceModel csm = persistenceExceptionClassGenerator.generate("rest-acf");
+		csm.getPackageModel().setPackageName(
+				csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+		String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+		new File(p).mkdirs();
+		String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+		code = code.replace("${base.package.name}", basePackageName);
+		try {
+			Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes());
+			System.out.println(p + "/" + csm.getName() + ".java");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createResultPageDTOClass(String path, String authorName, String basePackageName) {
+		ResultPageDTOClassGenerator resultPageDTOClassGenerator = new ResultPageDTOClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		ClassSourceModel csm = resultPageDTOClassGenerator.generate("rest-acf");
+		csm.getPackageModel().setPackageName(
+				csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+		String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+		new File(p).mkdirs();
+		String code = new ModelToJavaSourceCodeConverter().classSourceModelToJavaSourceCode(csm);
+		code = code.replace("${base.package.name}", basePackageName);
+		try {
+			Files.write(Paths.get(p + "/" + csm.getName() + ".java"), code.getBytes());
+			System.out.println(p + "/" + csm.getName() + ".java");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createResultPageSOClass(String path, String authorName, String basePackageName) {
+		ResultPageSOClassGenerator resultPageSOClassGenerator = new ResultPageSOClassGenerator(
+				new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
+				new TypeConverter());
+		ClassSourceModel csm = resultPageSOClassGenerator.generate("rest-acf");
 		csm.getPackageModel().setPackageName(
 				csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
 		String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
