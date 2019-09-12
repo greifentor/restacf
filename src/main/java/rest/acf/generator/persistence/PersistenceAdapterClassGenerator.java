@@ -129,7 +129,7 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 					elementName + "s"));
 			csm.getMethods().add(createFindById(soClassName, dboClassName, pkAttrName, pkClassName, repositoryAttrName,
 					dboConverterAttrName));
-			csm.getMethods().add(createSave(soClassName, dboClassName, dboConverterAttrName));
+			csm.getMethods().add(createSave(soClassName, dboClassName, dboConverterAttrName, repositoryAttrName));
 		}
 		return csm;
 	}
@@ -189,9 +189,12 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 	}
 
 	/*
-	 * @Override public List<RackSO> findAll() throws PersistenceException { try { List<RackSO> sos = new ArrayList<>();
-	 * for (RackDBO dbo : this.rackRepository.findAll()) { sos.add(this.rackDBOConverter.convertDBOToSO(dbo)); } return
-	 * sos; } catch (Exception e) { throw new PersistenceException(PersistenceException.Type.ReadError,
+	 * @Override public List<RackSO> findAll() throws PersistenceException { try {
+	 * List<RackSO> sos = new ArrayList<>(); for (RackDBO dbo :
+	 * this.rackRepository.findAll()) {
+	 * sos.add(this.rackDBOConverter.convertDBOToSO(dbo)); } return sos; } catch
+	 * (Exception e) { throw new
+	 * PersistenceException(PersistenceException.Type.ReadError,
 	 * "error while finding all racks.", e); } }
 	 * 
 	 * 
@@ -221,7 +224,8 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 								+ "\t}\n");
 	}
 
-	private MethodSourceModel createSave(String soClassName, String dboClassName, String dboConverterAttrName) {
+	private MethodSourceModel createSave(String soClassName, String dboClassName, String dboConverterAttrName,
+			String repositoryAttrName) {
 		return new MethodSourceModel().setName("save") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
@@ -232,7 +236,7 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 						"\t\ttry {\n" //
 								+ "\t\t\t" + dboClassName + " dbo = this." + dboConverterAttrName
 								+ ".convertSOToDBO(so);\n" //
-								+ "\t\t\tthis.rackRepository.save(dbo);\n" //
+								+ "\t\t\tthis." + repositoryAttrName + ".save(dbo);\n" //
 								+ "\t\t} catch (Exception e) {\n" //
 								+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
 								+ "\"error while saving: \" + so, e);\n" //
