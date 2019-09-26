@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import archimedes.legacy.scheme.ArchimedesObjectFactory;
+import archimedes.legacy.scheme.Diagramm;
 import archimedes.model.DataModel;
-import archimedes.scheme.ArchimedesObjectFactory;
-import archimedes.scheme.Diagramm;
 import archimedes.scheme.xml.ModelXMLReader;
 
 /**

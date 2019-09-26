@@ -280,31 +280,6 @@ public class RESTServerCodeFactory implements CodeFactory {
 	}
 
 	@Override
-	public GUIBundle getGUIBundle() {
-		return this.guiBundle;
-	}
-
-	@Override
-	public ModelChecker[] getModelCheckers() {
-		return new ModelChecker[0];
-	}
-
-	@Override
-	public String getName() {
-		return "REST Server Code Factory";
-	}
-
-	@Override
-	public String[] getResourceBundleNames() {
-		return new String[] { "archimedes" };
-	}
-
-	@Override
-	public String getVersion() {
-		return "0.0.1";
-	}
-
-	@Override
 	public void removeCodeFactoryListener(CodeFactoryListener listener) {
 		this.listeners.remove(listener);
 	}
@@ -315,13 +290,45 @@ public class RESTServerCodeFactory implements CodeFactory {
 	}
 
 	@Override
-	public void setGUIBundle(GUIBundle guiBundle) {
-		this.guiBundle = guiBundle;
+	public GUIBundle getGUIBundle() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... listeners) {
-		// ???
+	public ModelChecker[] getModelCheckers() {
+		// TODO Auto-generated method stub
+		return new ModelChecker[0];
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] getResourceBundleNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getVersion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setGUIBundle(GUIBundle arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... arg0) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
