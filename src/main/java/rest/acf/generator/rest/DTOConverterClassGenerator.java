@@ -117,7 +117,8 @@ public class DTOConverterClassGenerator implements ClassCodeFactory {
 				String dtoConverterClassName = this.nameConverter.tableNameToDTOConverterClassName(referencedTable);
 				String dtoConverterAttrName = this.nameConverter.classNameToAttrName(dtoConverterClassName);
 				this.classSourceModelUtils.addAttributeForClassName(csm, dtoConverterClassName)
-						.ifPresent(asm -> classSourceModelUtils.addAnnotation(asm, "Autowired"));
+						.ifPresent(asm -> classSourceModelUtils.getAnnotationByName(asm, "Autowired") //
+								.orElse(classSourceModelUtils.addAnnotation(asm, "Autowired")));
 				code.append(".").append(this.nameConverter.getSetterName(column)).append("(this.")
 						.append(dtoConverterAttrName).append(".convertDTOToSO(dto.")
 						.append(this.nameConverter.getGetterName(column)).append("()))");

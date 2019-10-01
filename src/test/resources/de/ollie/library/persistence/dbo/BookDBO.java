@@ -28,8 +28,8 @@ public class BookDBO {
 	@Column(name = "ID")
 	private long id;
 	@ManyToOne
-	@JoinColumn(name = "RACK_ID", referencedColumnName = "ID")
-	private RackDBO rackId;
+	@JoinColumn(name = "RACK", referencedColumnName = "ID")
+	private RackDBO rack;
 	@Column(name = "REFERENCE_LIBRARY")
 	private Boolean referenceLibrary;
 	@Column(name = "TITLE")

@@ -21,6 +21,7 @@ import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportBearer;
 import rest.acf.model.ImportSourceModel;
 import rest.acf.model.InterfaceSourceModel;
+import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
 import rest.acf.model.PropertySourceModel;
 
@@ -64,7 +65,9 @@ public class ClassSourceModelUtils {
 		List<ImportSourceModel> imports = ib.getImports();
 		ImportSourceModel ism = new ImportSourceModel().setClassName(className)
 				.setPackageModel(new PackageSourceModel().setPackageName(packageName));
-		imports.add(ism);
+		if (!imports.contains(ism)) {
+			imports.add(ism);
+		}
 		LOG.debug("Added import '" + ism + "' to import bearer: " + ib);
 		return ism;
 	}
@@ -79,14 +82,16 @@ public class ClassSourceModelUtils {
 	 * @return The annotation source model which has been added.
 	 */
 	public AnnotationSourceModel addAnnotation(AnnotationBearer ab, String name, Object... propertyInfo) {
-		AnnotationSourceModel asm = new AnnotationSourceModel().setName(name);
+		AnnotationSourceModel asm = getAnnotationByName(ab, name).orElse(new AnnotationSourceModel().setName(name));
 		if (propertyInfo.length > 0) {
 			for (int i = 0, leni = propertyInfo.length; i < leni; i = i + 2) {
 				asm.getProperties().add(new PropertySourceModel<>().setName(String.valueOf(propertyInfo[i]))
 						.setContent(propertyInfo[i + 1]));
 			}
 		}
-		ab.getAnnotations().add(asm);
+		if (!ab.getAnnotations().contains(asm)) {
+			ab.getAnnotations().add(asm);
+		}
 		LOG.debug("Added annotation '" + asm + "' to annotation bearer: " + ab);
 		return asm;
 	}
@@ -142,10 +147,26 @@ public class ClassSourceModelUtils {
 	 *         be added.
 	 */
 	public Optional<AttributeSourceModel> addAttributeForClassName(ClassSourceModel csm, String className) {
-		AttributeSourceModel asm = new AttributeSourceModel().setName(this.nameConverter.classNameToAttrName(className))
-				.setType(className);
-		csm.getAttributes().add(asm);
-		return Optional.of(asm);
+		Optional<AttributeSourceModel> oasm = getAttributeByName(csm,
+				this.nameConverter.classNameToAttrName(className));
+		if (oasm.isEmpty()) {
+			AttributeSourceModel asm = new AttributeSourceModel() //
+					.setName(this.nameConverter.classNameToAttrName(className)) //
+					.setType(className) //
+					.addModifier(ModifierSourceModel.PRIVATE);
+			csm.getAttributes().add(asm);
+			oasm = Optional.of(asm);
+		}
+		return oasm;
+	}
+
+	public Optional<AttributeSourceModel> getAttributeByName(ClassSourceModel csm, String name) {
+		for (AttributeSourceModel asm : csm.getAttributes()) {
+			if (asm.getName().equalsIgnoreCase(name)) {
+				return Optional.of(asm);
+			}
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -470,6 +491,22 @@ public class ClassSourceModelUtils {
 			}
 		}
 		return fks.toArray(new ForeignKeySO[fks.size()]);
+	}
+
+	/**
+	 * Returns the annotation with the passed name.
+	 * 
+	 * @param ap   The annotation provider where the annotation is to check for.
+	 * @param name The name of the annotation to find.
+	 * @return An optional with the annotation which has the passed name.
+	 */
+	public Optional<AnnotationSourceModel> getAnnotationByName(AnnotationBearer ap, String name) {
+		for (AnnotationSourceModel asm : ap.getAnnotations()) {
+			if (asm.getName().equalsIgnoreCase(name)) {
+				return Optional.of(asm);
+			}
+		}
+		return Optional.empty();
 	}
 
 }
