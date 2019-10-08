@@ -1,0 +1,4 @@
+	@Autowired
+	private ${foreign.dtoConverter.class.name} ${foreign.dtoConverter.attribute.name};
+	@Autowired
+	private ${foreign.service.class.name} ${foreign.service.attribute.name};

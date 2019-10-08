@@ -1,0 +1,18 @@
+	@GetMapping("/{id}/${foreign.attribute.name}s")
+	public ResponseEntity<ResultPageDTO<${foreign.dto.class.name}>> find${foreign.table.name}sFor${table.name}(@PathVariable("id") long ${attribute.name}Id) {
+		try {
+			List<${foreign.dto.class.name}> dtos = new ArrayList<>();
+			ResultPageSO<${foreign.so.class.name}> result = this.${foreign.service.attribute.name}.find${foreign.table.name}sFor${table.name}(${attribute.name}Id);
+			for (${foreign.so.class.name} so : result.getResults()) {
+				dtos.add(this.${foreign.dtoConverter.attribute.name}.convertSOToDTO(so));
+			}
+			return ResponseEntity.ok() //
+					.body(new ResultPageDTO<${foreign.dto.class.name}>() //
+							.setCurrentPage(result.getCurrentPage()) //
+							.setResultsPerPage(result.getResultsPerPage()) //
+							.setResults(dtos) //
+							.setTotalResults(result.getTotalResults()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}

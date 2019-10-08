@@ -1,0 +1,82 @@
+package ${base.package.name}.rest.v1.controller;
+
+$^{imports}
+
+/**
+ * A REST controller for ${attribute.name}s.
+ *
+ * @author ${author.name}
+ *
+ * GENERATED CODE!!! DO NOT CHANGE!!!
+ */
+@RestController
+@RequestMapping("api/v1/${attribute.name}s")
+public class ${class.name} {
+
+	private final Logger logger = LogManager.getLogger(${class.name}.class);
+	@Autowired
+	private ${dtoConverter.class.name} ${dtoConverter.attribute.name};
+	@Autowired
+	private ${service.class.name} ${service.attribute.name};
+$^{foreign.attribute.code.block}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity delete(@PathVariable("id") long id) {
+		try {
+			logger.debug("deleting ${attribute.name} with id: " + id);
+			if (!this.${service.attribute.name}.delete(id)) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping
+	public ResponseEntity<ResultPageDTO<${dto.class.name}>> findAll() {
+		try {
+			List<${dto.class.name}> dtos = new ArrayList<>();
+			ResultPageSO<${so.class.name}> result = this.${service.attribute.name}.findAll();
+			for (${so.class.name} so : result.getResults()) {
+				dtos.add(this.${dtoConverter.attribute.name}.convertSOToDTO(so));
+			}
+			return ResponseEntity.ok() //
+					.body(new ResultPageDTO<${dto.class.name}>() //
+							.setCurrentPage(result.getCurrentPage()) //
+							.setResultsPerPage(result.getResultsPerPage()) //
+							.setResults(dtos) //
+							.setTotalResults(result.getTotalResults()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<${dto.class.name}> findById(@PathVariable("id") long id) {
+		try {
+			Optional<${so.class.name}> so = this.${service.attribute.name}.findById(id);
+			if (so.isEmpty()) {
+				logger.debug("no ${attribute.name} found for id: " + id);
+				return ResponseEntity.notFound().build();
+			}
+			return ResponseEntity.ok().body(this.${dtoConverter.attribute.name}.convertSOToDTO(so.get()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@PostMapping
+	public ResponseEntity save(@RequestBody ${dto.class.name} dto) {
+		${so.class.name} so = this.${dtoConverter.attribute.name}.convertDTOToSO(dto);
+		try {
+			logger.debug("saving ${attribute.name}: " + so);
+			this.${service.attribute.name}.save(so);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+		return ResponseEntity.ok().build();
+	}
+
+$^{findXXXForYYY.code.block}
+}
