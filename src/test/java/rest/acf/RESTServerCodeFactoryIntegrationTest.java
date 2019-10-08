@@ -96,6 +96,24 @@ public class RESTServerCodeFactoryIntegrationTest {
 	}
 
 	@Test
+	public void generate_PassADataModel_CreatesCorrectBookRepositoryFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "de", "ollie", "library",
+				"persistence", "repository", "BookRepository.java")));
+		String generated = new String(Files.readAllBytes(
+				Paths.get(OUTPUT_PATH, "de", "ollie", "library", "persistence", "repository", "BookRepository.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
 	public void generate_PassADataModel_CreatesCorrectRackDTOFile() throws Exception {
 		if (new File(OUTPUT_PATH).exists()) {
 			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
@@ -222,6 +240,24 @@ public class RESTServerCodeFactoryIntegrationTest {
 	}
 
 	@Test
+	public void generate_PassADataModel_CreatesCorrectBookPersistenceAdapterFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "de", "ollie", "library",
+				"persistence", "adapter", "BookRDBMSPersistenceAdapter.java")));
+		String generated = new String(Files.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "persistence",
+				"adapter", "BookRDBMSPersistenceAdapter.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
 	public void generate_PassADataModel_CreatesCorrectRackPersistencePortFile() throws Exception {
 		if (new File(OUTPUT_PATH).exists()) {
 			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
@@ -236,6 +272,24 @@ public class RESTServerCodeFactoryIntegrationTest {
 				"service", "persistence", "port", "RackPersistencePort.java")));
 		String generated = new String(Files.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service",
 				"persistence", "port", "RackPersistencePort.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModel_CreatesCorrectBookPersistencePortFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/", "de", "ollie", "library",
+				"service", "persistence", "port", "BookPersistencePort.java")));
+		String generated = new String(Files.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service",
+				"persistence", "port", "BookPersistencePort.java")));
 		assertEquals(expected.toString(), generated.toString());
 	}
 
@@ -258,7 +312,7 @@ public class RESTServerCodeFactoryIntegrationTest {
 	}
 
 	@Test
-	public void generate_PassADataModel_CreatesCorrectServiceInterfaceFile() throws Exception {
+	public void generate_PassADataModel_CreatesCorrectRackServiceInterfaceFile() throws Exception {
 		if (new File(OUTPUT_PATH).exists()) {
 			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
 					.peek(System.out::println).forEach(File::delete);
@@ -276,7 +330,25 @@ public class RESTServerCodeFactoryIntegrationTest {
 	}
 
 	@Test
-	public void generate_PassADataModel_CreatesCorrectServiceImplClassFile() throws Exception {
+	public void generate_PassADataModel_CreatesCorrectBookServiceInterfaceFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(
+				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "BookService.java")));
+		String generated = new String(
+				Files.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service", "BookService.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModel_CreatesCorrectRackServiceImplClassFile() throws Exception {
 		if (new File(OUTPUT_PATH).exists()) {
 			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
 					.peek(System.out::println).forEach(File::delete);
@@ -290,6 +362,24 @@ public class RESTServerCodeFactoryIntegrationTest {
 				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "impl", "RackServiceImpl.java")));
 		String generated = new String(Files.readAllBytes(
 				Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service", "impl", "RackServiceImpl.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModel_CreatesCorrectBookServiceImplClassFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(
+				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "impl", "BookServiceImpl.java")));
+		String generated = new String(Files.readAllBytes(
+				Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service", "impl", "BookServiceImpl.java")));
 		assertEquals(expected.toString(), generated.toString());
 	}
 

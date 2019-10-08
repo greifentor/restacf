@@ -30,8 +30,8 @@ import rest.acf.generator.persistence.DBOJPAClassGenerator;
 import rest.acf.generator.persistence.PersistenceAdapterClassGenerator;
 import rest.acf.generator.rest.DTOClassGenerator;
 import rest.acf.generator.rest.DTOConverterClassGenerator;
-import rest.acf.generator.rest.RESTControllerClassGenerator;
 import rest.acf.generator.rest.ResultPageDTOClassGenerator;
+import rest.acf.generator.rest.TemplateRESTControllerClassGenerator;
 import rest.acf.generator.service.PersistenceExceptionClassGenerator;
 import rest.acf.generator.service.PersistencePortInterfaceGenerator;
 import rest.acf.generator.service.ResultPageSOClassGenerator;
@@ -80,8 +80,8 @@ public class RESTServerCodeFactory implements CodeFactory {
 				new PersistenceAdapterClassGenerator(
 						new ClassSourceModelUtils(new NameConverter(), new TypeConverter()), new NameConverter(),
 						new TypeConverter()),
-				new RESTControllerClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
-						new NameConverter(), new TypeConverter()),
+//				new RESTControllerClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
+//						new NameConverter(), new TypeConverter()),
 				new ServiceImplClassGenerator(new ClassSourceModelUtils(new NameConverter(), new TypeConverter()),
 						new NameConverter(), new TypeConverter()) };
 		CRUDRepositoryInterfaceGenerator crudRepositoryGenerator = new CRUDRepositoryInterfaceGenerator(
@@ -101,6 +101,7 @@ public class RESTServerCodeFactory implements CodeFactory {
 		createPersistenceExceptionClass(path, "rest-acf", basePackageName);
 		createResultPageDTOClass(path, "rest-acf", basePackageName);
 		createResultPageSOClass(path, "rest-acf", basePackageName);
+		createRESTControllerClass(databaseSO, path, "rest-acf", basePackageName);
 		for (SchemeSO scheme : databaseSO.getSchemes()) {
 			for (TableSO table : scheme.getTables()) {
 				for (ClassCodeFactory ccf : classCodeFactories) {
@@ -276,6 +277,30 @@ public class RESTServerCodeFactory implements CodeFactory {
 			System.out.println(p + "/" + csm.getName() + ".java");
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void createRESTControllerClass(DatabaseSO database, String path, String authorName,
+			String basePackageName) {
+		TemplateRESTControllerClassGenerator restControllerClassGenerator = new TemplateRESTControllerClassGenerator();
+		ClassSourceModelUtils utils = new ClassSourceModelUtils(new NameConverter(), new TypeConverter());
+		for (SchemeSO scheme : database.getSchemes()) {
+			for (TableSO table : scheme.getTables()) {
+				String code = restControllerClassGenerator.generate(table, database, "rest-acf");
+				String className = utils.createRESTControllerClassSourceModel(table).getName();
+//		csm.getPackageModel().setPackageName(
+//				csm.getPackageModel().getPackageName().replace("${base.package.name}", basePackageName));
+//		String p = path + "/" + csm.getPackageModel().getPackageName().replace(".", "/");
+				String p = path + "/" + "de.ollie.library.rest.v1.controller".replace(".", "/");
+				new File(p).mkdirs();
+				code = code.replace("${base.package.name}", basePackageName);
+				try {
+					Files.write(Paths.get(p + "/" + className + ".java"), code.getBytes());
+					System.out.println(p + "/" + className + ".java");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

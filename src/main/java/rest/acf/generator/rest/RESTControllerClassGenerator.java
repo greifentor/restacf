@@ -16,7 +16,6 @@ import rest.acf.model.AnnotationSourceModel;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
-import rest.acf.model.ConstructorSourceModel;
 import rest.acf.model.MethodSourceModel;
 import rest.acf.model.ModifierSourceModel;
 import rest.acf.model.PackageSourceModel;
@@ -75,6 +74,7 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 		this.classSourceModelUtils.addImport(csm, "java.util", "Optional");
 		this.classSourceModelUtils.addImport(csm, "org.apache.logging.log4j", "LogManager");
 		this.classSourceModelUtils.addImport(csm, "org.apache.logging.log4j", "Logger");
+		this.classSourceModelUtils.addImport(csm, "org.springframework.beans.factory.annotation", "Autowired");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.http", "HttpStatus");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.http", "ResponseEntity");
 		this.classSourceModelUtils.addImport(csm, "org.springframework.web.bind.annotation", "DeleteMapping");
@@ -112,31 +112,19 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 		Optional<AttributeSourceModel> serviceAttrOpt = this.classSourceModelUtils.addAttributeForClassName(csm,
 				serviceInterfaceClassName);
 		if (dtoConverterAttrOpt.isPresent() && serviceAttrOpt.isPresent()) {
-			dtoConverterAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE, ModifierSourceModel.FINAL);
+			dtoConverterAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE);
+			this.classSourceModelUtils.addAnnotation(dtoConverterAttrOpt.get(), "Autowired");
 			String dtoConverterAttrName = dtoConverterAttrOpt.get().getName();
-			serviceAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE, ModifierSourceModel.FINAL);
+			serviceAttrOpt.get().addModifier(ModifierSourceModel.PRIVATE);
+			this.classSourceModelUtils.addAnnotation(serviceAttrOpt.get(), "Autowired");
 			String serviceAttrName = serviceAttrOpt.get().getName();
-			ConstructorSourceModel cosm = new ConstructorSourceModel();
-			cosm.getParameters()
-					.add(new ParameterSourceModel()
-							.setName(this.nameConverter.classNameToAttrName(dtoConverterClassName))
-							.setType(dtoConverterClassName));
-			cosm.getParameters()
-					.add(new ParameterSourceModel()
-							.setName(this.nameConverter.classNameToAttrName(serviceInterfaceClassName))
-							.setType(serviceInterfaceClassName));
-			String code = "\t\tsuper();\n" //
-					+ "\t\tthis." + dtoConverterAttrName + " = " + dtoConverterAttrName + ";\n" //
-					+ "\t\tthis." + serviceAttrName + " = " + serviceAttrName + ";\n" //
-					+ "\t}\n";
-			cosm.setCode(code);
-			csm.getConstructors().add(cosm);
 			csm.getMethods().add(createDelete(serviceAttrName, tableSO));
 			csm.getMethods().add(createFindAll(resultPageClassName, resultPageSOClassName, dtoClassName, soClassName,
 					serviceAttrName, dtoConverterAttrName));
 			csm.getMethods()
 					.add(createFindById(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
 			csm.getMethods().add(createSave(dtoClassName, soClassName, serviceAttrName, tableSO, dtoConverterAttrName));
+			addListReaderMethods(csm, tableSO);
 		}
 		return csm;
 	}
@@ -216,7 +204,7 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 								+ ".convertSOToDTO(so.get()));\n" //
 								+ "\t\t} catch (Exception e) {\n" //
 								+ "\t\t\treturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();\n" //
-								+ "\t\t}\n" //
+								+ "\t\t}\n" // welt
 								+ "\t}\n");
 	}
 
@@ -239,6 +227,10 @@ public class RESTControllerClassGenerator implements ClassCodeFactory {
 								+ "\t\t}\n"//
 								+ "\t\treturn ResponseEntity.ok().build();\n" //
 								+ "\t}\n");
+	}
+
+	private void addListReaderMethods(ClassSourceModel csm, TableSO table) {
+
 	}
 
 }

@@ -122,7 +122,7 @@ public class NameConverter {
 		return getClassName(tableSO) + "DBO";
 	}
 
-	private String getClassName(TableSO tableSO) {
+	public String getClassName(TableSO tableSO) {
 		String tableName = tableSO.getName();
 		ensure(!tableName.isEmpty(), "table name cannot be empty.");
 		if (containsUnderScores(tableName)) {

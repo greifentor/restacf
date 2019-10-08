@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +23,10 @@ import de.ollie.library.rest.v1.dto.ResultPageDTO;
 import de.ollie.library.service.RackService;
 import de.ollie.library.service.so.RackSO;
 import de.ollie.library.service.so.ResultPageSO;
+import de.ollie.library.rest.v1.converter.BookDTOConverter;
+import de.ollie.library.service.BookService;
+import de.ollie.library.rest.v1.dto.BookDTO;
+import de.ollie.library.service.so.BookSO;
 
 /**
  * A REST controller for racks.
@@ -35,14 +40,14 @@ import de.ollie.library.service.so.ResultPageSO;
 public class RackRESTController {
 
 	private final Logger logger = LogManager.getLogger(RackRESTController.class);
-	private final RackDTOConverter rackDTOConverter;
-	private final RackService rackService;
-
-	public RackRESTController(RackDTOConverter rackDTOConverter, RackService rackService) {
-		super();
-		this.rackDTOConverter = rackDTOConverter;
-		this.rackService = rackService;
-	}
+	@Autowired
+	private RackDTOConverter rackDTOConverter;
+	@Autowired
+	private RackService rackService;
+	@Autowired
+	private BookDTOConverter bookDTOConverter;
+	@Autowired
+	private BookService bookService;
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity delete(@PathVariable("id") long id) {
@@ -65,7 +70,12 @@ public class RackRESTController {
 			for (RackSO so : result.getResults()) {
 				dtos.add(this.rackDTOConverter.convertSOToDTO(so));
 			}
-			return ResponseEntity.ok().body(new ResultPageDTO<RackDTO>().setCurrentPage(result.getCurrentPage()).setResultsPerPage(result.getResultsPerPage()).setResults(dtos).setTotalResults(result.getTotalResults()));
+			return ResponseEntity.ok() //
+					.body(new ResultPageDTO<RackDTO>() //
+							.setCurrentPage(result.getCurrentPage()) //
+							.setResultsPerPage(result.getResultsPerPage()) //
+							.setResults(dtos) //
+							.setTotalResults(result.getTotalResults()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
@@ -95,6 +105,25 @@ public class RackRESTController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/{id}/books")
+	public ResponseEntity<ResultPageDTO<BookDTO>> findBooksForRack(@PathVariable("id") long rackId) {
+		try {
+			List<BookDTO> dtos = new ArrayList<>();
+			ResultPageSO<BookSO> result = this.bookService.findBooksForRack(rackId);
+			for (BookSO so : result.getResults()) {
+				dtos.add(this.bookDTOConverter.convertSOToDTO(so));
+			}
+			return ResponseEntity.ok() //
+					.body(new ResultPageDTO<BookDTO>() //
+							.setCurrentPage(result.getCurrentPage()) //
+							.setResultsPerPage(result.getResultsPerPage()) //
+							.setResults(dtos) //
+							.setTotalResults(result.getTotalResults()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 }
