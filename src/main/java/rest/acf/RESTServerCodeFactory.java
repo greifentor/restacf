@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import archimedes.acf.checker.ModelChecker;
 import archimedes.acf.event.CodeFactoryListener;
 import archimedes.gui.checker.ModelCheckerMessageListFrameListener;
+import archimedes.legacy.checkers.ModelCheckerNoComplexPrimaryKey;
 import archimedes.model.CodeFactory;
 import archimedes.model.DataModel;
 import baccara.gui.GUIBundle;
@@ -316,44 +317,40 @@ public class RESTServerCodeFactory implements CodeFactory {
 
 	@Override
 	public GUIBundle getGUIBundle() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.guiBundle;
 	}
 
 	@Override
 	public ModelChecker[] getModelCheckers() {
-		// TODO Auto-generated method stub
-		return new ModelChecker[0];
+		return new ModelChecker[] { //
+				new ModelCheckerNoComplexPrimaryKey(this.getGUIBundle()) //
+		};
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "REST server code factory";
 	}
 
 	@Override
 	public String[] getResourceBundleNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { //
+				"rest-server" //
+		};
 	}
 
 	@Override
 	public String getVersion() {
-		// TODO Auto-generated method stub
-		return null;
+		return "1.1.1";
 	}
 
 	@Override
-	public void setGUIBundle(GUIBundle arg0) {
-		// TODO Auto-generated method stub
-
+	public void setGUIBundle(GUIBundle guiBundle) {
+		this.guiBundle = guiBundle;
 	}
 
 	@Override
-	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... arg0) {
-		// TODO Auto-generated method stub
-
+	public void setModelCheckerMessageListFrameListeners(ModelCheckerMessageListFrameListener... l) {
 	}
 
 }
