@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
 import rest.acf.generator.openapi.OpenAPIModel;
 
 /**

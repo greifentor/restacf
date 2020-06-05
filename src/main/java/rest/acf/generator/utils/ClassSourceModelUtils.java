@@ -6,11 +6,12 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
-import de.ollie.archimedes.alexandrian.service.ReferenceSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.so.ReferenceSO;
+import de.ollie.archimedes.alexandrian.service.so.SchemeSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
@@ -507,6 +508,29 @@ public class ClassSourceModelUtils {
 			}
 		}
 		return Optional.empty();
+	}
+
+	/**
+	 * Returns all column service object of the database service object which are referenced by the passed table.
+	 * 
+	 * @param tableSO    The table service object whose referenced of columns of the counter side table are to return.
+	 * @param databaseSO A reference to the database which the table belongs to.
+	 * @return All column which are referenced by the passed table or an empty list, if there are no columns found.
+	 */
+	public List<ColumnSO> getReferencedColumns(TableSO tableSO, DatabaseSO databaseSO) {
+		List<ColumnSO> l = new ArrayList<>();
+		for (SchemeSO schemeSO : databaseSO.getSchemes()) {
+			for (TableSO table : schemeSO.getTables()) {
+				for (ForeignKeySO foreignKeySO : table.getForeignKeys()) {
+					for (ReferenceSO referenceSO : foreignKeySO.getReferences()) {
+						if (referenceSO.getReferencingColumn().getTable() == tableSO) {
+							l.add(referenceSO.getReferencedColumn());
+						}
+					}
+				}
+			}
+		}
+		return l;
 	}
 
 }

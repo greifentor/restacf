@@ -3,8 +3,10 @@ package rest.acf.generator.converter;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -14,10 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.OptionSO;
+import de.ollie.archimedes.alexandrian.service.so.TableMetaInfo;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 
 /**
  * Unit tests for class "NameConverter".
@@ -294,7 +298,8 @@ public class NameConverterTest {
 		public void getGetterName_PassAColumnSOWithBooleanType_ReturnsACorrectGetterName() {
 			// Prepare
 			String expected = "isColumnName";
-			ColumnSO columnSO = new ColumnSO().setName("column_name").setType(new TypeSO().setSqlType(Types.BOOLEAN));
+			ColumnSO columnSO = new ColumnSO().setName("column_name").setNullable(false)
+					.setType(new TypeSO().setSqlType(Types.BOOLEAN));
 			// Run
 			String returned = unitUnderTest.getGetterName(columnSO);
 			// Check
@@ -1169,6 +1174,47 @@ public class NameConverterTest {
 			// Check
 			assertThat(returned, equalTo(expected));
 		}
+	}
+
+	@DisplayName("tests for plural names")
+	@Nested
+	class PluralNameTests {
+
+		@Test
+		public void getPluralName_PassTableSOWithName_ReturnsAPluralName() {
+			// Prepare
+			String expected = "Names";
+			TableSO tableSO = new TableSO().setName("Name");
+			// Run
+			String returned = unitUnderTest.getPluralName(tableSO);
+			// Check
+			assertEquals(expected, returned);
+		}
+
+		@Test
+		public void getPluralName_PassTableSOWithNameEndingWithAY_ReturnsAPluralNameEndingWithIES() {
+			// Prepare
+			String expected = "Entities";
+			TableSO tableSO = new TableSO().setName("Entity");
+			// Run
+			String returned = unitUnderTest.getPluralName(tableSO);
+			// Check
+			assertEquals(expected, returned);
+		}
+
+		@Test
+		public void getPluralName_PassTableSOWithOptionPLURAL_NAME_ReturnsThePluralNameFromTheOption() {
+			// Prepare
+			String expected = "buecher";
+			TableSO tableSO = new TableSO().setName("Buch");
+			tableSO.setMetaInfo(new TableMetaInfo().setOptions(new ArrayList<>()));
+			tableSO.getMetaInfo().getOptions().add(new OptionSO().setName("PLURAL_NAME").setValue(expected));
+			// Run
+			String returned = unitUnderTest.getPluralName(tableSO);
+			// Check
+			assertEquals(expected, returned);
+		}
+
 	}
 
 	@DisplayName("tests for repository interface names")

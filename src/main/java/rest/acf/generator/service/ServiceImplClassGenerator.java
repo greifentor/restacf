@@ -6,8 +6,9 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 import rest.acf.ClassCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
@@ -35,13 +36,15 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 	private static final Logger LOG = Logger.getLogger(ServiceImplClassGenerator.class);
 
 	private final ClassSourceModelUtils classSourceModelUtils;
+	private final DatabaseSO databaseSO;
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
 	public ServiceImplClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
-			TypeConverter typeConverter) {
+			TypeConverter typeConverter, DatabaseSO databaseSO) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
+		this.databaseSO = databaseSO;
 		this.nameConverter = nameConverter;
 		this.typeConverter = typeConverter;
 	}
@@ -117,6 +120,9 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 			csm.getMethods().add(createFindById(soClassName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
 					persistencePortAttrName, persistenceExceptionClassName));
+			this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
+					.forEach(columnSO -> csm.getMethods()
+							.add(createFindXByY(columnSO, tableSO, soClassName, persistencePortAttrName)));
 		}
 		return csm;
 	}
@@ -187,6 +193,28 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 				.setCode( //
 						"\t\tthis." + persistencePortAttrName + ".save(" + soAttrName + ");\n" //
 								+ "\t}\n");
+	}
+
+	private MethodSourceModel createFindXByY(ColumnSO columnSO, TableSO tableSO, String soClassName,
+			String persistencePortAttrName) {
+		String methodName = "find" + this.nameConverter.getPluralName(tableSO) + "For"
+				+ this.nameConverter.getSingularName(columnSO.getTable());
+		String idParameterName = this.nameConverter.columnNameToAttributeName(columnSO, true);
+		return new MethodSourceModel() //
+				.setName(methodName) //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.setReturnType("ResultPageSO<" + soClassName + ">") //
+				.addParameters(new ParameterSourceModel() //
+						.setName(idParameterName) //
+						.setType(this.typeConverter.typeSOToTypeString(columnSO.getType(), columnSO.isNullable()))) //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+				.setCode("\t\tList<" + soClassName + "> l = this." + persistencePortAttrName + "." + methodName + "("
+						+ idParameterName + ");\n" //
+						+ "\t\treturn new ResultPageSO<" + soClassName
+						+ ">().setCurrentPage(0).setResultsPerPage(l.size()).setResults(l).setTotalResults(l.size());\n" //
+						+ "\t}\n") //
+		;
 	}
 
 }

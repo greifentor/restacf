@@ -6,9 +6,10 @@ import java.sql.Types;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.OptionSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 
 /**
  * A converter for table names.
@@ -48,10 +49,22 @@ public class NameConverter {
 	 *         "null" value is passed.
 	 */
 	public String columnNameToAttributeName(ColumnSO columnSO) {
+		return columnNameToAttributeName(columnSO, false);
+	}
+
+	/**
+	 * Converts a column name into a Java attribute name.
+	 * 
+	 * @param columnSO               The column service object whose name is to convert.
+	 * @param useQualifiedColumnName Set this flag to get an attribute name for the qualified column name.
+	 * @return A Java attribute name based on the name of the passed column service object, or a "null" value, if a
+	 *         "null" value is passed.
+	 */
+	public String columnNameToAttributeName(ColumnSO columnSO, boolean useQualifiedColumnName) {
 		if (columnSO == null) {
 			return null;
 		}
-		String columnName = columnSO.getName();
+		String columnName = (useQualifiedColumnName ? columnSO.getTable().getName() + "_" : "") + columnSO.getName();
 		ensure(!columnName.isEmpty(), "column name cannot be empty.");
 		if (containsUnderScores(columnName)) {
 			columnName = buildTableNameFromUnderScoreString(columnName);
@@ -106,6 +119,25 @@ public class NameConverter {
 			return null;
 		}
 		return "set" + this.firstCharToUpperCase(this.columnNameToAttributeName(column));
+	}
+
+	/**
+	 * Returns a plural name for the passed table with a starting uppercase letter.
+	 * 
+	 * @param tableSO The table whose plural name is to create.
+	 * @return the plural name for the passed table.
+	 */
+	public String getPluralName(TableSO tableSO) {
+		return tableSO.getOptionByName("PLURAL_NAME") //
+				.map(OptionSO::getValue) //
+				.orElseGet(() -> {
+					String n = getClassName(tableSO) + "s";
+					if (n.endsWith("ys")) {
+						n = n.substring(0, n.length() - 2) + "ies";
+					}
+					return n;
+				}) //
+		;
 	}
 
 	/**
@@ -188,6 +220,16 @@ public class NameConverter {
 			databaseName = firstCharToUpperCase(databaseName);
 		}
 		return databaseName;
+	}
+
+	/**
+	 * Returns a singular name for the passed table with a starting uppercase letter.
+	 * 
+	 * @param tableSO The table whose singular name is to create.
+	 * @return the singular name for the passed table.
+	 */
+	public String getSingularName(TableSO tableSO) {
+		return getClassName(tableSO);
 	}
 
 	/**

@@ -7,7 +7,7 @@
  */
 package rest.acf;
 
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 import rest.acf.model.ClassSourceModel;
 
 /**

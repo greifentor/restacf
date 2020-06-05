@@ -4,6 +4,7 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 				http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	<!-- GENERATED CODE!!! DO NOT CHANGE!!! -->
 	<changeSet author="rest-acf" id="initial-db-001">
 		<createTable tableName="BOOK">
 			<column name="ID" type="BIGINT">

@@ -2,7 +2,7 @@ package rest.acf.generator.converter;
 
 import static de.ollie.utils.Check.ensure;
 
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
 import rest.acf.generator.openapi.OpenAPIModel;
 
 /**

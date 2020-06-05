@@ -15,11 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
-import de.ollie.archimedes.alexandrian.service.ReferenceSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.so.ReferenceSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.model.AnnotationSourceModel;
@@ -108,7 +108,8 @@ public class ClassSourceModelUtilsTest {
 		// Prepare
 		String attributeName = "attributeName";
 		String typeName = "int";
-		ColumnSO column = new ColumnSO().setName(attributeName).setType(new TypeSO().setSqlType(Types.INTEGER));
+		ColumnSO column = new ColumnSO().setName(attributeName).setNullable(false)
+				.setType(new TypeSO().setSqlType(Types.INTEGER));
 		TableSO table = new TableSO().setName(TABLE_NAME);
 		column.setTable(table);
 		ClassSourceModel csm = new ClassSourceModel();

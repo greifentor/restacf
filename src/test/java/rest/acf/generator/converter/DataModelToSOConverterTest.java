@@ -18,14 +18,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import archimedes.model.ColumnModel;
 import archimedes.model.DataModel;
 import archimedes.model.DomainModel;
+import archimedes.model.OptionModel;
 import archimedes.model.TableModel;
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
-import de.ollie.archimedes.alexandrian.service.ReferenceSO;
-import de.ollie.archimedes.alexandrian.service.SchemeSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import archimedes.scheme.Option;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.so.OptionSO;
+import de.ollie.archimedes.alexandrian.service.so.ReferenceSO;
+import de.ollie.archimedes.alexandrian.service.so.SchemeSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 
 /**
  * Unit tests of class "DataModelToSOConverter".
@@ -39,6 +42,8 @@ public class DataModelToSOConverterTest {
 	private static final String COLUMN0_NAME = "Column0";
 	private static final String COLUMN1_NAME = "Column1";
 	private static final String MODEL_NAME = "ModelName";
+	private static final String OPTION_CONTENT = "optionContent";
+	private static final String OPTION_NAME = "OptionName";
 	private static final String TABLE_NAME = "TableName";
 	private static final int TYPE_BIGINT = Types.BIGINT;
 	private static final int TYPE_VARCHAR = Types.VARCHAR;
@@ -70,7 +75,11 @@ public class DataModelToSOConverterTest {
 		ForeignKeySO foreignKey = new ForeignKeySO().setReferences(Arrays.asList(reference));
 		tableReferencing.setForeignKeys(Arrays.asList(foreignKey));
 		SchemeSO scheme = new SchemeSO().setName("public").setTables(Arrays.asList(table, tableReferencing));
-		DatabaseSO expected = new DatabaseSO().setName(MODEL_NAME).setSchemes(Arrays.asList(scheme));
+		DatabaseSO expected = new DatabaseSO() //
+				.setName(MODEL_NAME) //
+				.setSchemes(Arrays.asList(scheme)) //
+				.addOptions(new OptionSO().setName(OPTION_NAME).setValue(OPTION_CONTENT)) //
+		;
 		DataModel model = mock(DataModel.class);
 		TableModel tm = mock(TableModel.class);
 		TableModel tmReferencing = mock(TableModel.class);
@@ -100,6 +109,7 @@ public class DataModelToSOConverterTest {
 		when(cm2.getReferencedTable()).thenReturn(tm);
 		when(model.getName()).thenReturn(MODEL_NAME);
 		when(model.getTables()).thenReturn(new TableModel[] { tm, tmReferencing });
+		when(model.getOptions()).thenReturn(new OptionModel[] { new Option(OPTION_NAME, OPTION_CONTENT) });
 		// Run
 		DatabaseSO returned = this.unitUnderTest.convert(model);
 		// Check

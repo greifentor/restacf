@@ -42,8 +42,7 @@ public class BookRDBMSPersistenceAdapter implements BookPersistencePort {
 				result = true;
 			}
 		} catch (Exception e) {
-			throw new PersistenceException(PersistenceException.Type.WriteError,
-					"error while deleting book with id: " + id, e);
+			throw new PersistenceException(PersistenceException.Type.WriteError, "error while deleting book with id: " + id, e);
 		}
 		return result;
 	}

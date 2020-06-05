@@ -2,7 +2,8 @@ package rest.acf.generator;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
 
@@ -39,7 +40,8 @@ public class ApplicationPropertiesGenerator {
 	 */
 	public String generate(DatabaseSO databaseSO) {
 		NameConverter nameConverter = new NameConverter();
-		String code = "app.version=@project.version@\n" //
+		return "# " + RESTServerCodeFactory.DO_NOT_CHANGE_TAG + "\n\n\n" //
+				+ "app.version=@project.version@\n" //
 				+ "\n" //
 				+ "spring.liquibase.change-log=classpath:db/change-log/change-log-master.xml\n" //
 				+ "\n" //
@@ -52,7 +54,6 @@ public class ApplicationPropertiesGenerator {
 				+ "spring.datasource.driverClassName=org.hsqldb.jdbc.JDBCDriver\n" //
 				+ "spring.datasource.username=sa\n" //
 				+ "spring.datasource.password=";
-		return code;
 	}
 
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 
 /**
  * Unit tests for class "TypeConverter".

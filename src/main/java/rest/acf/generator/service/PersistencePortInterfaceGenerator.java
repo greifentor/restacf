@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -28,6 +29,7 @@ public class PersistencePortInterfaceGenerator {
 	private static final Logger LOG = Logger.getLogger(PersistencePortInterfaceGenerator.class);
 
 	private final ClassSourceModelUtils classSourceModelUtils;
+	private final DatabaseSO databaseSO;
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
@@ -37,11 +39,13 @@ public class PersistencePortInterfaceGenerator {
 	 * @param classSourceModelUtils An access to the class source model utils.
 	 * @param nameConverter         An access to the name converter of the application.
 	 * @param typeConverter         An access to the type converter of the application.
+	 * @param databaseSO            A reference to the database model which the code should be generated for.
 	 */
 	public PersistencePortInterfaceGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
-			TypeConverter typeConverter) {
+			TypeConverter typeConverter, DatabaseSO databaseSO) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
+		this.databaseSO = databaseSO;
 		this.nameConverter = nameConverter;
 		this.typeConverter = typeConverter;
 	}
@@ -90,6 +94,8 @@ public class PersistencePortInterfaceGenerator {
 		ism.getMethods().add(createFindAll(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createSave(soClassName, persistenceExceptionClassName));
+		this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
+				.forEach(columnSO -> ism.getMethods().add(createFindXByY(columnSO, tableSO, soClassName)));
 		return ism;
 	}
 
@@ -129,6 +135,18 @@ public class PersistencePortInterfaceGenerator {
 				.setReturnType("void") //
 				.addParameters(new ParameterSourceModel().setName("so").setType(soClassName)) //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
+	}
+
+	private MethodSourceModel createFindXByY(ColumnSO columnSO, TableSO tableSO, String soClassName) {
+		return new MethodSourceModel() //
+				.setName("find" + this.nameConverter.getPluralName(tableSO) + "For"
+						+ this.nameConverter.getSingularName(columnSO.getTable())) //
+				.setReturnType("List<" + soClassName + ">") //
+				.addParameters(new ParameterSourceModel() //
+						.setName(this.nameConverter.columnNameToAttributeName(columnSO, true)) //
+						.setType(this.typeConverter.typeSOToTypeString(columnSO.getType(), columnSO.isNullable()))) //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+		;
 	}
 
 }

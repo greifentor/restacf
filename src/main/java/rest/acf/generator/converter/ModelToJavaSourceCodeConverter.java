@@ -328,6 +328,24 @@ public class ModelToJavaSourceCodeConverter {
 			if (!hasMethod) {
 				code += "\n";
 			}
+			for (AnnotationSourceModel asm : method.getAnnotations()) {
+				code += "\t@" + asm.getName();
+				if (!asm.getProperties().isEmpty()) {
+					code += "(";
+					boolean first = true;
+					for (PropertySourceModel<?> prosm : asm.getProperties()) {
+						if (!first) {
+							code += ", ";
+						}
+						code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+						first = false;
+					}
+					code += ")";
+				} else if (asm.getValue() != null) {
+					code += "(" + getJavaConstantValue(asm.getValue()) + ")";
+				}
+				code += "\n";
+			}
 			code += "\t" + method.getReturnType() + " " + method.getName() + "(";
 			hasMethod = true;
 			String paramStr = "";

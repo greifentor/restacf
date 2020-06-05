@@ -9,7 +9,7 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
 import rest.acf.generator.converter.DatabaseSOToOpenAPIModelConverter;
 import rest.acf.generator.openapi.OpenAPIModel;
 

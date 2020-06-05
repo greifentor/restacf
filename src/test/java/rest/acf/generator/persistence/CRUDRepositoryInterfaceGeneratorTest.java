@@ -14,9 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -54,7 +55,7 @@ public class CRUDRepositoryInterfaceGeneratorTest {
 	public void setUp() {
 		this.classSourceModelUtils = new ClassSourceModelUtils(this.nameConverter, this.typeConverter);
 		this.unitUnderTest = new CRUDRepositoryInterfaceGenerator(this.classSourceModelUtils, this.nameConverter,
-				this.typeConverter);
+				this.typeConverter, new DatabaseSO());
 	}
 
 	@Test

@@ -5,14 +5,16 @@ import java.util.Arrays;
 import archimedes.model.ColumnModel;
 import archimedes.model.DataModel;
 import archimedes.model.DomainModel;
+import archimedes.model.OptionModel;
 import archimedes.model.TableModel;
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
-import de.ollie.archimedes.alexandrian.service.ReferenceSO;
-import de.ollie.archimedes.alexandrian.service.SchemeSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.so.OptionSO;
+import de.ollie.archimedes.alexandrian.service.so.ReferenceSO;
+import de.ollie.archimedes.alexandrian.service.so.SchemeSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 
 /**
  * A convert for Archimedes DataModels (old style) to SO's.
@@ -69,6 +71,9 @@ public class DataModelToSOConverter {
 			}
 		}
 		DatabaseSO dbso = new DatabaseSO().setName(dataModel.getName()).setSchemes(Arrays.asList(sso));
+		for (OptionModel option : dataModel.getOptions()) {
+			dbso.addOptions(new OptionSO().setName(option.getName()).setValue(option.getParameter()));
+		}
 		return dbso;
 	}
 

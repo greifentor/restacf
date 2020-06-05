@@ -2,7 +2,8 @@ package rest.acf.generator;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.persistence.CRUDRepositoryInterfaceGenerator;
@@ -64,7 +65,7 @@ public class ApplicationClassGenerator {
 				+ " *\n" //
 				+ " * @author " + authorName + "\n" //
 				+ " *\n" //
-				+ " * GENERATED CODE!!! DO NOT CHANGE!!!\n" //
+				+ " * " + RESTServerCodeFactory.DO_NOT_CHANGE_TAG + "\n" //
 				+ " */\n"));
 		MethodSourceModel methodMain = new MethodSourceModel().setName("main");
 		methodMain.addModifiers(ModifierSourceModel.PUBLIC, ModifierSourceModel.STATIC);

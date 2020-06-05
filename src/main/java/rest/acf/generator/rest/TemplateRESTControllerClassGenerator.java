@@ -5,11 +5,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.ForeignKeySO;
-import de.ollie.archimedes.alexandrian.service.ReferenceSO;
-import de.ollie.archimedes.alexandrian.service.SchemeSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.ForeignKeySO;
+import de.ollie.archimedes.alexandrian.service.so.ReferenceSO;
+import de.ollie.archimedes.alexandrian.service.so.SchemeSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -44,15 +44,16 @@ public class TemplateRESTControllerClassGenerator {
 		imports.add("org.springframework.web.bind.annotation.RequestMapping");
 		imports.add("org.springframework.web.bind.annotation.RestController");
 		imports.add("");
-		imports.add("de.ollie.library.rest.v1.converter.RackDTOConverter");
-		imports.add("de.ollie.library.rest.v1.dto.RackDTO");
-		imports.add("de.ollie.library.rest.v1.dto.ResultPageDTO");
-		imports.add("de.ollie.library.service.RackService");
-		imports.add("de.ollie.library.service.so.RackSO");
-		imports.add("de.ollie.library.service.so.ResultPageSO");
+		imports.add("${base.package.name}.rest.v1.converter.${dtoConverter.class.name}");
+		imports.add("${base.package.name}.rest.v1.dto.${dto.class.name}");
+		imports.add("${base.package.name}.rest.v1.dto.ResultPageDTO");
+		imports.add("${base.package.name}.service.${service.class.name}");
+		imports.add("${base.package.name}.service.so.${so.class.name}");
+		imports.add("${base.package.name}.service.so.ResultPageSO");
 		try {
-			code = getCodeFromTemplate(
-					Files.readAllLines(Paths.get("src/main/resources/templates/RESTController.template")));
+			code = getCodeFromTemplate(Files
+					.readAllLines(Paths.get(System.getProperty("restacf.template.path", "src/main/resources/templates/")
+							+ "RESTController.template")));
 			code = code.replace("$^{foreign.attribute.code.block}\n",
 					getForeignAttributeCodeBlock(table, database, imports));
 			code = code.replace("$^{findXXXForYYY.code.block}\n",
@@ -104,7 +105,8 @@ public class TemplateRESTControllerClassGenerator {
 			List<ReferenceSO> refs = getReferencingTables(table, database);
 			if (refs.size() > 0) {
 				String template = getCodeFromTemplate(Files.readAllLines(
-						Paths.get("src/main/resources/templates/RESTController-foreign-attributeCodeBlock.template")));
+						Paths.get(System.getProperty("restacf.template.path", "src/main/resources/templates/")
+								+ "RESTController-foreign-attributeCodeBlock.template")));
 				for (ReferenceSO ref : refs) {
 					TableSO refTable = ref.getReferencingColumn().getTable();
 					code += template;
@@ -133,8 +135,9 @@ public class TemplateRESTControllerClassGenerator {
 		try {
 			List<ReferenceSO> refs = getReferencingTables(table, database);
 			if (refs.size() > 0) {
-				String template = getCodeFromTemplate(Files
-						.readAllLines(Paths.get("src/main/resources/templates/RESTController-findXXXForYYY.template")));
+				String template = getCodeFromTemplate(Files.readAllLines(
+						Paths.get(System.getProperty("restacf.template.path", "src/main/resources/templates/")
+								+ "RESTController-findXXXForYYY.template")));
 				for (ReferenceSO ref : refs) {
 					TableSO refTable = ref.getReferencingColumn().getTable();
 					code += template;

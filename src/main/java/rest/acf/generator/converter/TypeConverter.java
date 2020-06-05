@@ -2,7 +2,7 @@ package rest.acf.generator.converter;
 
 import java.sql.Types;
 
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 
 /**
  * A converter for type objects.

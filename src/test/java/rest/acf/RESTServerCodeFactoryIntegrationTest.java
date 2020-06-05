@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import archimedes.legacy.scheme.ArchimedesObjectFactory;
 import archimedes.legacy.scheme.Diagramm;
 import archimedes.model.DataModel;
+import archimedes.scheme.Option;
 import archimedes.scheme.xml.ModelXMLReader;
 
 /**
@@ -488,6 +489,42 @@ public class RESTServerCodeFactoryIntegrationTest {
 		String generated = new String(Files
 				.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service", "so", "ResultPageSO.java")));
 		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModelWithIGNORE_BY_PACKAGE_REST_CreatesCorrectResultPageSOClassFile()
+			throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		dm.addOption(new Option("IGNORE_BY_PACKAGE", "rest"));
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		String expected = new String(Files.readAllBytes(
+				Paths.get("src/test/resources/", "de", "ollie", "library", "service", "so", "ResultPageSO.java")));
+		String generated = new String(Files
+				.readAllBytes(Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service", "so", "ResultPageSO.java")));
+		assertEquals(expected.toString(), generated.toString());
+	}
+
+	@Test
+	public void generate_PassADataModelWithIGNORE_BY_PACKAGE_SERVICE_CreatesNoResultPageSOClassFile() throws Exception {
+		if (new File(OUTPUT_PATH).exists()) {
+			Files.walk(Paths.get(OUTPUT_PATH)).sorted(Comparator.reverseOrder()).map(Path::toFile)
+					.peek(System.out::println).forEach(File::delete);
+		}
+		ModelXMLReader reader = new ModelXMLReader(new ArchimedesObjectFactory());
+		DataModel dm = (Diagramm) reader.read("src/test/resources/library.xml");
+		dm.addOption(new Option("IGNORE_BY_PACKAGE", "service"));
+		this.unitUnderTest.setDataModel(dm);
+		this.unitUnderTest.generate(OUTPUT_PATH);
+		assertThat(new File(OUTPUT_PATH).exists(), equalTo(true));
+		Path generatedPath = Paths.get(OUTPUT_PATH, "de", "ollie", "library", "service", "so", "ResultPageSO.java");
+		assertThat(new File(generatedPath.toString()).exists(), equalTo(false));
 	}
 
 }

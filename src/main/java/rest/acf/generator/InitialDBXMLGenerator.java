@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.DatabaseSO;
-import de.ollie.archimedes.alexandrian.service.SchemeSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.SchemeSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import rest.acf.RESTServerCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -55,7 +56,9 @@ public class InitialDBXMLGenerator {
 				+ "		xmlns=\"http://www.liquibase.org/xml/ns/dbchangelog/1.9\" \n" //
 				+ "		xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" //
 				+ "		xsi:schemaLocation=\"http://www.liquibase.org/xml/ns/dbchangelog/1.9\n" //
-				+ "				http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd\">\n";
+				+ "				http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd\">\n" //
+				+ "	<!-- " + RESTServerCodeFactory.DO_NOT_CHANGE_TAG + " -->\n" //
+		;
 		int i = 1;
 		for (SchemeSO schemeSO : databaseSO.getSchemes()) {
 			for (TableSO tableSO : schemeSO.getTables()) {

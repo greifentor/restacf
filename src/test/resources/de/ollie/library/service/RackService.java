@@ -1,6 +1,5 @@
 package de.ollie.library.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import de.ollie.library.service.persistence.exception.PersistenceException;

@@ -14,9 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
-import de.ollie.archimedes.alexandrian.service.TypeSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.TypeSO;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
@@ -67,7 +67,8 @@ public class DBOJPAClassGeneratorTest {
 	@Test
 	public void generate_PassASimpleClassWithSimpleFields_ReturnsACorrectClassSourceModel() {
 		// Prepare
-		ColumnSO column0 = new ColumnSO().setName(COLUMN_NAME_0).setType(COLUMN_TYPE_0).setPkMember(true);
+		ColumnSO column0 = new ColumnSO().setName(COLUMN_NAME_0).setNullable(false).setType(COLUMN_TYPE_0)
+				.setPkMember(true);
 		ColumnSO column1 = new ColumnSO().setName(COLUMN_NAME_1).setType(COLUMN_TYPE_1);
 		List<ColumnSO> columns = Arrays.asList(column0, column1);
 		TableSO table = new TableSO().setName(TABLE_NAME).setColumns(columns);

@@ -33,9 +33,20 @@
 			<artifactId>antlr4-runtime</artifactId>
 			<version>4.7.1</version>
 		</dependency>
+		 <dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-commons</artifactId>
+			<version>1.5.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.3.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
 			<version>5.3.1</version>
 			<scope>test</scope>
 		</dependency>
@@ -80,7 +91,7 @@
 		<dependency>
 			<groupId>de.ollie</groupId>
 			<artifactId>archimedes-legacy</artifactId>
-			<version>1.82.3</version>
+			<version>1.87.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.ollie</groupId>
@@ -149,7 +160,7 @@
 				<!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>

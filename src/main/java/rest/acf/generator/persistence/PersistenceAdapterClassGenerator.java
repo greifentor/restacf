@@ -6,8 +6,9 @@ import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
-import de.ollie.archimedes.alexandrian.service.ColumnSO;
-import de.ollie.archimedes.alexandrian.service.TableSO;
+import de.ollie.archimedes.alexandrian.service.so.ColumnSO;
+import de.ollie.archimedes.alexandrian.service.so.DatabaseSO;
+import de.ollie.archimedes.alexandrian.service.so.TableSO;
 import rest.acf.ClassCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
@@ -32,16 +33,18 @@ import rest.acf.model.ThrownExceptionSourceModel;
  */
 public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 
-	private static final Logger LOG = Logger.getLogger(CRUDRepositoryInterfaceGenerator.class);
+	private static final Logger LOG = Logger.getLogger(PersistenceAdapterClassGenerator.class);
 
 	private final ClassSourceModelUtils classSourceModelUtils;
+	private final DatabaseSO databaseSO;
 	private final NameConverter nameConverter;
 	private final TypeConverter typeConverter;
 
 	public PersistenceAdapterClassGenerator(ClassSourceModelUtils classSourceModelUtils, NameConverter nameConverter,
-			TypeConverter typeConverter) {
+			TypeConverter typeConverter, DatabaseSO databaseSO) {
 		super();
 		this.classSourceModelUtils = classSourceModelUtils;
+		this.databaseSO = databaseSO;
 		this.nameConverter = nameConverter;
 		this.typeConverter = typeConverter;
 	}
@@ -130,6 +133,9 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 			csm.getMethods().add(createFindById(soClassName, dboClassName, pkAttrName, pkClassName, repositoryAttrName,
 					dboConverterAttrName));
 			csm.getMethods().add(createSave(soClassName, dboClassName, dboConverterAttrName, repositoryAttrName));
+			this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
+					.forEach(columnSO -> csm.getMethods().add(createFindXByY(columnSO, tableSO, soClassName,
+							dboClassName, repositoryAttrName, dboConverterAttrName)));
 		}
 		return csm;
 	}
@@ -189,12 +195,9 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 	}
 
 	/*
-	 * @Override public List<RackSO> findAll() throws PersistenceException { try {
-	 * List<RackSO> sos = new ArrayList<>(); for (RackDBO dbo :
-	 * this.rackRepository.findAll()) {
-	 * sos.add(this.rackDBOConverter.convertDBOToSO(dbo)); } return sos; } catch
-	 * (Exception e) { throw new
-	 * PersistenceException(PersistenceException.Type.ReadError,
+	 * @Override public List<RackSO> findAll() throws PersistenceException { try { List<RackSO> sos = new ArrayList<>();
+	 * for (RackDBO dbo : this.rackRepository.findAll()) { sos.add(this.rackDBOConverter.convertDBOToSO(dbo)); } return
+	 * sos; } catch (Exception e) { throw new PersistenceException(PersistenceException.Type.ReadError,
 	 * "error while finding all racks.", e); } }
 	 * 
 	 * 
@@ -242,6 +245,36 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 								+ "\"error while saving: \" + so, e);\n" //
 								+ "\t\t}\n" //
 								+ "\t}\n");
+	}
+
+	private MethodSourceModel createFindXByY(ColumnSO columnSO, TableSO tableSO, String soClassName,
+			String dboClassName, String repositoryAttrName, String dboConverterAttrName) {
+		String xPluralName = this.nameConverter.getPluralName(tableSO);
+		String ySingularName = this.nameConverter.getSingularName(columnSO.getTable());
+		String methodName = "find" + xPluralName + "For" + ySingularName;
+		String idParameterName = this.nameConverter.columnNameToAttributeName(columnSO, true);
+		return new MethodSourceModel() //
+				.setName(methodName) //
+				.addModifiers(ModifierSourceModel.PUBLIC) //
+				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
+				.setReturnType("List<" + soClassName + ">") //
+				.addParameters(new ParameterSourceModel() //
+						.setName(idParameterName) //
+						.setType(this.typeConverter.typeSOToTypeString(columnSO.getType(), columnSO.isNullable()))) //
+				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
+				.setCode("\t\ttry {\n" + //
+						"\t\t\tList<" + soClassName + "> sos = new ArrayList<>();\n" + "			for ("
+						+ dboClassName + " dbo : this." + repositoryAttrName + "." + methodName + "(" + idParameterName
+						+ ")) {\n" //
+						+ "\t\t\t\tsos.add(this." + dboConverterAttrName + ".convertDBOToSO(dbo));\n" + "\t\t\t}\n" //
+						+ "\t\t\treturn sos;\n" //
+						+ "\t\t} catch (Exception e) {\n" //
+						+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.ReadError, \"error while "
+						+ "finding all " + this.nameConverter.classNameToAttrName(xPluralName) + " for "
+						+ this.nameConverter.classNameToAttrName(ySingularName) + ":\" + " + idParameterName + ", e);\n" //
+						+ "\t\t}\n" //
+						+ "\t}\n") //
+		;
 	}
 
 }
