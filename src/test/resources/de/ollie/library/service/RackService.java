@@ -21,6 +21,6 @@ public interface RackService {
 
 	Optional<RackSO> findById(long id) throws PersistenceException;
 
-	void save(RackSO rack) throws PersistenceException;
+	long save(RackSO rack) throws PersistenceException;
 
 }

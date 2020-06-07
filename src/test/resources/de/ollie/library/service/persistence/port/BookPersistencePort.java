@@ -21,7 +21,7 @@ public interface BookPersistencePort {
 
 	Optional<BookSO> findById(long id) throws PersistenceException;
 
-	void save(BookSO so) throws PersistenceException;
+	long save(BookSO so) throws PersistenceException;
 
 	List<BookSO> findBooksForRack(long rackId) throws PersistenceException;
 

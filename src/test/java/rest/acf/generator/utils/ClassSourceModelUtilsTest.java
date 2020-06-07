@@ -74,8 +74,8 @@ public class ClassSourceModelUtilsTest {
 		String propertyName = "propertyName";
 		String propertyValue = "propertyValue";
 		AttributeSourceModel asm = new AttributeSourceModel();
-		AnnotationSourceModel expected = new AnnotationSourceModel().setName(name).setProperties(
-				Arrays.asList(new PropertySourceModel<>().setName(propertyName).setContent(propertyValue)));
+		AnnotationSourceModel expected = new AnnotationSourceModel().setName(name).setProperties(Arrays
+				.asList(new PropertySourceModel<>().setName(propertyName).setContent(propertyValue).setQuoted(true)));
 		// Run
 		AnnotationSourceModel returned = this.unitUnderTest.addAnnotation(asm, name, propertyName, propertyValue);
 		// Check
@@ -92,8 +92,8 @@ public class ClassSourceModelUtilsTest {
 		String propertyName = "propertyName";
 		String propertyValue = "propertyValue";
 		ClassSourceModel csm = new ClassSourceModel();
-		AnnotationSourceModel expected = new AnnotationSourceModel().setName(name).setProperties(
-				Arrays.asList(new PropertySourceModel<>().setName(propertyName).setContent(propertyValue)));
+		AnnotationSourceModel expected = new AnnotationSourceModel().setName(name).setProperties(Arrays
+				.asList(new PropertySourceModel<>().setName(propertyName).setContent(propertyValue).setQuoted(true)));
 		// Run
 		AnnotationSourceModel returned = this.unitUnderTest.addAnnotation(csm, name, propertyName, propertyValue);
 		// Check

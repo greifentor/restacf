@@ -45,8 +45,8 @@ public class RackServiceImpl implements RackService {
 	}
 
 	@Override
-	public void save(RackSO rack) throws PersistenceException {
-		this.rackPersistencePort.save(rack);
+	public long save(RackSO rack) throws PersistenceException {
+		return this.rackPersistencePort.save(rack);
 	}
 
 }

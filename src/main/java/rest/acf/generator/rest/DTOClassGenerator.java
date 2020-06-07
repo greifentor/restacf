@@ -6,6 +6,7 @@ import rest.acf.ClassCodeFactory;
 import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.generator.utils.ClassSourceModelUtils;
+import rest.acf.model.AnnotationValue;
 import rest.acf.model.ClassCommentSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ModifierSourceModel;
@@ -41,7 +42,8 @@ public class DTOClassGenerator implements ClassCodeFactory {
 				.setPackageName("${base.package.name}." + this.classSourceModelUtils.createDTOPackageNameSuffix()));
 		this.classSourceModelUtils.addImport(csm, "lombok", "Data");
 		this.classSourceModelUtils.addImport(csm, "lombok.experimental", "Accessors");
-		this.classSourceModelUtils.addAnnotation(csm, "Accessors", "chain", true);
+		this.classSourceModelUtils.addAnnotation(csm, "Accessors", "chain",
+				new AnnotationValue().setQuoted(false).setValue("true"));
 		this.classSourceModelUtils.addAnnotation(csm, "Data");
 		csm.setComment(new ClassCommentSourceModel().setComment("/**\n" //
 				+ " * A data transfer object class for " + tableSO.getName().toLowerCase() + "s.\n" //

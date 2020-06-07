@@ -2,6 +2,8 @@ package de.ollie.library.persistence.dbo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -22,6 +24,7 @@ import lombok.experimental.Accessors;
 public class RackDBO {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "RACK_IDS")
 	@Column(name = "ID")
 	private long id;
 	@Column(name = "NAME")

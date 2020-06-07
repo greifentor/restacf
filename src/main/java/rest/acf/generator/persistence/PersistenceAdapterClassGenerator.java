@@ -60,6 +60,7 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 			return null;
 		}
 		String pkAttrName = this.nameConverter.columnNameToAttributeName(pkMembers.get(0));
+		String pkGetterName = this.nameConverter.getGetterName(pkMembers.get(0));
 		String pkClassName = this.typeConverter.typeSOToTypeString(pkMembers.get(0).getType(),
 				pkMembers.get(0).isNullable());
 		String dboClassName = this.classSourceModelUtils.createJPAModelClassSourceModel(tableSO).getName();
@@ -132,7 +133,8 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 					elementName + "s"));
 			csm.getMethods().add(createFindById(soClassName, dboClassName, pkAttrName, pkClassName, repositoryAttrName,
 					dboConverterAttrName));
-			csm.getMethods().add(createSave(soClassName, dboClassName, dboConverterAttrName, repositoryAttrName));
+			csm.getMethods().add(createSave(soClassName, dboClassName, pkClassName, dboConverterAttrName,
+					repositoryAttrName, pkGetterName));
 			this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
 					.forEach(columnSO -> csm.getMethods().add(createFindXByY(columnSO, tableSO, soClassName,
 							dboClassName, repositoryAttrName, dboConverterAttrName)));
@@ -227,19 +229,19 @@ public class PersistenceAdapterClassGenerator implements ClassCodeFactory {
 								+ "\t}\n");
 	}
 
-	private MethodSourceModel createSave(String soClassName, String dboClassName, String dboConverterAttrName,
-			String repositoryAttrName) {
+	private MethodSourceModel createSave(String soClassName, String dboClassName, String pkClassName,
+			String dboConverterAttrName, String repositoryAttrName, String pkGetterName) {
 		return new MethodSourceModel().setName("save") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
 				.addParameters(new ParameterSourceModel().setName("so").setType(soClassName)) //
-				.setReturnType("void") //
+				.setReturnType(pkClassName) //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName("PersistenceException")) //
 				.setCode( //
 						"\t\ttry {\n" //
 								+ "\t\t\t" + dboClassName + " dbo = this." + dboConverterAttrName
 								+ ".convertSOToDBO(so);\n" //
-								+ "\t\t\tthis." + repositoryAttrName + ".save(dbo);\n" //
+								+ "\t\t\treturn this." + repositoryAttrName + ".save(dbo)." + pkGetterName + "();\n" //
 								+ "\t\t} catch (Exception e) {\n" //
 								+ "\t\t\tthrow new PersistenceException(PersistenceException.Type.WriteError, " //
 								+ "\"error while saving: \" + so, e);\n" //

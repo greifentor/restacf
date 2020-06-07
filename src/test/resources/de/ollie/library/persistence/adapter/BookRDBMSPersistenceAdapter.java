@@ -74,10 +74,10 @@ public class BookRDBMSPersistenceAdapter implements BookPersistencePort {
 	}
 
 	@Override
-	public void save(BookSO so) throws PersistenceException {
+	public long save(BookSO so) throws PersistenceException {
 		try {
 			BookDBO dbo = this.bookDBOConverter.convertSOToDBO(so);
-			this.bookRepository.save(dbo);
+			return this.bookRepository.save(dbo).getId();
 		} catch (Exception e) {
 			throw new PersistenceException(PersistenceException.Type.WriteError, "error while saving: " + so, e);
 		}

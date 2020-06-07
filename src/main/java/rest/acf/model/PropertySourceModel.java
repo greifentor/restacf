@@ -17,5 +17,6 @@ public class PropertySourceModel<T> {
 
 	private String name;
 	private T content;
+	private boolean quoted;
 
 }

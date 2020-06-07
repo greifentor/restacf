@@ -101,7 +101,8 @@ public class ModelToJavaSourceCodeConverterTest {
 				+ "\n" //
 				+ "}";
 		AnnotationSourceModel annotation = new AnnotationSourceModel().setName("Annotation")
-				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("name").setContent("aName"),
+				.setProperties(Arrays.asList(
+						new PropertySourceModel<String>().setName("name").setContent("aName").setQuoted(true),
 						new PropertySourceModel<Integer>().setName("value").setContent(4711)));
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
 		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
@@ -163,8 +164,8 @@ public class ModelToJavaSourceCodeConverterTest {
 				.setPackageModel(new PackageSourceModel().setPackageName("another.pack.age"));
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
 		attribute0.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Id"),
-				new AnnotationSourceModel().setName("Column").setProperties(
-						Arrays.asList(new PropertySourceModel<String>().setName("name").setContent("Column0")))));
+				new AnnotationSourceModel().setName("Column").setProperties(Arrays.asList(
+						new PropertySourceModel<String>().setName("name").setContent("Column0").setQuoted(true)))));
 		attribute0.getModifiers().add(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String");
 		attribute1.getModifiers().add(ModifierSourceModel.PRIVATE);

@@ -119,7 +119,7 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 					persistenceExceptionClassName));
 			csm.getMethods().add(createFindById(soClassName, persistencePortAttrName, persistenceExceptionClassName));
 			csm.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
-					persistencePortAttrName, persistenceExceptionClassName));
+					persistencePortAttrName, persistenceExceptionClassName, pkClassName));
 			this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
 					.forEach(columnSO -> csm.getMethods()
 							.add(createFindXByY(columnSO, tableSO, soClassName, persistencePortAttrName)));
@@ -183,15 +183,15 @@ public class ServiceImplClassGenerator implements ClassCodeFactory {
 	}
 
 	private MethodSourceModel createSave(String soClassName, String soAttrName, String persistencePortAttrName,
-			String persistenceExceptionClassName) {
+			String persistenceExceptionClassName, String pkClassName) {
 		return new MethodSourceModel().setName("save") //
 				.addModifiers(ModifierSourceModel.PUBLIC) //
 				.addAnnotations(new AnnotationSourceModel().setName("Override")) //
 				.addParameters(new ParameterSourceModel().setName(soAttrName).setType(soClassName)) //
-				.setReturnType("void") //
+				.setReturnType(pkClassName) //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName)) //
 				.setCode( //
-						"\t\tthis." + persistencePortAttrName + ".save(" + soAttrName + ");\n" //
+						"\t\treturn this." + persistencePortAttrName + ".save(" + soAttrName + ");\n" //
 								+ "\t}\n");
 	}
 

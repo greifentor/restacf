@@ -45,8 +45,8 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public void save(BookSO book) throws PersistenceException {
-		this.bookPersistencePort.save(book);
+	public long save(BookSO book) throws PersistenceException {
+		return this.bookPersistencePort.save(book);
 	}
 
 	@Override

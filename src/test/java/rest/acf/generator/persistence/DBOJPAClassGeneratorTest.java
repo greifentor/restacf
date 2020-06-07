@@ -78,6 +78,10 @@ public class DBOJPAClassGeneratorTest {
 				.setPackageModel(new PackageSourceModel().setPackageName("javax.persistence"));
 		ImportSourceModel importEntityAnnotation = new ImportSourceModel().setClassName("Entity")
 				.setPackageModel(new PackageSourceModel().setPackageName("javax.persistence"));
+		ImportSourceModel importGeneratedValueAnnotation = new ImportSourceModel().setClassName("GeneratedValue")
+				.setPackageModel(new PackageSourceModel().setPackageName("javax.persistence"));
+		ImportSourceModel importGenerationTypeAnnotation = new ImportSourceModel().setClassName("GenerationType")
+				.setPackageModel(new PackageSourceModel().setPackageName("javax.persistence"));
 		ImportSourceModel importIdAnnotation = new ImportSourceModel().setClassName("Id")
 				.setPackageModel(new PackageSourceModel().setPackageName("javax.persistence"));
 		ImportSourceModel importTableAnnotation = new ImportSourceModel().setClassName("Table")
@@ -89,18 +93,25 @@ public class DBOJPAClassGeneratorTest {
 		AnnotationSourceModel annotationAccessors = new AnnotationSourceModel().setName("Accessors")
 				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("chain").setContent("true")));
 		AnnotationSourceModel annotationData = new AnnotationSourceModel().setName("Data");
-		AnnotationSourceModel annotationEntity = new AnnotationSourceModel().setName("Entity")
-				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("name").setContent(TABLE_NAME)));
-		AnnotationSourceModel annotationTable = new AnnotationSourceModel().setName("Table")
-				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("name").setContent(TABLE_NAME)));
+		AnnotationSourceModel annotationEntity = new AnnotationSourceModel().setName("Entity").setProperties(Arrays
+				.asList(new PropertySourceModel<String>().setName("name").setContent(TABLE_NAME).setQuoted(true)));
+		AnnotationSourceModel annotationTable = new AnnotationSourceModel().setName("Table").setProperties(Arrays
+				.asList(new PropertySourceModel<String>().setName("name").setContent(TABLE_NAME).setQuoted(true)));
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int")
-				.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Id"),
-						new AnnotationSourceModel().setName("Column").setProperties(Arrays
-								.asList(new PropertySourceModel<String>().setName("name").setContent(COLUMN_NAME_0)))));
+				.setAnnotations(Arrays.asList( //
+						new AnnotationSourceModel().setName("Id"), //
+						new AnnotationSourceModel().setName("GeneratedValue").setProperties(Arrays.asList( //
+								new PropertySourceModel<String>().setName("strategy").setContent("GenerationType.AUTO")
+										.setQuoted(false), //
+								new PropertySourceModel<String>().setName("generator").setContent(TABLE_NAME + "_IDS")
+										.setQuoted(true))), //
+						new AnnotationSourceModel().setName("Column")
+								.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("name")
+										.setContent(COLUMN_NAME_0).setQuoted(true)))));
 		attribute0.addModifier(ModifierSourceModel.PRIVATE);
 		AttributeSourceModel attribute1 = new AttributeSourceModel().setName("column1").setType("String")
-				.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Column").setProperties(
-						Arrays.asList(new PropertySourceModel<String>().setName("name").setContent(COLUMN_NAME_1)))));
+				.setAnnotations(Arrays.asList(new AnnotationSourceModel().setName("Column").setProperties(Arrays.asList(
+						new PropertySourceModel<String>().setName("name").setContent(COLUMN_NAME_1).setQuoted(true)))));
 		attribute1.addModifier(ModifierSourceModel.PRIVATE);
 		List<AttributeSourceModel> attributes = Arrays.asList(attribute0, attribute1);
 		ClassSourceModel expected = new ClassSourceModel().setComment(new ClassCommentSourceModel().setComment("/**\n" //
@@ -112,7 +123,8 @@ public class DBOJPAClassGeneratorTest {
 				+ " */\n"))
 				.setPackageModel(new PackageSourceModel().setPackageName("${base.package.name}.persistence.dbo"))
 				.setAttributes(attributes).setName(TABLE_NAME + "DBO")
-				.setImports(Arrays.asList(importColumnAnnotation, importEntityAnnotation, importIdAnnotation,
+				.setImports(Arrays.asList(importColumnAnnotation, importEntityAnnotation,
+						importGeneratedValueAnnotation, importGenerationTypeAnnotation, importIdAnnotation,
 						importTableAnnotation, importData, importAccessors))
 				.setAnnotations(Arrays.asList(annotationAccessors, annotationData, annotationEntity, annotationTable));
 		// Run

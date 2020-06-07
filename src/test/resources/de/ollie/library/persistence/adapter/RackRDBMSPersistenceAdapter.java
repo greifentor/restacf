@@ -74,10 +74,10 @@ public class RackRDBMSPersistenceAdapter implements RackPersistencePort {
 	}
 
 	@Override
-	public void save(RackSO so) throws PersistenceException {
+	public long save(RackSO so) throws PersistenceException {
 		try {
 			RackDBO dbo = this.rackDBOConverter.convertSOToDBO(so);
-			this.rackRepository.save(dbo);
+			return this.rackRepository.save(dbo).getId();
 		} catch (Exception e) {
 			throw new PersistenceException(PersistenceException.Type.WriteError, "error while saving: " + so, e);
 		}

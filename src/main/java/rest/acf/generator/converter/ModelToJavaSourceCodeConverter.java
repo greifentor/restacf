@@ -75,7 +75,7 @@ public class ModelToJavaSourceCodeConverter {
 					if (!first) {
 						code += ", ";
 					}
-					code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+					code += prosm.getName() + " = " + getJavaConstantValue(prosm);
 					first = false;
 				}
 				code += ")";
@@ -109,7 +109,7 @@ public class ModelToJavaSourceCodeConverter {
 						if (!first) {
 							code += ", ";
 						}
-						code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+						code += prosm.getName() + " = " + getJavaConstantValue(prosm);
 						first = false;
 					}
 					code += ")";
@@ -148,7 +148,7 @@ public class ModelToJavaSourceCodeConverter {
 						if (!first) {
 							code += ", ";
 						}
-						code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+						code += prosm.getName() + " = " + getJavaConstantValue(prosm);
 						first = false;
 					}
 					code += ")";
@@ -173,7 +173,7 @@ public class ModelToJavaSourceCodeConverter {
 							if (!first) {
 								code += ", ";
 							}
-							code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+							code += prosm.getName() + " = " + getJavaConstantValue(prosm);
 							first = false;
 						}
 						code += ")";
@@ -243,11 +243,18 @@ public class ModelToJavaSourceCodeConverter {
 		return s;
 	}
 
-	private String getJavaConstantValue(Object value) {
-		if (value instanceof String) {
-			return "\"" + String.valueOf(value) + "\"";
+	private String getJavaConstantValue(PropertySourceModel<?> psm) {
+		if (psm.getContent() instanceof String) {
+			return (psm.isQuoted() ? "\"" : "") + String.valueOf(psm.getContent()) + (psm.isQuoted() ? "\"" : "");
 		}
-		return String.valueOf(value);
+		return String.valueOf(psm.getContent());
+	}
+
+	private String getJavaConstantValue(AnnotationSourceModel asm) {
+		if (asm.getValue() instanceof String) {
+			return "\"" + String.valueOf(asm.getValue()) + "\"";
+		}
+		return String.valueOf(asm.getValue());
 	}
 
 	private String getModifierString(Set<ModifierSourceModel> modifiers) {
@@ -315,7 +322,7 @@ public class ModelToJavaSourceCodeConverter {
 					if (!first) {
 						code += ", ";
 					}
-					code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+					code += prosm.getName() + " = " + getJavaConstantValue(prosm);
 					first = false;
 				}
 				code += ")";
@@ -337,12 +344,12 @@ public class ModelToJavaSourceCodeConverter {
 						if (!first) {
 							code += ", ";
 						}
-						code += prosm.getName() + " = " + getJavaConstantValue(prosm.getContent());
+						code += prosm.getName() + " = " + getJavaConstantValue(prosm);
 						first = false;
 					}
 					code += ")";
 				} else if (asm.getValue() != null) {
-					code += "(" + getJavaConstantValue(asm.getValue()) + ")";
+					code += "(" + getJavaConstantValue(asm) + ")";
 				}
 				code += "\n";
 			}

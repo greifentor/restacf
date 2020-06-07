@@ -78,8 +78,8 @@ public class SOClassGeneratorTest {
 				.setPackageModel(new PackageSourceModel().setPackageName("lombok"));
 		ImportSourceModel importAccessors = new ImportSourceModel().setClassName("Accessors")
 				.setPackageModel(new PackageSourceModel().setPackageName("lombok.experimental"));
-		AnnotationSourceModel annotationAccessors = new AnnotationSourceModel().setName("Accessors")
-				.setProperties(Arrays.asList(new PropertySourceModel<String>().setName("chain").setContent("true")));
+		AnnotationSourceModel annotationAccessors = new AnnotationSourceModel().setName("Accessors").setProperties(
+				Arrays.asList(new PropertySourceModel<String>().setName("chain").setContent("true").setQuoted(false)));
 		AnnotationSourceModel annotationData = new AnnotationSourceModel().setName("Data");
 		AttributeSourceModel attribute0 = new AttributeSourceModel().setName("column0").setType("int");
 		attribute0.addModifier(ModifierSourceModel.PRIVATE);

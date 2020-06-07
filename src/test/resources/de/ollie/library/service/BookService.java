@@ -21,7 +21,7 @@ public interface BookService {
 
 	Optional<BookSO> findById(long id) throws PersistenceException;
 
-	void save(BookSO book) throws PersistenceException;
+	long save(BookSO book) throws PersistenceException;
 
 	ResultPageSO<BookSO> findBooksForRack(long rackId) throws PersistenceException;
 

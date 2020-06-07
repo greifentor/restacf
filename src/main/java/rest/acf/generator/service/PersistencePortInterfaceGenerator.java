@@ -93,7 +93,7 @@ public class PersistencePortInterfaceGenerator {
 		ism.getMethods().add(createDelete(pkClassName, pkAttrName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindAll(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
-		ism.getMethods().add(createSave(soClassName, persistenceExceptionClassName));
+		ism.getMethods().add(createSave(soClassName, pkClassName, persistenceExceptionClassName));
 		this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
 				.forEach(columnSO -> ism.getMethods().add(createFindXByY(columnSO, tableSO, soClassName)));
 		return ism;
@@ -130,9 +130,9 @@ public class PersistencePortInterfaceGenerator {
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}
 
-	private MethodSourceModel createSave(String soClassName, String persistenceExceptionClassName) {
+	private MethodSourceModel createSave(String soClassName, String pkClassName, String persistenceExceptionClassName) {
 		return new MethodSourceModel().setName("save") //
-				.setReturnType("void") //
+				.setReturnType(pkClassName) //
 				.addParameters(new ParameterSourceModel().setName("so").setType(soClassName)) //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}

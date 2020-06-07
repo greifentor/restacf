@@ -89,7 +89,7 @@ public class ServiceInterfaceGenerator {
 		ism.getMethods().add(createFindAll(resultPageClassName, soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createFindById(soClassName, persistenceExceptionClassName));
 		ism.getMethods().add(createSave(soClassName, this.nameConverter.classNameToAttrName(tableSO.getName()),
-				persistenceExceptionClassName));
+				persistenceExceptionClassName, pkClassName));
 		this.classSourceModelUtils.getReferencedColumns(tableSO, this.databaseSO) //
 				.forEach(columnSO -> ism.getMethods().add(createFindXByY(columnSO, tableSO, soClassName)));
 		return ism;
@@ -127,9 +127,10 @@ public class ServiceInterfaceGenerator {
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}
 
-	private MethodSourceModel createSave(String soClassName, String soAttrName, String persistenceExceptionClassName) {
+	private MethodSourceModel createSave(String soClassName, String soAttrName, String persistenceExceptionClassName,
+			String pkClassName) {
 		return new MethodSourceModel().setName("save") //
-				.setReturnType("void") //
+				.setReturnType(pkClassName) //
 				.addParameters(new ParameterSourceModel().setName(soAttrName).setType(soClassName)) //
 				.addThrownExceptions(new ThrownExceptionSourceModel().setName(persistenceExceptionClassName));
 	}

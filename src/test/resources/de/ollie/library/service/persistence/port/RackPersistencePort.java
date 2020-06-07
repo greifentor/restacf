@@ -21,6 +21,6 @@ public interface RackPersistencePort {
 
 	Optional<RackSO> findById(long id) throws PersistenceException;
 
-	void save(RackSO so) throws PersistenceException;
+	long save(RackSO so) throws PersistenceException;
 
 }

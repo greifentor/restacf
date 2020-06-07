@@ -17,6 +17,7 @@ import rest.acf.generator.converter.NameConverter;
 import rest.acf.generator.converter.TypeConverter;
 import rest.acf.model.AnnotationBearer;
 import rest.acf.model.AnnotationSourceModel;
+import rest.acf.model.AnnotationValue;
 import rest.acf.model.AttributeSourceModel;
 import rest.acf.model.ClassSourceModel;
 import rest.acf.model.ImportBearer;
@@ -86,8 +87,14 @@ public class ClassSourceModelUtils {
 		AnnotationSourceModel asm = getAnnotationByName(ab, name).orElse(new AnnotationSourceModel().setName(name));
 		if (propertyInfo.length > 0) {
 			for (int i = 0, leni = propertyInfo.length; i < leni; i = i + 2) {
-				asm.getProperties().add(new PropertySourceModel<>().setName(String.valueOf(propertyInfo[i]))
-						.setContent(propertyInfo[i + 1]));
+				if (propertyInfo[i + 1] instanceof AnnotationValue) {
+					AnnotationValue av = (AnnotationValue) propertyInfo[i + 1];
+					asm.getProperties().add(new PropertySourceModel<>().setName(String.valueOf(propertyInfo[i]))
+							.setContent(av.getValue()).setQuoted(av.isQuoted()));
+				} else {
+					asm.getProperties().add(new PropertySourceModel<>().setName(String.valueOf(propertyInfo[i]))
+							.setContent(propertyInfo[i + 1]).setQuoted(true));
+				}
 			}
 		}
 		if (!ab.getAnnotations().contains(asm)) {
