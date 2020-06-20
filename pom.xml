@@ -23,7 +23,7 @@
 			</snapshots>
 			<id>central</id>
 			<name>Maven Repository Switchboard</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 		</repository>
 	</repositories>
 
@@ -91,27 +91,7 @@
 		<dependency>
 			<groupId>de.ollie</groupId>
 			<artifactId>archimedes-legacy</artifactId>
-			<version>1.87.1</version>
-		</dependency>
-		<dependency>
-			<groupId>de.ollie</groupId>
-			<artifactId>baccara</artifactId>
-			<version>1.10.1</version>
-		</dependency>
-		<dependency>
-			<groupId>de.ollie</groupId>
-			<artifactId>corent</artifactId>
-			<version>1.67.1</version>
-		</dependency>
-		<dependency>
-			<groupId>de.ollie</groupId>
-			<artifactId>corentx</artifactId>
-			<version>1.46.1</version>
-		</dependency>
-		<dependency>
-			<groupId>de.ollie</groupId>
-			<artifactId>gengen</artifactId>
-			<version>1.12.2</version>
+			<version>1.89.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
